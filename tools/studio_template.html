@@ -66,6 +66,7 @@
   .fit b { font-size: 26px; font-variant-numeric: tabular-nums; }
   .fit span { color: var(--muted); }
   .grades { display: flex; gap: 10px; margin-top: 6px; color: var(--muted); font-size: 12px; }
+  .info .note { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
   .ref { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
          background: rgba(21,32,43,.55); opacity: 0; transition: opacity .45s; pointer-events: none; }
   .ref.on { opacity: 1; }
@@ -574,20 +575,33 @@ function showVal(k) {
   el.textContent = fmt(P[k]) + (MODELS[cur.model].design[k]?.step === 1 ? '' : ' m');
   el.classList.toggle('moved', Math.abs(P[k] - (main || P0)[k]) > 1e-9);
 }
+function judge(k, v, t) {
+  // the same rule as tools/bench.py: a bootstrap spread over 5 % of the value means the photo does not fix it
+  const used = (k.match(/[A-Za-z_]\w*/g) || []).filter(n => n in cur.sd);
+  if (used.some(n => cur.sd[n] > 0.05 * Math.abs(cur.params[n])))
+    return { und: true, c: '#9aa3ab', err: 'not fixed' };
+  if (Math.abs(t) < 1) {  // a percentage of a small offset says little: give metres
+    const d = v - t, a = Math.abs(d);
+    return { ok: a <= 0.05, c: a <= 0.05 ? '#2f7d4f' : a <= 0.10 ? '#c99400' : '#c0392b', err: `${d > 0 ? '+' : ''}${d.toFixed(2)} m` };
+  }
+  const e = 100 * (v - t) / t, a = Math.abs(e);
+  return { ok: a <= 5, c: a <= 5 ? '#2f7d4f' : a <= 10 ? '#c99400' : '#c0392b', err: `${e > 0 ? '+' : ''}${e.toFixed(1)} %` };
+}
 function info() {
   if (view === 'review') return reviewPanel();
   const m = MODELS[cur.model].metrics(P), names = Object.keys(P), vals = names.map(k => P[k]);
-  let checks = '';
+  let checks = '', nund = 0;
   for (const [k, t] of Object.entries(cur.truth)) {
     let v; try { v = new Function(...names, 'return (' + k + ');')(...vals); } catch (e) { continue; }
-    const e = 100 * (v - t) / t, c = Math.abs(e) <= 5 ? '#2f7d4f' : Math.abs(e) <= 10 ? '#c99400' : '#c0392b';
-    checks += `<tr><td><span class="dot" style="background:${c}"></span>${cur.labels[k] || k}</td><td>${v.toFixed(2)} / ${t.toFixed(2)} · ${e > 0 ? '+' : ''}${e.toFixed(1)} %</td></tr>`;
+    const j = judge(k, v, t); if (j.und) nund++;
+    checks += `<tr><td><span class="dot" style="background:${j.c}"></span>${cur.labels[k] || k}</td><td>${v.toFixed(2)} / ${t.toFixed(2)} · ${j.err}</td></tr>`;
   }
   const n = { P: 0, D: 0, I: 0, A: 0 }; for (const k of names) n[gradeOf(k)]++;
   $('info').innerHTML = `<h1>${cur.title}</h1><p class="by">${cur.by}</p>
     <table>${m.map(([l, v, u]) => `<tr><td>${l}</td><td><b>${u === '' ? v : v.toFixed(u === '°' ? 1 : 2)}</b> ${u}</td></tr>`).join('')}</table>
     <div class="fit"><b>${rms(P).toFixed(1)}</b><span>px mean error on the photo${cur.photos > 1 ? ' (one of ' + cur.photos + ')' : ''}</span></div>
     <div class="sec">Against the ${cur.ref}</div><table>${checks}</table>
+    ${nund ? `<p class="note">Not fixed: the solve's spread is over 5 % of the value, so the ${cur.photos > 1 ? 'photos do' : 'photo does'} not pin it down. Offsets under 1 m are compared in metres.</p>` : ''}
     <div class="grades">${Object.entries(n).map(([g, c]) => `<span><span class="dot" style="background:${GC[g]}"></span>${g} ${c}</span>`).join('')}</div>`;
 }
 
@@ -633,7 +647,7 @@ function elemDiff(A, B) {
 function checkState(Q) {
   const names = Object.keys(Q), vals = names.map(k => Q[k]), out = {};
   for (const [k, t] of Object.entries(cur.truth)) {
-    try { const v = new Function(...names, 'return (' + k + ');')(...vals); out[k] = Math.abs(100 * (v - t) / t) <= 5; } catch (e) {}
+    try { const j = judge(k, new Function(...names, 'return (' + k + ');')(...vals), t); if (!j.und) out[k] = j.ok; } catch (e) {}
   }
   return out;
 }
@@ -658,7 +672,7 @@ function reviewPanel() {
     const groupList = (ids, c) => [...new Set(ids.map(groupOf))].map(g => { const n = ids.filter(id => groupOf(id) === g).length;
       return `<tr><td><span class="dot" style="background:${c}"></span>${g}${n > 1 ? ' ×' + n : ''}${why(ids.find(id => groupOf(id) === g))}</td><td></td></tr>`; }).join('');
     const c0 = checkState(main), c1 = checkState(P);
-    const flips = Object.keys(c1).filter(k => c0[k] !== c1[k]).map(k => `<tr><td><span class="dot" style="background:${c1[k] ? '#2f7d4f' : '#c0392b'}"></span>${label(k)}</td><td>${c1[k] ? 'now within 5 %' : 'now off the drawings'}</td></tr>`).join('');
+    const flips = Object.keys(c1).filter(k => c0[k] !== c1[k]).map(k => `<tr><td><span class="dot" style="background:${c1[k] ? '#2f7d4f' : '#c0392b'}"></span>${label(k)}</td><td>${c1[k] ? 'now on the drawings' : 'now off the drawings'}</td></tr>`).join('');
     const cf = conflicts();
     body = `<div class="sec">Proposal: ${pr.name}</div><p class="by" style="margin:0 0 6px">${pr.by}, drawn on v${pr.base}</p>
       <table>${params}</table>

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software or its method, please cite it as below."
+title: "reverse-cad: parametric building models recovered from photos and checked against measured drawings"
+type: software
+authors:
+  - name: "vibecading"
+    website: "https://github.com/vibecading"
+repository-code: "https://github.com/vibecading/reverse-cad"
+url: "https://vibecading.github.io/reverse-cad/studio/"
+license: MIT
+version: "0.1.0"
+date-released: "2026-10-29"
+keywords:
+  - architecture
+  - photogrammetry
+  - camera calibration
+  - parametric design
+  - building survey
+  - BIM

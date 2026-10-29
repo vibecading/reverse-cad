@@ -5,6 +5,8 @@ prove the model against measured drawings.
 
 ![A photo comes in, the parametric model builds itself, bays are added with a slider, a plan grip is dragged, the camera flies back into the photo, and changes are reviewed](media/teaser.gif)
 
+Try it in the browser: [studio](https://vibecading.github.io/reverse-cad/studio/) · [demo](https://vibecading.github.io/reverse-cad/demo/)
+
 Videos: [30 s teaser](media/teaser.mp4) · [studio walkthrough, 2 min](media/studio.mp4) · [results walkthrough, 65 s](media/screencast.mp4)
 
 Every number in a model says where it came from: **P** read off a drawing or a
@@ -32,7 +34,8 @@ recovered camera and its D and I values agree with sources the solve never saw.
 
 ## Studio
 
-Open `studio/index.html` in a browser (three.js loads from a CDN).
+[Open it online](https://vibecading.github.io/reverse-cad/studio/), or open
+`studio/index.html` from a clone (three.js loads from a CDN).
 
 | | |
 |---|---|

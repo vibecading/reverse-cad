@@ -3,6 +3,8 @@ message: "If you use this software or its method, please cite it as below."
 title: "reverse-cad: parametric building models recovered from photos and checked against measured drawings"
 type: software
 authors:
+  - family-names: "Tkachenko"
+    given-names: "Alexey"
   - name: "vibecading"
     website: "https://github.com/vibecading"
 repository-code: "https://github.com/vibecading/reverse-cad"

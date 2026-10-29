@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building from photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #e9edf1;
+    --panel: #f7f9fb;
+    --ink: #15202b;
+    --muted: #5b6875;
+    --rule: #cdd5dd;
+    --wire: #e0218a;
+    --mark: #00a3c4;
+    --warn: #b86b00;
+    --good: #2f7d4f;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font: 15px/1.45 "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 100vh; }
+  .stage { padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .stage h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .stage .sub { color: var(--muted); margin: 0; max-width: 70ch; }
+  .canvas-box { position: relative; background: #000; border-radius: 4px; overflow: hidden; }
+  canvas { display: block; width: 100%; height: auto; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; color: var(--muted); }
+  .toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .toggles input[type=range] { width: 120px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 6px; }
+
+  aside { background: var(--panel); border-left: 1px solid var(--rule); padding: 20px;
+          display: flex; flex-direction: column; gap: 18px; overflow-y: auto; max-height: 100vh; position: sticky; top: 0; }
+  .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cases button { flex: 1; padding: 9px 10px; border: 1px solid var(--rule); background: #fff; color: var(--ink);
+                  font: inherit; font-weight: 500; border-radius: 4px; cursor: pointer; text-align: left; }
+  .cases button[aria-pressed=true] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .cases small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  .fit { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; align-items: baseline; }
+  .fit .big { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fit .note { color: var(--muted); font-size: 13px; }
+  .fit .big.worse { color: var(--warn); }
+  button.reset { padding: 8px 12px; border: 1px solid var(--ink); background: var(--ink); color: #fff;
+                 font: inherit; border-radius: 4px; cursor: pointer; justify-self: start; }
+  button.reset:focus-visible, .cases button:focus-visible, input:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+  h2 { font-size: 15px; margin: 0 0 8px; font-weight: 700; }
+  .param { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; margin-bottom: 10px; }
+  .param .name { font-size: 14px; }
+  .param .name em { font-style: normal; color: var(--muted); font-size: 12px; margin-left: 4px; }
+  .param .val { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .param .val.moved { color: var(--warn); }
+  .param input { grid-column: 1 / -1; width: 100%; accent-color: var(--ink); }
+  .param .deps { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+  .param .deps.thin { color: var(--warn); }
+  .param.hot { background: #fff; box-shadow: -8px 0 0 #fff, 8px 0 0 #fff; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 5px 4px; border-bottom: 1px solid var(--rule); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 500; }
+  td.bad { color: var(--warn); }
+  .fine { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  .credit { color: var(--muted); font-size: 12px; }
+  .opencase { margin: 0; padding: 10px 12px; border-left: 3px solid var(--warn); background: #fff7ea; max-width: 80ch; font-size: 14px; }
+  .param .name em.cam { color: var(--warn); }
+  .opencase.good { border-left-color: var(--good); background: #eef7f1; }
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+    aside { position: static; max-height: none; border-left: 0; border-top: 1px solid var(--rule); }
+    .stage { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="stage">
+    <h1 id="title"></h1>
+    <p class="sub">The pink wireframe is a parametric model, projected through the camera recovered from this same photo. Move a parameter on the right and the model leaves the photo while the error grows. Reset puts the solution back.</p>
+    <div class="canvas-box"><canvas id="cv"></canvas></div>
+    <div class="toggles">
+      <label><input type="checkbox" id="tWire" checked> model wireframe</label>
+      <label><input type="checkbox" id="tMarks" checked> marks on the photo</label>
+      <label id="lTruth"><input type="checkbox" id="tTruth"> model from the drawings, same camera</label>
+      <label id="lRender">Rhino render <input type="range" id="tRender" min="0" max="100" value="0"></label>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--wire)"></span>measured from the photo</span>
+      <span><span class="sw" style="background:#4f8cff"></span>placed by a rule</span>
+      <span><span class="sw" style="background:#f2b705"></span>assumed</span>
+      <span><span class="sw" style="background:var(--mark)"></span>marks, and where the model projects them now</span>
+      <span id="legTruth"><span class="sw" style="background:#21a35b"></span>drawing values where there are any</span>
+    </div>
+    <p class="opencase" id="opencase" hidden>One photo. The solve fits this photo to 2.5 px, and hold-out and the camera sweep are quiet, yet the walls come out 11–18 % taller and longer than on the HABS measured drawings. The green dashed wireframe is the model from the drawings, seen through the same camera. No internal check sees this. A second photo does: solved together with this one, it brings the dimensions within 1 % of the drawings (next button).</p>
+    <p class="opencase good" id="jointcase" hidden>Two photos together: this photo and a second one from the north-west, solved as one building with two cameras. Coping 2.559 m against 2.56 on the HABS drawings, its underside 2.353 against 2.35, south wall 4.05 against 4.01. The price of agreeing: each photo fits a little worse than alone (4.5 px here instead of 2.5), and the dimensions are right. The green and pink wireframes nearly coincide.</p>
+    <p class="credit" id="credit"></p>
+  </main>
+  <aside>
+    <div class="cases" id="cases"></div>
+    <div class="fit">
+      <span class="big" id="rms">—</span><span class="note">mean error over the marks, px<br><span id="rms0"></span></span>
+    </div>
+    <button class="reset" id="reset">Reset to the solution</button>
+    <section><h2>Parameters</h2>
+      <p class="fine" style="margin:0 0 10px">Hover a parameter: only the marks it is measured through stay lit. That is the model’s dependency graph, which <code>tools/dag.py</code> builds from the marks.</p>
+      <div id="params"></div></section>
+    <section>
+      <h2>Check against the drawings</h2>
+      <table id="truth"><thead><tr><th>quantity</th><th>model</th><th>reference</th><th>error</th></tr></thead><tbody></tbody></table>
+      <p class="fine" id="truthnote"></p>
+    </section>
+  </aside>
+</div>
+<script>
+const DATA = [{"id": "farnsworth", "title": "Farnsworth House", "by": "Mies van der Rohe, 1951", "spec": {"image": "photos/farnsworth/9970.jpg", "source": "Paul R. Burley, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Farnsworth_House_Plano-9970.jpg", "frame": "x east from the west end of the house slab, y north from its south edge, z up from grade; metres", "mark_sigma_px": 2.0, "params": {"s": {"fixed": 6.7, "note": "column bay, the one published dimension used for scale"}, "c": {"init": 1.5, "note": "west cantilever, slab end to first column"}, "W": {"init": 8.0, "note": "house width, south to north fascia"}, "zf_t": {"init": 1.5}, "zf_b": {"init": 1.2}, "zr_t": {"init": 4.6}, "zr_b": {"init": 4.2}, "x_te": {"init": 15.0, "note": "terrace east end"}, "y_tf": {"init": -6.0, "note": "terrace south edge"}, "y_tn": {"init": 0.0, "note": "terrace north edge"}, "h_t": {"init": 0.7}, "d_t": {"init": 0.4}, "x_p": {"init": 10.0, "note": "terrace support post"}, "y_p": {"init": -5.0}, "g_x": {"init": 7.5, "note": "west glass wall of the enclosure"}, "g_y": {"init": 0.3, "note": "glass set-back from the south slab edge"}}, "camera": {"pos": [12, -22, 1.6], "target": [6, 4, 2], "f_px": 1800}, "points": [{"id": "A roof top, front-west", "px": [462, 383], "xyz": ["0", "0", "zr_t"]}, {"id": "B roof bottom, front-west", "px": [467, 440], "xyz": ["0", "0", "zr_b"]}, {"id": "C roof bottom, back-west", "px": [790, 523], "xyz": ["0", "W", "zr_b"]}, {"id": "D floor top, front-west", "px": [462, 759], "xyz": ["0", "0", "zf_t"]}, {"id": "E floor bottom, front-west", "px": [462, 801], "xyz": ["0", "0", "zf_b"]}, {"id": "T1 terrace top, front-east", "px": [1518.5, 883], "xyz": ["x_te", "y_tf", "h_t"]}, {"id": "T2 terrace bottom, front-east", "px": [1519, 951], "xyz": ["x_te", "y_tf", "h_t - d_t"]}, {"id": "T3 terrace top, back-east", "px": [1607, 852], "xyz": ["x_te", "y_tn", "h_t"]}, {"id": "G post foot on grade", "px": [1211, 998], "xyz": ["x_p", "y_p", "0"]}, {"id": "GT glass SW corner, head", "px": [1197, 421], "xyz": ["g_x", "g_y", "zr_b"]}, {"id": "GB glass SW corner, sill", "px": [1197, 760], "xyz": ["g_x", "g_y", "zf_t"]}], "lines": [{"id": "L1 roof top front", "px": [[462, 383], [1900, 323]], "xyz": [["0", "0", "zr_t"], ["20", "0", "zr_t"]]}, {"id": "L2 roof bottom front", "px": [[467, 440], [1900, 396]], "xyz": [["0", "0", "zr_b"], ["20", "0", "zr_b"]]}, {"id": "L3 floor top front", "px": [[462, 759], [1900, 760]], "xyz": [["0", "0", "zf_t"], ["20", "0", "zf_t"]]}, {"id": "L4 floor bottom front", "px": [[462, 801], [1900, 809]], "xyz": [["0", "0", "zf_b"], ["20", "0", "zf_b"]]}, {"id": "L5 column S1 west edge", "px": [[620, 450], [620, 820]], "xyz": [["c - 0.1", "-0.2", "1"], ["c - 0.1", "-0.2", "4"]]}, {"id": "L6 column S2 west edge", "px": [[1379, 450], [1379, 820]], "xyz": [["c + s - 0.1", "-0.2", "1"], ["c + s - 0.1", "-0.2", "4"]]}, {"id": "L7 column N1 west edge", "px": [[931, 560], [931, 740]], "xyz": [["c - 0.1", "W", "2"], ["c - 0.1", "W", "4"]]}, {"id": "L8 roof bottom back", "px": [[800, 523], [930, 524]], "xyz": [["0", "W", "zr_b"], ["c", "W", "zr_b"]]}, {"id": "L9 terrace top front", "px": [[1000, 881.5], [1518, 883]], "xyz": [["8", "y_tf", "h_t"], ["x_te", "y_tf", "h_t"]]}, {"id": "L10 terrace top back", "px": [[1460, 848.5], [1600, 851.5]], "xyz": [["x_te - 3", "y_tn", "h_t"], ["x_te", "y_tn", "h_t"]]}, {"id": "L11 post west edge", "px": [[1190, 955], [1190, 995]], "xyz": [["x_p - 0.15", "y_p", "0"], ["x_p - 0.15", "y_p", "0.3"]]}, {"id": "L12 glass SW mullion", "px": [[1197, 440], [1197, 740]], "xyz": [["g_x", "g_y", "zf_t + 0.3"], ["g_x", "g_y", "zr_b - 0.3"]]}], "truth": {"c": 1.724, "W": 8.738, "2*c + 3*s": 23.57, "g_x": 6.712, "zf_t": 1.84, "zf_b": 1.43, "zr_b - zf_t": 2.87, "zr_t - zf_t": 3.404, "x_te": 10.135, "y_tn": -0.216, "y_tf": -7.118}, "truth_source": "HABS IL-1105 (2009), sheets 3 and 5 of 8, Library of Congress via Wikimedia Commons, public domain. Dimension strings read off the plan; floor heights scaled off section A-A with the drawing's scale bar (26.8 px/ft at 3840 px)", "priors": [{"expr": "y_p - y_tf", "value": 0.6, "sigma_m": 0.6, "note": "posts sit a little behind the terrace fascia; assumption, not measured"}], "truth_note": "Wikipedia gives the floor 5 ft 3 in (1.60 m) above grade; the HABS section shows 6 ft 0 in at the west column, which both photos reproduce", "truth_wikipedia": {"c": 1.68, "W": 8.74, "zf_t": 1.6, "zr_b - zf_t": 2.9, "zr_t - zf_t": 2.9, "2*c + 3*s - g_x - g_y": 16.76}}, "result": {"camera": {"pos": [11.819, -23.815, 1.707], "target": [8.963, -14.242, 2.156], "f_px": 2889.2, "hfov_deg": 36.76, "lens_35mm": 54.2, "up": [0.0109, -0.0437, 0.999], "R": [[0.9583036, 0.2857446, 0.0020683], [-0.0108682, 0.0436796, -0.9989865], [-0.2855454, 0.9573098, 0.0449639]]}, "principal_point": [960.0, 640.0], "params": {"s": 6.7, "c": 1.7519, "W": 8.9932, "zf_t": 1.7988, "zf_b": 1.4174, "zr_t": 5.2352, "zr_b": 4.6764, "x_te": 9.7372, "y_tf": -2.9197, "y_tn": 5.9382, "h_t": 0.9074, "d_t": 0.4776, "x_p": 7.3925, "y_p": -2.3846, "g_x": 6.7519, "g_y": 0.2019}, "rms_px": 2.01, "max_px": 9.06, "per_mark_px": {"A roof top, front-west": 3.16, "B roof bottom, front-west": 3.81, "C roof bottom, back-west": 9.09, "D floor top, front-west": 0.95, "E floor bottom, front-west": 1.35, "T1 terrace top, front-east": 0.64, "T2 terrace bottom, front-east": 0.1, "T3 terrace top, back-east": 1.03, "G post foot on grade": 0.93, "GT glass SW corner, head": 0.28, "GB glass SW corner, sill": 0.45, "L1 roof top front": 2.87, "L2 roof bottom front": 4.45, "L3 floor top front": 0.54, "L4 floor bottom front": 0.02, "L5 column S1 west edge": 2.7, "L6 column S2 west edge": 0.82, "L7 column N1 west edge": 1.93, "L8 roof bottom back": 3.61, "L9 terrace top front": 1.81, "L10 terrace top back": 2.79, "L11 post west edge": 0.48, "L12 glass SW mullion": 0.22, "prior y_p - y_tf": -0.22}, "param_sd": {"c": 0.0274, "W": 0.2058, "zf_t": 0.3922, "zf_b": 0.3927, "zr_t": 0.3981, "zr_b": 0.396, "x_te": 0.486, "y_tf": 5.0067, "y_tn": 7.2702, "h_t": 0.212, "d_t": 0.1304, "x_p": 1.0514, "y_p": 5.0168, "g_x": 0.0427, "g_y": 0.1575}, "holdout_px": {"A roof top, front-west": 3.73, "B roof bottom, front-west": 6.33, "C roof bottom, back-west": 13.34, "D floor top, front-west": 1.56, "E floor bottom, front-west": 2.16, "T1 terrace top, front-east": 1.06, "T2 terrace bottom, front-east": 5093.14, "T3 terrace top, back-east": 285.62, "G post foot on grade": 1227.55, "GT glass SW corner, head": 15.42, "GB glass SW corner, sill": 0.47, "L1 roof top front": 12.91, "L2 roof bottom front": 11.02, "L3 floor top front": 1.35, "L4 floor bottom front": 0.22, "L5 column S1 west edge": 17.58, "L6 column S2 west edge": 36.74, "L7 column N1 west edge": 12.6, "L8 roof bottom back": 5.32, "L9 terrace top front": 2.93, "L10 terrace top back": 4.37, "L11 post west edge": 19.92, "L12 glass SW mullion": 0.22}, "holdout_median_px": 6.33, "vs_truth": {"c": {"solved": 1.752, "truth": 1.724, "err_m": 0.028, "err_pct": 1.6}, "W": {"solved": 8.993, "truth": 8.738, "err_m": 0.255, "err_pct": 2.9}, "2*c + 3*s": {"solved": 23.604, "truth": 23.57, "err_m": 0.034, "err_pct": 0.1}, "g_x": {"solved": 6.752, "truth": 6.712, "err_m": 0.04, "err_pct": 0.6}, "zf_t": {"solved": 1.799, "truth": 1.84, "err_m": -0.041, "err_pct": -2.2}, "zf_b": {"solved": 1.417, "truth": 1.43, "err_m": -0.013, "err_pct": -0.9}, "zr_b - zf_t": {"solved": 2.878, "truth": 2.87, "err_m": 0.008, "err_pct": 0.3}, "zr_t - zf_t": {"solved": 3.436, "truth": 3.404, "err_m": 0.032, "err_pct": 1.0}, "x_te": {"solved": 9.737, "truth": 10.135, "err_m": -0.398, "err_pct": -3.9}, "y_tn": {"solved": 5.938, "truth": -0.216, "err_m": 6.154, "err_pct": -2849.2}, "y_tf": {"solved": -2.92, "truth": -7.118, "err_m": 4.198, "err_pct": -59.0}}}, "render": "../cases/farnsworth/render_9970.png", "model": "farnsworth", "grades": {"s": "scale"}, "labels": {"s": "column bay", "c": "cantilever, slab end to column", "W": "width of the house", "zf_t": "top of the floor", "zf_b": "underside of the floor slab", "zr_t": "top of the roof", "zr_b": "underside of the roof (ceiling)", "x_te": "east edge of the terrace", "y_tf": "south edge of the terrace", "y_tn": "north edge of the terrace", "h_t": "top of the terrace", "d_t": "terrace depth", "x_p": "terrace post, x", "y_p": "terrace post, y", "g_x": "west glass wall", "g_y": "glass set back from the edge", "zr_b - zf_t": "floor to ceiling", "zr_t - zf_t": "floor to top of roof", "2*c + 3*s - g_x - g_y": "length of the glass volume", "2*c + 3*s": "length of the house (rule)"}, "uses": {"s": ["L6 column S2 west edge"], "c": ["L5 column S1 west edge", "L6 column S2 west edge", "L7 column N1 west edge", "L8 roof bottom back"], "W": ["C roof bottom, back-west", "L7 column N1 west edge", "L8 roof bottom back"], "zf_t": ["D floor top, front-west", "GB glass SW corner, sill", "L3 floor top front", "L12 glass SW mullion"], "zf_b": ["E floor bottom, front-west", "L4 floor bottom front"], "zr_t": ["A roof top, front-west", "L1 roof top front"], "zr_b": ["B roof bottom, front-west", "C roof bottom, back-west", "GT glass SW corner, head", "L2 roof bottom front", "L8 roof bottom back", "L12 glass SW mullion"], "x_te": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "T3 terrace top, back-east", "L9 terrace top front", "L10 terrace top back"], "y_tf": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "L9 terrace top front"], "y_tn": ["T3 terrace top, back-east", "L10 terrace top back"], "h_t": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "T3 terrace top, back-east", "L9 terrace top front", "L10 terrace top back"], "d_t": ["T2 terrace bottom, front-east"], "x_p": ["G post foot on grade", "L11 post west edge"], "y_p": ["G post foot on grade", "L11 post west edge"], "g_x": ["GT glass SW corner, head", "GB glass SW corner, sill", "L12 glass SW mullion"], "g_y": ["GT glass SW corner, head", "GB glass SW corner, sill", "L12 glass SW mullion"]}, "dag_report": {"free_without_marks": [], "free_on_one_mark": {"d_t": "T2 terrace bottom, front-east"}, "fixed_unused": [], "checked": ["W", "c", "g_x", "s", "x_te", "y_tf", "y_tn", "zf_b", "zf_t", "zr_b", "zr_t"], "free_unchecked": ["h_t", "d_t", "x_p", "y_p", "g_y"]}, "spread": {"c": 1.4, "W": 3.3, "zf_t": 1.1, "zf_b": 1.7, "zr_t": 0.5, "zr_b": 0.4, "x_te": 0.6, "y_tf": 9.6, "y_tn": 6.6, "h_t": 1.0, "d_t": 0.6, "x_p": 1.1, "y_p": 11.6, "g_x": 0.1, "g_y": 51.8}, "photo": "../photos/farnsworth/9970.jpg"}, {"id": "crownhall", "title": "S. R. Crown Hall", "by": "Mies van der Rohe, 1956", "spec": {"image": "photos/crownhall/c1.jpg", "source": "Joe Ravi, public domain, commons.wikimedia.org/wiki/File:Crown_Hall_2.jpg", "frame": "x east from the girder 1 column axis (west end out of frame), y north from the glass plane, z up from grade; metres", "mark_sigma_px": 2.0, "params": {"b": {"fixed": 3.048, "note": "mullion bay, 10 ft, the one published dimension used for scale"}, "c": {"fixed": 0.0, "note": "gauge: the west end is out of frame, so the cantilever cannot be measured; origin moved to the girder 1 axis"}, "s": {"init": 18.0, "note": "girder column spacing"}, "wc": {"init": 0.36, "note": "girder column width"}, "d_c": {"init": 0.4, "note": "column face in front of the glass plane"}, "zg": {"init": 9.5, "note": "girder top"}, "zr_t": {"init": 7.5}, "zr_b": {"init": 6.8}, "z_tt": {"init": 4.5, "note": "transom between upper lights and middle tier"}, "z_mb": {"init": 2.0, "note": "bottom of the middle tier"}}, "camera": {"pos": [33, -22, 1.6], "target": [33, 10, 1.6], "f_px": 1300, "free_principal_point": "y"}, "priors": [{"expr": "d_c", "value": 0.4, "sigma_m": 0.3, "note": "assumption: columns stand just outside the glass"}], "points": [{"id": "P1 column 2 top-left", "px": [503, 427.5], "xyz": ["c + s - wc/2", "-d_c", "zg"]}, {"id": "P2 column 3 top-left", "px": [1632, 183.5], "xyz": ["c + 2*s - wc/2", "-d_c", "zg"]}, {"id": "P3 column 3 foot-left (grade)", "px": [1631, 1045], "xyz": ["c + 2*s - wc/2", "-d_c", "0"]}, {"id": "P4 column 3 foot-right (grade)", "px": [1660.5, 1045], "xyz": ["c + 2*s + wc/2", "-d_c", "0"]}], "lines": [{"id": "G1 girder 1 top (east edge)", "px": [[20, 567], [185, 600]], "xyz": [["c + 0.25", "2", "zg"], ["c + 0.25", "12", "zg"]]}, {"id": "G2 girder 2 top (east edge)", "px": [[517, 425], [725, 506]], "xyz": [["c + s + 0.25", "2", "zg"], ["c + s + 0.25", "12", "zg"]]}, {"id": "F1 roof fascia top", "px": [[300, 578], [1900, 313]], "xyz": [["c + 1", "0", "zr_t"], ["c + 2*s + 8", "0", "zr_t"]]}, {"id": "F2 roof fascia bottom", "px": [[900, 527], [1900, 384]], "xyz": [["c + s + 3", "0", "zr_b"], ["c + 2*s + 8", "0", "zr_b"]]}, {"id": "T1 transom", "px": [[1680, 697], [1880, 683]], "xyz": [["c + 2*s + 1", "0", "z_tt"], ["c + 2*s + 5", "0", "z_tt"]]}, {"id": "T2 middle tier bottom", "px": [[1680, 874], [1720, 872]], "xyz": [["c + 2*s + 1", "0", "z_mb"], ["c + 2*s + 2", "0", "z_mb"]], "w": 0.5}, {"id": "C2 column 2 west edge", "px": [[503, 450], [503, 640]], "xyz": [["c + s - wc/2", "-d_c", "z_tt"], ["c + s - wc/2", "-d_c", "zr_t"]]}, {"id": "C3 column 3 west edge", "px": [[1631, 300], [1631, 1000]], "xyz": [["c + 2*s - wc/2", "-d_c", "1"], ["c + 2*s - wc/2", "-d_c", "zr_t"]]}, {"id": "M+1 mullion", "px": [[659, 600], [659, 690]], "xyz": [["c + s + 1*b", "0", "z_tt + 0.3"], ["c + s + 1*b", "0", "zr_b - 0.3"]]}, {"id": "M+2 mullion", "px": [[810, 600], [810, 690]], "xyz": [["c + s + 2*b", "0", "z_tt + 0.3"], ["c + s + 2*b", "0", "zr_b - 0.3"]]}, {"id": "M+3 mullion", "px": [[981, 600], [981, 690]], "xyz": [["c + s + 3*b", "0", "z_tt + 0.3"], ["c + s + 3*b", "0", "zr_b - 0.3"]]}, {"id": "M+4 mullion", "px": [[1177, 600], [1177, 690]], "xyz": [["c + s + 4*b", "0", "z_tt + 0.3"], ["c + s + 4*b", "0", "zr_b - 0.3"]]}, {"id": "M+5 mullion", "px": [[1401, 600], [1401, 690]], "xyz": [["c + s + 5*b", "0", "z_tt + 0.3"], ["c + s + 5*b", "0", "zr_b - 0.3"]]}, {"id": "M-1 mullion", "px": [[409, 640], [409, 690]], "xyz": [["c + s - 1*b", "0", "z_tt + 0.3"], ["c + s - 1*b", "0", "zr_b - 0.3"]]}, {"id": "M-2 mullion", "px": [[304, 640], [304, 690]], "xyz": [["c + s - 2*b", "0", "z_tt + 0.3"], ["c + s - 2*b", "0", "zr_b - 0.3"]]}, {"id": "M-3 mullion", "px": [[210, 640], [210, 690]], "xyz": [["c + s - 3*b", "0", "z_tt + 0.3"], ["c + s - 3*b", "0", "zr_b - 0.3"]]}, {"id": "M-4 mullion", "px": [[123, 640], [123, 690]], "xyz": [["c + s - 4*b", "0", "z_tt + 0.3"], ["c + s - 4*b", "0", "zr_b - 0.3"]]}], "truth": {"s": 18.288, "zg - zr_t": 1.905, "zr_b": 7.315, "z_tt - z_mb": 2.362, "zr_b - z_tt": 3.7}, "truth_source": "en.wikipedia.org/wiki/S._R._Crown_Hall: 220 ft = 2 x 20 ft cantilever + 3 x 60 ft bays; girders 6 1/4 ft deep; middle tier 7 3/4 ft; upper lights 11 1/2 to 12 3/4 ft (3.70 m is the middle of that range)", "dropped": [{"id": "G3 girder 3 top", "px": [[1671, 240], [1692, 331]], "why": "24 px residual in the first solve; the sliver right of column 3 is seen nearly edge-on and was misread"}], "truth_note": "zr_b compared with 6 ft main level + 18 ft to the roof, read as floor to ceiling. Published tiers (11.5-12.75 ft upper, 7.75 ft middle) add up to more than the 18 ft storey, so the tier comparison depends on a definition the article does not give"}, "result": {"camera": {"pos": [37.495, -18.994, 1.466], "target": [32.631, -10.257, 1.509], "f_px": 1461.5, "hfov_deg": 66.6, "lens_35mm": 27.4, "up": [-0.0012, -0.0056, 1.0], "R": [[0.8737582, 0.4863459, 0.0037844], [0.0012393, 0.0055547, -0.9999838], [-0.4863591, 0.8737487, 0.0042507]]}, "principal_point": [960.0, 908.7], "params": {"b": 3.048, "c": 0.0, "s": 18.1051, "wc": 0.3112, "d_c": 0.4702, "zg": 9.9656, "zr_t": 8.1104, "zr_b": 7.3231, "z_tt": 4.0692, "z_mb": 2.0291}, "rms_px": 1.63, "max_px": 5.16, "per_mark_px": {"P1 column 2 top-left": 2.88, "P2 column 3 top-left": 0.23, "P3 column 3 foot-left (grade)": 0.74, "P4 column 3 foot-right (grade)": 0.63, "G1 girder 1 top (east edge)": 5.16, "G2 girder 2 top (east edge)": 1.28, "F1 roof fascia top": 0.74, "F2 roof fascia bottom": 4.21, "T1 transom": 1.74, "T2 middle tier bottom": 1.02, "C2 column 2 west edge": 1.21, "C3 column 3 west edge": 0.9, "M+1 mullion": 2.41, "M+2 mullion": 0.83, "M+3 mullion": 0.91, "M+4 mullion": 1.87, "M+5 mullion": 0.72, "M-1 mullion": 1.83, "M-2 mullion": 0.74, "M-3 mullion": 1.79, "M-4 mullion": 1.68, "prior d_c": 0.47}, "param_sd": {"s": 0.0468, "wc": 0.0267, "d_c": 0.0507, "zg": 0.1039, "zr_t": 0.0848, "zr_b": 0.0819, "z_tt": 0.0522, "z_mb": 0.0832}, "holdout_px": {"P1 column 2 top-left": 4.06, "P2 column 3 top-left": 0.73, "P3 column 3 foot-left (grade)": 1.28, "P4 column 3 foot-right (grade)": 5.35, "G1 girder 1 top (east edge)": 8.77, "G2 girder 2 top (east edge)": 19.62, "F1 roof fascia top": 290.38, "F2 roof fascia bottom": 282.84, "T1 transom": 302.35, "T2 middle tier bottom": 1.02, "C2 column 2 west edge": 3.92, "C3 column 3 west edge": 1.45, "M+1 mullion": 3.09, "M+2 mullion": 1.08, "M+3 mullion": 1.15, "M+4 mullion": 2.42, "M+5 mullion": 2.51, "M-1 mullion": 2.21, "M-2 mullion": 0.9, "M-3 mullion": 2.47, "M-4 mullion": 3.06}, "holdout_median_px": 2.51, "vs_truth": {"s": {"solved": 18.105, "truth": 18.288, "err_m": -0.183, "err_pct": -1.0}, "zg - zr_t": {"solved": 1.855, "truth": 1.905, "err_m": -0.05, "err_pct": -2.6}, "zr_b": {"solved": 7.323, "truth": 7.315, "err_m": 0.008, "err_pct": 0.1}, "z_tt - z_mb": {"solved": 2.04, "truth": 2.362, "err_m": -0.322, "err_pct": -13.6}, "zr_b - z_tt": {"solved": 3.254, "truth": 3.7, "err_m": -0.446, "err_pct": -12.1}}}, "render": "../cases/crownhall/render_c1.png", "model": "crownhall", "grades": {"b": "scale", "c": "gauge"}, "labels": {"b": "mullion bay (10 ft)", "c": "cantilever (end out of frame)", "s": "column bay under the girders", "wc": "column width", "d_c": "column in front of the glass", "zg": "top of the girders", "zr_t": "top of the roof", "zr_b": "underside of the roof (ceiling)", "z_tt": "horizontal mullion", "z_mb": "bottom of the middle glass tier", "zg - zr_t": "girder above the roof", "z_tt - z_mb": "middle glass tier", "zr_b - z_tt": "upper glass tier"}, "uses": {"b": ["M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "c": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "G1 girder 1 top (east edge)", "G2 girder 2 top (east edge)", "F1 roof fascia top", "F2 roof fascia bottom", "T1 transom", "T2 middle tier bottom", "C2 column 2 west edge", "C3 column 3 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "s": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "G2 girder 2 top (east edge)", "F1 roof fascia top", "F2 roof fascia bottom", "T1 transom", "T2 middle tier bottom", "C2 column 2 west edge", "C3 column 3 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "wc": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "C2 column 2 west edge", "C3 column 3 west edge"], "d_c": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "C2 column 2 west edge", "C3 column 3 west edge"], "zg": ["P1 column 2 top-left", "P2 column 3 top-left", "G1 girder 1 top (east edge)", "G2 girder 2 top (east edge)"], "zr_t": ["F1 roof fascia top", "C2 column 2 west edge", "C3 column 3 west edge"], "zr_b": ["F2 roof fascia bottom", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "z_tt": ["T1 transom", "C2 column 2 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "z_mb": ["T2 middle tier bottom"]}, "dag_report": {"free_without_marks": [], "free_on_one_mark": {"z_mb": "T2 middle tier bottom"}, "fixed_unused": [], "checked": ["s", "z_mb", "z_tt", "zg", "zr_b", "zr_t"], "free_unchecked": ["wc", "d_c"]}, "spread": {"s": 0.7, "wc": 5.5, "d_c": 22.1, "zg": 2.7, "zr_t": 2.7, "zr_b": 2.7, "z_tt": 2.7, "z_mb": 2.7}, "photo": "../photos/crownhall/c1.jpg"}, {"id": "robie", "title": "Robie House", "by": "Frank Lloyd Wright, 1910", "spec": {"image": "photos/robie/w1.jpg", "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL.jpg (iPhone 15 Pro, 24 mm equivalent, 5383 px wide crop of a 5712 px frame)", "frame": "origin at the outer south-west corner of the ground-floor west enclosure (HABS sheet 2), x east, y north, z up from grade; metres", "mark_sigma_px": 2.0, "params": {"Lw": {"fixed": 6.85, "note": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale"}, "Ls": {"init": 4.0, "note": "south face of the enclosure, to the inner corner of the stair-wall jog"}, "h_ct": {"init": 2.5, "note": "top of the stone coping"}, "h_cb": {"init": 2.3, "note": "underside of the coping (top of brick)"}, "h_b": {"init": 0.3, "note": "bottom of brick (top of the stone base)"}, "rx": {"init": 2.0, "note": "west edge of the living-room roof"}, "rys": {"init": -0.5, "note": "south edge of the roof"}, "ryn": {"init": 8.0, "note": "north edge of the roof"}, "rzt": {"fixed": 4.91, "note": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"}}, "camera": {"pos": [-6, -7, 1.7], "target": [3, 3, 2.0], "f_px": 1300, "f_px_prior": {"value": 1358, "sigma_frac": 0.1, "note": "24 mm equivalent on 5712 px = 3808 px; crop to 5383 px, scaled to 1920 px. Sigma wide: the crop may include a resize"}}, "points": [{"id": "sw_ct", "px": [490, 549], "xyz": ["0", "0", "h_ct"], "w": 0.7}, {"id": "sw_cb", "px": [492, 577], "xyz": ["0", "0", "h_cb"]}, {"id": "sw_bb", "px": [497, 845], "xyz": ["0", "0", "h_b"]}, {"id": "sw_grade", "px": [495, 896], "xyz": ["0", "0", "0"], "w": 0.5}, {"id": "nw_cb", "px": [103, 621], "xyz": ["0", "Lw", "h_cb"]}, {"id": "nw_bb", "px": [103, 829], "xyz": ["0", "Lw", "h_b"]}, {"id": "in_cb", "px": [868, 606], "xyz": ["Ls", "0", "h_cb"]}, {"id": "in_bb", "px": [870, 814], "xyz": ["Ls", "0", "h_b"]}, {"id": "roof_sw", "px": [758, 274], "xyz": ["rx", "rys", "rzt"]}, {"id": "roof_nw", "px": [240, 418], "xyz": ["rx", "ryn", "rzt"]}], "lines": [{"id": "cb_west", "px": [[120.6, 618.9], [494.1, 573.7]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]}, {"id": "cb_south", "px": [[523.1, 578.0], [873.1, 603.4]], "xyz": [["0", "0", "h_cb"], ["Ls", "0", "h_cb"]]}, {"id": "roof_west_top", "px": [[241.3, 412.4], [729.6, 281.6]], "xyz": [["rx", "ryn", "rzt"], ["rx", "rys", "rzt"]]}, {"id": "sw_vertical", "px": [[492, 577], [497, 845]], "xyz": [["0", "0", "h_cb"], ["0", "0", "h_b"]]}, {"id": "nw_vertical", "px": [[103, 621], [103, 829]], "xyz": [["0", "Lw", "h_cb"], ["0", "Lw", "h_b"]]}, {"id": "in_vertical", "px": [[868, 606], [870, 814]], "xyz": [["Ls", "0", "h_cb"], ["Ls", "0", "h_b"]]}, {"id": "eave_south_1", "px": [[785.0, 283.6], [1336.8, 460.9]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_2", "px": [[1305.4, 450.1], [1547.7, 533.0]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_3", "px": [[1635.9, 569.9], [1707.8, 595.2]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "bb_west", "px": [[103, 829], [497, 845]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]}, {"id": "bb_south", "px": [[497, 845], [870, 814]], "xyz": [["0", "0", "h_b"], ["Ls", "0", "h_b"]]}], "truth": {"Ls": 4.01, "h_ct": 2.56, "h_cb": 2.35, "h_b": 0.31, "rx": 1.83, "rys": -0.7, "ryn": 8.0}, "truth_source": "HABS ILL,16-CHIG,33- (1963). Plan values scaled from sheet 2 (first floor) and sheet 4 (roof outline, registered to sheet 2 by the south garden pier and the stair wall, about 5 px = 0.08 m), heights scaled from the west elevation on sheet 6; all at 20.0 px/ft checked on the scale bars. Scaled, not dimensioned: read to about 0.1 m", "truth_note": "Ls: enclosure SW corner to the west face of the stair-wall jog, sheet 2 (263 px at 19.98 px/ft). Heights: west elevation, sheet 6, at 19.66 px/ft. Roof: sheet 4 says west edge 5'-9\" east of the wall face, north 4'-5\" beyond the enclosure, south 1'-10\" beyond it; the west elevation says north 3'-1\", south 2'-8\". rys and ryn take the mean of the two sheets; they disagree by about 0.3 m, which is the tolerance on the roof"}, "result": {"camera": {"pos": [-7.715, -10.49, 1.252], "target": [0.303, -4.515, 1.339], "f_px": 1525.6, "hfov_deg": 64.36, "lens_35mm": 28.6, "up": [0.0049, -0.021, 0.9998], "R": [[0.5975206, -0.8016096, -0.019775], [-0.0049089, 0.0210043, -0.9997673], [0.8018385, 0.5974787, 0.0086154]]}, "principal_point": [960.0, 720.0], "k1": 0.0, "aspect": 1.0, "params": {"Lw": 6.85, "rzt": 4.91, "Ls": 4.743, "h_ct": 2.8328, "h_cb": 2.6296, "h_b": 0.4102, "rx": 0.9951, "rys": -2.1234, "ryn": 5.7728}, "rms_px": 2.52, "max_px": 10.19, "per_mark_px": {"sw_ct": 0.94, "sw_cb": 3.19, "sw_bb": 0.81, "sw_grade": 1.14, "nw_cb": 2.63, "nw_bb": 2.04, "in_cb": 1.03, "in_bb": 1.0, "roof_sw": 2.56, "roof_nw": 4.23, "cb_west": 1.99, "cb_south": 2.84, "roof_west_top": 0.87, "sw_vertical": 0.59, "nw_vertical": 1.62, "in_vertical": 1.01, "eave_south_1": 2.92, "eave_south_2": 8.52, "eave_south_3": 10.19, "bb_west": 1.3, "bb_south": 0.52}, "param_sd": {"Ls": 0.0883, "h_ct": 0.0459, "h_cb": 0.038, "h_b": 0.0206, "rx": 0.1389, "rys": 0.1748, "ryn": 0.278}, "holdout_px": {"sw_ct": 7519.62, "sw_cb": 4.1, "sw_bb": 0.82, "sw_grade": 52.98, "nw_cb": 3.22, "nw_bb": 2.43, "in_cb": 1.42, "in_bb": 1.39, "roof_sw": 18.31, "roof_nw": 686.82, "cb_west": 2.86, "cb_south": 3.12, "roof_west_top": 2.41, "sw_vertical": 2.33, "nw_vertical": 2.31, "in_vertical": 2.33, "eave_south_1": 5.38, "eave_south_2": 10.04, "eave_south_3": 11.72, "bb_west": 2.69, "bb_south": 2.31}, "holdout_median_px": 2.86, "vs_truth": {"Ls": {"solved": 4.743, "truth": 4.01, "err_m": 0.733, "err_pct": 18.3}, "h_ct": {"solved": 2.833, "truth": 2.56, "err_m": 0.273, "err_pct": 10.7}, "h_cb": {"solved": 2.63, "truth": 2.35, "err_m": 0.28, "err_pct": 11.9}, "h_b": {"solved": 0.41, "truth": 0.31, "err_m": 0.1, "err_pct": 32.3}, "rx": {"solved": 0.995, "truth": 1.83, "err_m": -0.835, "err_pct": -45.6}, "rys": {"solved": -2.123, "truth": -0.7, "err_m": -1.423, "err_pct": 203.3}, "ryn": {"solved": 5.773, "truth": 8.0, "err_m": -2.227, "err_pct": -27.8}}}, "render": "", "model": "robie", "open_case": true, "grades": {"Lw": "scale"}, "labels": {"Lw": "west wall of the enclosure (scale, HABS)", "Ls": "south wall of the enclosure", "h_ct": "top of the stone coping", "h_cb": "underside of the coping", "h_b": "bottom of the brick", "rx": "west edge of the roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia (HABS)"}, "uses": {"Lw": ["nw_cb", "nw_bb", "cb_west", "nw_vertical", "bb_west"], "Ls": ["in_cb", "in_bb", "cb_south", "in_vertical", "bb_south"], "h_ct": ["sw_ct"], "h_cb": ["sw_cb", "nw_cb", "in_cb", "cb_west", "cb_south", "sw_vertical", "nw_vertical", "in_vertical"], "h_b": ["sw_bb", "nw_bb", "in_bb", "sw_vertical", "nw_vertical", "in_vertical", "bb_west", "bb_south"], "rx": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "rys": ["roof_sw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "ryn": ["roof_nw", "roof_west_top"], "rzt": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"]}, "dag_report": {"free_without_marks": [], "free_on_one_mark": {"h_ct": "sw_ct"}, "fixed_unused": [], "checked": ["Ls", "h_b", "h_cb", "h_ct", "rx", "ryn", "rys"], "free_unchecked": []}, "spread": {"Ls": 3.7, "h_ct": 1.1, "h_cb": 1.0, "h_b": 2.2, "rx": 17.4, "rys": 7.3, "ryn": 6.1}, "photo": "../photos/robie/w1.jpg"}, {"id": "robie2", "title": "Robie House", "by": "two photos together", "spec": {"image": "photos/robie/w1.jpg", "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL.jpg (iPhone 15 Pro, 24 mm equivalent, 5383 px wide crop of a 5712 px frame)", "frame": "origin at the outer south-west corner of the ground-floor west enclosure (HABS sheet 2), x east, y north, z up from grade; metres", "mark_sigma_px": 2.0, "params": {"Lw": {"fixed": 6.85, "note": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale"}, "Ls": {"init": 4.0, "note": "south face of the enclosure, to the inner corner of the stair-wall jog"}, "h_ct": {"init": 2.5, "note": "top of the stone coping"}, "h_cb": {"init": 2.3, "note": "underside of the coping (top of brick)"}, "h_b": {"init": 0.3, "note": "bottom of brick (top of the stone base)"}, "rx": {"init": 2.0, "note": "west edge of the living-room roof"}, "rys": {"init": -0.5, "note": "south edge of the roof"}, "ryn": {"init": 8.0, "note": "north edge of the roof"}, "rzt": {"fixed": 4.91, "note": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"}}, "camera": {"pos": [-6, -7, 1.7], "target": [3, 3, 2.0], "f_px": 1300, "f_px_prior": {"value": 1358, "sigma_frac": 0.1, "note": "24 mm equivalent on 5712 px = 3808 px; crop to 5383 px, scaled to 1920 px. Sigma wide: the crop may include a resize"}}, "points": [{"id": "sw_ct", "px": [490, 549], "xyz": ["0", "0", "h_ct"], "w": 0.7}, {"id": "sw_cb", "px": [492, 577], "xyz": ["0", "0", "h_cb"]}, {"id": "sw_bb", "px": [497, 845], "xyz": ["0", "0", "h_b"]}, {"id": "sw_grade", "px": [495, 896], "xyz": ["0", "0", "0"], "w": 0.5}, {"id": "nw_cb", "px": [103, 621], "xyz": ["0", "Lw", "h_cb"]}, {"id": "nw_bb", "px": [103, 829], "xyz": ["0", "Lw", "h_b"]}, {"id": "in_cb", "px": [868, 606], "xyz": ["Ls", "0", "h_cb"]}, {"id": "in_bb", "px": [870, 814], "xyz": ["Ls", "0", "h_b"]}, {"id": "roof_sw", "px": [758, 274], "xyz": ["rx", "rys", "rzt"]}, {"id": "roof_nw", "px": [240, 418], "xyz": ["rx", "ryn", "rzt"]}], "lines": [{"id": "cb_west", "px": [[120.6, 618.9], [494.1, 573.7]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]}, {"id": "cb_south", "px": [[523.1, 578.0], [873.1, 603.4]], "xyz": [["0", "0", "h_cb"], ["Ls", "0", "h_cb"]]}, {"id": "roof_west_top", "px": [[241.3, 412.4], [729.6, 281.6]], "xyz": [["rx", "ryn", "rzt"], ["rx", "rys", "rzt"]]}, {"id": "sw_vertical", "px": [[492, 577], [497, 845]], "xyz": [["0", "0", "h_cb"], ["0", "0", "h_b"]]}, {"id": "nw_vertical", "px": [[103, 621], [103, 829]], "xyz": [["0", "Lw", "h_cb"], ["0", "Lw", "h_b"]]}, {"id": "in_vertical", "px": [[868, 606], [870, 814]], "xyz": [["Ls", "0", "h_cb"], ["Ls", "0", "h_b"]]}, {"id": "eave_south_1", "px": [[785.0, 283.6], [1336.8, 460.9]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_2", "px": [[1305.4, 450.1], [1547.7, 533.0]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_3", "px": [[1635.9, 569.9], [1707.8, 595.2]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "bb_west", "px": [[103, 829], [497, 845]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]}, {"id": "bb_south", "px": [[497, 845], [870, 814]], "xyz": [["0", "0", "h_b"], ["Ls", "0", "h_b"]]}], "truth": {"Ls": 4.01, "h_ct": 2.56, "h_cb": 2.35, "h_b": 0.31, "rx": 1.83, "rys": -0.7, "ryn": 8.0}, "truth_source": "HABS ILL,16-CHIG,33- (1963). Plan values scaled from sheet 2 (first floor) and sheet 4 (roof outline, registered to sheet 2 by the south garden pier and the stair wall, about 5 px = 0.08 m), heights scaled from the west elevation on sheet 6; all at 20.0 px/ft checked on the scale bars. Scaled, not dimensioned: read to about 0.1 m", "truth_note": "Ls: enclosure SW corner to the west face of the stair-wall jog, sheet 2 (263 px at 19.98 px/ft). Heights: west elevation, sheet 6, at 19.66 px/ft. Roof: sheet 4 says west edge 5'-9\" east of the wall face, north 4'-5\" beyond the enclosure, south 1'-10\" beyond it; the west elevation says north 3'-1\", south 2'-8\". rys and ryn take the mean of the two sheets; they disagree by about 0.3 m, which is the tolerance on the roof"}, "joint": "cases/robie/joint_w1_w2.json", "joint_photo": 0, "render": "", "model": "robie", "joint_case": true, "grades": {"Lw": "scale"}, "labels": {"Lw": "west wall of the enclosure (scale, HABS)", "Ls": "south wall of the enclosure", "h_ct": "top of the stone coping", "h_cb": "underside of the coping", "h_b": "bottom of the brick", "rx": "west edge of the roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia (HABS)"}, "result": {"camera": {"pos": [-6.023, -8.998, 1.266], "target": [1.845, -2.826, 1.288], "f_px": 1423.8, "hfov_deg": 67.98, "lens_35mm": 26.7, "up": [0.0042, -0.0088, 1.0], "R": [[0.6172331, -0.7867229, -0.0095062], [-0.0041826, 0.0088012, -0.9999525], [0.7867692, 0.6172435, 0.0021418]]}, "principal_point": [960.0, 720.0], "params": {"Lw": 6.85, "rzt": 4.91, "Ls": 4.0513, "h_ct": 2.5589, "h_cb": 2.3533, "h_b": 0.4227, "rx": 1.8827, "rys": -0.8009, "ryn": 7.7857}, "param_sd": {"Ls": 0.0472, "h_ct": 0.0198, "h_cb": 0.0173, "h_b": 0.0143, "rx": 0.018, "rys": 0.0229, "ryn": 0.0145}}, "uses": {"Lw": ["nw_cb", "nw_bb", "cb_west", "nw_vertical", "bb_west"], "Ls": ["in_cb", "in_bb", "cb_south", "in_vertical", "bb_south"], "h_ct": ["sw_ct"], "h_cb": ["sw_cb", "nw_cb", "in_cb", "cb_west", "cb_south", "sw_vertical", "nw_vertical", "in_vertical"], "h_b": ["sw_bb", "nw_bb", "in_bb", "sw_vertical", "nw_vertical", "in_vertical", "bb_west", "bb_south"], "rx": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "rys": ["roof_sw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "ryn": ["roof_nw", "roof_west_top"], "rzt": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"]}, "dag_report": {"free_without_marks": [], "free_on_one_mark": {"h_ct": "sw_ct"}, "fixed_unused": [], "checked": ["Ls", "h_b", "h_cb", "h_ct", "rx", "ryn", "rys"], "free_unchecked": []}, "spread": {}, "photo": "../photos/robie/w1.jpg"}];
+
+// parametric models, mirroring cases/*/model_rhino.py. Each returns boxes and lines in metres,
+// tagged with a grade: D measured from the photo, I placed by a rule, A assumed.
+const MODELS = {
+  farnsworth(P) {
+    const L = 2 * P.c + 3 * P.s, col = 0.2, out = [];
+    out.push(['box', [0, L, 0, P.W, P.zf_b, P.zf_t], 'D']);
+    out.push(['box', [0, L, 0, P.W, P.zr_b, P.zr_t], 'D']);
+    for (let i = 0; i < 4; i++) {
+      const x = P.c + i * P.s, g = i < 2 ? 'D' : 'I';
+      out.push(['box', [x - col / 2, x + col / 2, -col, 0, 0, P.zr_t - 0.03], g]);
+      out.push(['box', [x - col / 2, x + col / 2, P.W, P.W + col, 0, P.zr_t - 0.03], g]);
+    }
+    out.push(['box', [P.g_x, L - P.g_y, P.g_y, P.W - P.g_y, P.zf_t, P.zr_b], 'D']);
+    out.push(['box', [P.x_te - 16.8, P.x_te, P.y_tf, P.y_tn, P.h_t - P.d_t, P.h_t], 'A']);
+    return out;
+  },
+  crownhall(P) {
+    const cant = 2 * P.b, D = 12 * P.b, x0 = -cant, x1 = 3 * P.s + cant, gw = 0.5, out = [];
+    out.push(['box', [x0, x1, 0, D, P.zr_b, P.zr_t], 'D']);
+    out.push(['box', [x0, x1, 0, D, P.z_mb, P.zr_b], 'I']);
+    out.push(['line', [[x0, 0, P.z_tt], [x1, 0, P.z_tt]], 'D']);
+    for (let k = 0; k < 4; k++) {
+      const x = k * P.s, g = k < 3 ? 'D' : 'I';
+      out.push(['box', [x - gw / 2, x + gw / 2, -P.d_c, D + P.d_c, P.zr_t, P.zg], g]);
+      out.push(['box', [x - P.wc / 2, x + P.wc / 2, -P.d_c, -P.d_c + P.wc, 0, P.zg], g]);
+    }
+    const n = Math.round((x1 - x0) / P.b);
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + i * P.b;
+      out.push(['line', [[x, 0, P.z_mb], [x, 0, P.zr_b]], 'D']);
+    }
+    return out;
+  },
+};
+MODELS.robie = P => {
+  const out = [];
+  // the ground-floor west enclosure: brick body and stone coping
+  out.push(['box', [0, P.Ls, 0, P.Lw, P.h_b, P.h_cb], 'D']);
+  out.push(['box', [0, P.Ls, 0, P.Lw, P.h_cb, P.h_ct], 'D']);
+  out.push(['box', [0, P.Ls, 0, P.Lw, 0, P.h_b], 'D']);
+  // living-room roof: the west part of its outline, eaves running east
+  out.push(['box', [P.rx, P.rx + 25, P.rys, P.ryn, P.rzt - 0.25, P.rzt], 'D']);
+  return out;
+};
+const GRADE_COLOR = { D: '#e0218a', I: '#4f8cff', A: '#f2b705' };
+
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+let cur, P, P0, photo, render, exprCache = {}, hot = null;
+
+function expr(e, names) {
+  const key = names.join(',') + '|' + e;
+  if (!exprCache[key]) exprCache[key] = new Function(...names, 'return (' + e + ');');
+  return exprCache[key];
+}
+function evalXYZ(xyz) {
+  const names = Object.keys(P), vals = names.map(k => P[k]);
+  return xyz.map(e => expr(String(e), names)(...vals));
+}
+function project(X) {
+  const cam = cur.result.camera, R = cam.R, C = cam.pos;
+  const d = [X[0] - C[0], X[1] - C[1], X[2] - C[2]];
+  const xc = R.map(r => r[0] * d[0] + r[1] * d[1] + r[2] * d[2]);
+  const [cx, cy] = cur.result.principal_point || [photo.naturalWidth / 2, photo.naturalHeight / 2];
+  const f = cam.f_px;
+  return { u: cx + f * xc[0] / xc[2], v: cy + f * xc[1] / xc[2], z: xc[2] };
+}
+function residuals() {
+  const res = [], spec = cur.spec;
+  for (const m of spec.points || []) {
+    const p = project(evalXYZ(m.xyz)), w = m.w || 1;
+    res.push(w * (p.u - m.px[0]), w * (p.v - m.px[1]));
+  }
+  for (const m of spec.lines || []) {
+    const [a, b] = m.px, w = m.w || 1;
+    let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const L = Math.hypot(nx, ny); nx /= L; ny /= L;
+    for (const e of m.xyz) { const p = project(evalXYZ(e)); res.push(w * (nx * (p.u - a[0]) + ny * (p.v - a[1]))); }
+  }
+  for (const pr of spec.priors || []) {
+    const v = evalXYZ([pr.expr])[0]; res.push(2 * (v - pr.value) / pr.sigma_m);
+  }
+  return res;
+}
+const rms = r => Math.sqrt(r.reduce((s, x) => s + x * x, 0) / r.length);
+
+function boxEdges(b) {
+  const [x0, x1, y0, y1, z0, z1] = b, V = [];
+  for (const z of [z0, z1]) V.push([x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]);
+  const E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  return E.map(([i, j]) => [V[i], V[j]]);
+}
+function drawSeg(a, b, s) {
+  // clip against a near plane so segments passing behind the camera do not wrap around
+  let pa = project(a), pb = project(b); const near = 0.3;
+  if (pa.z < near && pb.z < near) return;
+  if (pa.z < near || pb.z < near) {
+    const t = (near - pa.z) / (pb.z - pa.z), m = a.map((v, i) => v + t * (b[i] - v)), pm = project(m);
+    if (pa.z < near) pa = pm; else pb = pm;
+  }
+  ctx.beginPath(); ctx.moveTo(pa.u * s, pa.v * s); ctx.lineTo(pb.u * s, pb.v * s); ctx.stroke();
+}
+
+function draw() {
+  if (!photo.complete || !photo.naturalWidth) return;
+  const W = cv.clientWidth, s = W / photo.naturalWidth, dpr = window.devicePixelRatio || 1;
+  cv.width = W * dpr; cv.height = photo.naturalHeight * s * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.drawImage(photo, 0, 0, W, photo.naturalHeight * s);
+  const ro = $('tRender').value / 100;
+  if (ro > 0 && render.complete && render.naturalWidth) {
+    ctx.globalAlpha = ro; ctx.drawImage(render, 0, 0, W, photo.naturalHeight * s); ctx.globalAlpha = 1;
+  }
+  if ($('tWire').checked) {
+    ctx.lineWidth = 2;
+    for (const [kind, g, grade] of MODELS[cur.model](P)) {
+      ctx.strokeStyle = GRADE_COLOR[grade];
+      if (kind === 'box') for (const [a, b] of boxEdges(g)) drawSeg(a, b, s);
+      else drawSeg(g[0], g[1], s);
+    }
+  }
+  if ($('tTruth').checked && cur.spec.truth) {
+    const T = { ...P };
+    for (const [k, v] of Object.entries(cur.spec.truth)) if (k in T) T[k] = v;
+    ctx.lineWidth = 3; ctx.strokeStyle = '#21a35b'; ctx.setLineDash([9, 5]);
+    for (const [kind, g] of MODELS[cur.model](T)) {
+      if (kind === 'box') for (const [a, b] of boxEdges(g)) drawSeg(a, b, s);
+      else drawSeg(g[0], g[1], s);
+    }
+    ctx.setLineDash([]);
+  }
+  if ($('tMarks').checked) {
+    ctx.lineWidth = 2;
+    const on = m => !hot || (cur.uses[hot] || []).includes(m.id);
+    for (const m of cur.spec.points || []) {
+      const p = project(evalXYZ(m.xyz));
+      ctx.globalAlpha = on(m) ? 1 : 0.15; ctx.lineWidth = hot && on(m) ? 3.5 : 2;
+      ctx.strokeStyle = hot && on(m) ? '#ffd400' : '#00a3c4';
+      ctx.beginPath(); ctx.arc(m.px[0] * s, m.px[1] * s, 6, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(m.px[0] * s, m.px[1] * s); ctx.lineTo(p.u * s, p.v * s); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.fillRect(p.u * s - 2, p.v * s - 2, 4, 4);
+    }
+    for (const m of cur.spec.lines || []) {
+      ctx.globalAlpha = on(m) ? 1 : 0.15; ctx.lineWidth = hot && on(m) ? 3.5 : 2;
+      ctx.strokeStyle = hot && on(m) ? '#ffd400' : 'rgba(0,163,196,0.85)'; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(m.px[0][0] * s, m.px[0][1] * s); ctx.lineTo(m.px[1][0] * s, m.px[1][1] * s); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.globalAlpha = 1;
+  }
+  const r = rms(residuals());
+  $('rms').textContent = r.toFixed(1);
+  $('rms').classList.toggle('worse', r > cur.rms0 * 1.5);
+  updateTable();
+}
+
+function plural(n, one, few, many) {
+  const a = n % 10, b = n % 100;
+  return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many;
+}
+function fmt(v) { return Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2); }
+
+function buildParams() {
+  const box = $('params'); box.innerHTML = '';
+  const specP = cur.spec.params, sd = cur.result.param_sd || {};
+  for (const k of Object.keys(specP)) {
+    const p = specP[k], row = document.createElement('div'); row.className = 'param';
+    const grade = cur.grades[k];
+    const tag = grade === 'scale' ? 'scale reference' : grade === 'gauge' ? 'not in the photo' : (sd[k] !== undefined ? '± ' + fmt(sd[k]) + ' m' : '');
+    const label = (cur.labels && cur.labels[k]) || p.note || k;
+    const sp = cur.spread && cur.spread[k];
+    const camTag = sp === undefined ? '' : sp >= 5 ? `<em class="cam">camera: ±${(sp / 2).toFixed(0)} %, not determined</em>` : `<em>camera: ±${(sp / 2).toFixed(1)} %</em>`;
+    row.innerHTML = `<span class="name">${label} <em>${tag}</em> ${camTag}</span><span class="val" id="v_${k}"></span>`;
+    const n = (cur.uses[k] || []).length, checked = (cur.dag_report.checked || []).includes(k);
+    const deps = document.createElement('span');
+    deps.className = 'deps' + (!('fixed' in p) && n < 2 ? ' thin' : '');
+    deps.textContent = ('fixed' in p ? 'fixed, ' : '') + (n ? 'in ' + n + ' mark' + (n === 1 ? '' : 's') : 'not seen in the photo')
+      + (!('fixed' in p) && n === 1 ? ': rests on one mark' : '') + (checked ? '; checked' : '');
+    row.addEventListener('mouseenter', () => { hot = k; row.classList.add('hot'); draw(); });
+    row.addEventListener('mouseleave', () => { hot = null; row.classList.remove('hot'); draw(); });
+    row.addEventListener('focusin', () => { hot = k; row.classList.add('hot'); draw(); });
+    row.addEventListener('focusout', () => { hot = null; row.classList.remove('hot'); draw(); });
+    if ('fixed' in p) {
+      row.appendChild(deps); box.appendChild(row); $('v_' + k).textContent = fmt(P[k]) + ' m'; continue;
+    }
+    const inp = document.createElement('input'); inp.type = 'range';
+    const v = P0[k], span = Math.max(Math.abs(v) * 0.3, 0.6);
+    inp.min = v - span; inp.max = v + span; inp.step = 0.01; inp.value = v;
+    inp.setAttribute('aria-label', k);
+    inp.addEventListener('input', () => { P[k] = parseFloat(inp.value); showVal(k); draw(); });
+    row.appendChild(inp); row.appendChild(deps); box.appendChild(row); showVal(k);
+  }
+}
+function showVal(k) {
+  const el = $('v_' + k); el.textContent = fmt(P[k]) + ' m';
+  el.classList.toggle('moved', Math.abs(P[k] - P0[k]) > 1e-6);
+}
+function updateTable() {
+  const tb = $('truth').querySelector('tbody'); tb.innerHTML = '';
+  const names = Object.keys(P), vals = names.map(k => P[k]);
+  for (const [k, t] of Object.entries(cur.spec.truth || {})) {
+    const v = expr(k, names)(...vals), e = 100 * (v - t) / t;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${(cur.labels && cur.labels[k]) || k}</td><td>${v.toFixed(2)}</td><td>${t.toFixed(2)}</td><td class="${Math.abs(e) > 5 ? 'bad' : ''}">${e > 0 ? '+' : ''}${e.toFixed(1)} %</td>`;
+    tb.appendChild(tr);
+  }
+  $('truthnote').textContent = (cur.spec.truth_note || '') + (cur.spec.truth_note ? '. ' : '') + 'Source: ' + (cur.spec.truth_source || '');
+}
+
+function select(i) {
+  cur = DATA[i]; exprCache = {};
+  P0 = { ...cur.result.params }; P = { ...P0 };
+  document.querySelectorAll('.cases button').forEach((b, j) => b.setAttribute('aria-pressed', i === j));
+  $('title').textContent = cur.title + (cur.joint_case ? ', two photos solved together' : ' from one photo' + (cur.open_case ? ': it misses' : ''));
+  $('credit').textContent = 'Photo: ' + cur.spec.source;
+  $('opencase').hidden = !cur.open_case;
+  $('jointcase').hidden = !cur.joint_case;
+  $('lRender').hidden = !cur.render;
+  $('tTruth').checked = !!(cur.open_case || cur.joint_case);
+  photo = new Image(); render = new Image();
+  photo.onload = () => { cur.rms0 = rms(residuals()); $('rms0').textContent = 'at the solution ' + cur.rms0.toFixed(1) + ' px'; buildParams(); draw(); };
+  render.onload = draw;
+  photo.src = cur.photo; if (cur.render) render.src = cur.render;
+}
+
+const cs = $('cases');
+DATA.forEach((c, i) => {
+  const b = document.createElement('button'); b.innerHTML = `${c.title}<small>${c.by}</small>`;
+  b.addEventListener('click', () => select(i)); cs.appendChild(b);
+});
+$('reset').addEventListener('click', () => { P = { ...P0 }; buildParams(); draw(); });
+['tWire', 'tMarks', 'tRender', 'tTruth'].forEach(id => $(id).addEventListener('input', draw));
+window.addEventListener('resize', draw);
+select(0);
+</script>
+</body>
+</html>

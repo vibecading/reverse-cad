@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>reverse-cad studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #e9edf1; --panel: #f7f9fb; --ink: #15202b; --muted: #5b6875; --rule: #cdd5dd;
+    --D: #e0218a; --I: #4f8cff; --A: #c99400; --P: #2f7d4f; --hot: #ffd400;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); overflow: hidden;
+         font: 14px/1.4 "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .app { display: grid; grid-template-columns: 340px minmax(0, 1fr); height: 100vh; }
+
+  aside { background: var(--panel); border-right: 1px solid var(--rule); display: flex; flex-direction: column; min-height: 0; }
+  .brand { padding: 16px 18px 10px; font-size: 15px; } .brand b { font-weight: 700; }
+  .brand span { color: var(--muted); }
+  .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 14px 10px; }
+  .cases button { text-align: left; border: 1px solid var(--rule); background: #fff; border-radius: 4px; padding: 7px 9px;
+                  font: inherit; font-weight: 500; color: var(--ink); cursor: pointer; }
+  .cases button small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  .cases button[aria-pressed=true] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .views { display: flex; gap: 0; margin: 0 14px 10px; border: 1px solid var(--ink); border-radius: 4px; overflow: hidden; }
+  .views button { flex: 1; border: 0; background: #fff; font: inherit; font-weight: 500; padding: 7px 0; cursor: pointer; color: var(--ink); }
+  .views button + button { border-left: 1px solid var(--ink); }
+  .views button[aria-pressed=true] { background: var(--ink); color: #fff; }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0 16px 10px; color: var(--muted); font-size: 13px; }
+  .opts label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .opts input[type=range] { width: 90px; }
+  .params { overflow-y: auto; padding: 4px 16px 12px; border-top: 1px solid var(--rule); flex: 1; min-height: 0; }
+  .params h2 { font-size: 13px; margin: 12px 0 6px; color: var(--muted); font-weight: 500; }
+  .param { display: grid; grid-template-columns: 18px 1fr auto; gap: 2px 8px; align-items: center; padding: 4px 6px; margin: 0 -6px; border-radius: 4px; }
+  .param.hot { background: #fff6c2; }
+  .badge { width: 18px; height: 18px; border-radius: 3px; color: #fff; font-size: 11px; font-weight: 700;
+           display: inline-flex; align-items: center; justify-content: center; }
+  .param .name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .param .val { font-variant-numeric: tabular-nums; font-weight: 500; font-size: 13px; }
+  .param .val.moved { color: #b86b00; }
+  .param input { grid-column: 2 / -1; width: 100%; accent-color: var(--ink); margin: 0; }
+  .param input:disabled { opacity: .35; }
+  .reset { margin: 10px 16px 14px; padding: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff;
+           border-radius: 4px; font: inherit; font-weight: 500; cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--I); outline-offset: 2px; }
+
+  .stage { position: relative; min-width: 0; overflow: hidden; }
+  .frame { position: absolute; border-radius: 4px; overflow: hidden;
+           background: radial-gradient(120% 90% at 50% 20%, #f4f6f8 0%, #dde3e9 100%); box-shadow: 0 0 0 1px var(--rule); }
+  .frame > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #photo { object-fit: fill; opacity: 0; transition: opacity .5s; }
+  #plan, #graph { background: #fbfcfd; }
+  .info { position: absolute; top: 16px; right: 16px; width: 330px; background: rgba(255,255,255,.93); border: 1px solid var(--rule);
+          border-radius: 6px; padding: 12px 14px; font-size: 13px; box-shadow: 0 4px 18px rgba(21,32,43,.08); }
+  .info h1 { font-size: 17px; margin: 0; } .info .by { color: var(--muted); margin: 0 0 8px; }
+  .info table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .info td { padding: 2px 0; border-bottom: 1px solid #edf0f3; } .info td:last-child { text-align: right; white-space: nowrap; padding-left: 8px; }
+  .info .sec { margin: 10px 0 4px; font-weight: 700; font-size: 12px; color: var(--muted); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .fit { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
+  .fit b { font-size: 26px; font-variant-numeric: tabular-nums; }
+  .fit span { color: var(--muted); }
+  .grades { display: flex; gap: 10px; margin-top: 6px; color: var(--muted); font-size: 12px; }
+  .ref { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+         background: rgba(21,32,43,.55); opacity: 0; transition: opacity .45s; pointer-events: none; }
+  .ref.on { opacity: 1; }
+  .ref img { max-width: 62%; max-height: 72%; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,.35); background: #fff; padding: 8px; }
+  .ref p { color: #fff; margin: 12px 0 0; font-size: 15px; }
+  .info button { font: inherit; font-size: 12px; padding: 4px 9px; border: 1px solid var(--ink); background: #fff; border-radius: 4px; cursor: pointer; }
+  .info .acts { display: flex; gap: 8px; margin-top: 12px; }
+  .info .acts button { font-size: 13px; padding: 7px 12px; }
+  .info .acts .ok { background: var(--ink); color: #fff; }
+  .conflict { margin-top: 10px; padding: 8px 10px; border-left: 3px solid #c0392b; background: #fdeeee; font-size: 13px; }
+  .info { max-height: calc(100vh - 32px); overflow-y: auto; }
+  .legend { position: absolute; left: 16px; bottom: 14px; display: flex; gap: 14px; font-size: 12px; color: var(--muted);
+            background: rgba(255,255,255,.85); padding: 6px 10px; border-radius: 4px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+</style>
+<script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><b>reverse-cad</b> <span>studio</span></div>
+    <div class="cases" id="cases"></div>
+    <div class="views" id="views">
+      <button data-v="3d">3D</button><button data-v="plan">Plan</button><button data-v="graph">Graph</button><button data-v="photo">Photo</button><button data-v="review">Review</button>
+    </div>
+    <div class="opts">
+      <label><input type="checkbox" id="oSpin"> turn</label>
+      <label><input type="checkbox" id="oTruth"> drawings</label>
+      <label><input type="checkbox" id="oMarks" checked> marks</label>
+      <label>clay <input type="range" id="oClay" min="0" max="100" value="35"></label>
+    </div>
+    <div class="params" id="params"></div>
+    <button class="reset" id="reset">Back to the current version</button>
+  </aside>
+  <main class="stage" id="stage">
+    <div class="frame" id="frame">
+      <img id="photo" alt="">
+      <canvas id="gl"></canvas>
+      <canvas id="ov"></canvas>
+      <svg id="plan" hidden></svg>
+      <svg id="graph" hidden></svg>
+    </div>
+    <div class="legend" id="legend">
+      <span><i style="background:var(--D)"></i>measured from the photo</span>
+      <span><i style="background:var(--I)"></i>by a rule</span>
+      <span><i style="background:var(--A)"></i>assumed</span>
+      <span><i style="background:var(--P)"></i>drawings</span>
+    </div>
+    <div class="info" id="info"></div>
+    <div class="ref" id="ref"><img id="refimg" alt=""><p id="refcap"></p></div>
+  </main>
+</div>
+<script>const DATA = [{"id": "farnsworth", "model": "farnsworth", "title": "Farnsworth House", "by": "Mies van der Rohe, 1951", "ref": "HABS IL-1105 measured drawings", "labels": {"s": "column bay", "c": "cantilever, slab end to column", "W": "width of the house", "zf_t": "top of the floor", "zf_b": "underside of the floor slab", "zr_t": "top of the roof", "zr_b": "underside of the roof (ceiling)", "x_te": "east edge of the terrace", "y_tf": "south edge of the terrace", "y_tn": "north edge of the terrace", "h_t": "top of the terrace", "d_t": "terrace depth", "x_p": "terrace post, x", "y_p": "terrace post, y", "g_x": "west glass wall", "g_y": "glass set back from the edge", "zr_b - zf_t": "floor to ceiling", "zr_t - zf_t": "floor to top of roof", "2*c + 3*s": "length of the house", "n": "number of bays", "t_len": "terrace length"}, "photo": "../photos/farnsworth/9970.jpg", "source": "Paul R. Burley, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Farnsworth_House_Plano-9970.jpg", "points": [{"id": "A roof top, front-west", "px": [462, 383], "xyz": ["0", "0", "zr_t"]}, {"id": "B roof bottom, front-west", "px": [467, 440], "xyz": ["0", "0", "zr_b"]}, {"id": "C roof bottom, back-west", "px": [790, 523], "xyz": ["0", "W", "zr_b"]}, {"id": "D floor top, front-west", "px": [462, 759], "xyz": ["0", "0", "zf_t"]}, {"id": "E floor bottom, front-west", "px": [462, 801], "xyz": ["0", "0", "zf_b"]}, {"id": "T1 terrace top, front-east", "px": [1518.5, 883], "xyz": ["x_te", "y_tf", "h_t"]}, {"id": "T2 terrace bottom, front-east", "px": [1519, 951], "xyz": ["x_te", "y_tf", "h_t - d_t"]}, {"id": "T3 terrace top, back-east", "px": [1607, 852], "xyz": ["x_te", "y_tn", "h_t"]}, {"id": "G post foot on grade", "px": [1211, 998], "xyz": ["x_p", "y_p", "0"]}, {"id": "GT glass SW corner, head", "px": [1197, 421], "xyz": ["g_x", "g_y", "zr_b"]}, {"id": "GB glass SW corner, sill", "px": [1197, 760], "xyz": ["g_x", "g_y", "zf_t"]}], "lines": [{"id": "L1 roof top front", "px": [[462, 383], [1900, 323]], "xyz": [["0", "0", "zr_t"], ["20", "0", "zr_t"]]}, {"id": "L2 roof bottom front", "px": [[467, 440], [1900, 396]], "xyz": [["0", "0", "zr_b"], ["20", "0", "zr_b"]]}, {"id": "L3 floor top front", "px": [[462, 759], [1900, 760]], "xyz": [["0", "0", "zf_t"], ["20", "0", "zf_t"]]}, {"id": "L4 floor bottom front", "px": [[462, 801], [1900, 809]], "xyz": [["0", "0", "zf_b"], ["20", "0", "zf_b"]]}, {"id": "L5 column S1 west edge", "px": [[620, 450], [620, 820]], "xyz": [["c - 0.1", "-0.2", "1"], ["c - 0.1", "-0.2", "4"]]}, {"id": "L6 column S2 west edge", "px": [[1379, 450], [1379, 820]], "xyz": [["c + s - 0.1", "-0.2", "1"], ["c + s - 0.1", "-0.2", "4"]]}, {"id": "L7 column N1 west edge", "px": [[931, 560], [931, 740]], "xyz": [["c - 0.1", "W", "2"], ["c - 0.1", "W", "4"]]}, {"id": "L8 roof bottom back", "px": [[800, 523], [930, 524]], "xyz": [["0", "W", "zr_b"], ["c", "W", "zr_b"]]}, {"id": "L9 terrace top front", "px": [[1000, 881.5], [1518, 883]], "xyz": [["8", "y_tf", "h_t"], ["x_te", "y_tf", "h_t"]]}, {"id": "L10 terrace top back", "px": [[1460, 848.5], [1600, 851.5]], "xyz": [["x_te - 3", "y_tn", "h_t"], ["x_te", "y_tn", "h_t"]]}, {"id": "L11 post west edge", "px": [[1190, 955], [1190, 995]], "xyz": [["x_p - 0.15", "y_p", "0"], ["x_p - 0.15", "y_p", "0.3"]]}, {"id": "L12 glass SW mullion", "px": [[1197, 440], [1197, 740]], "xyz": [["g_x", "g_y", "zf_t + 0.3"], ["g_x", "g_y", "zr_b - 0.3"]]}], "truth": {"c": 1.724, "W": 8.738, "2*c + 3*s": 23.57, "g_x": 6.712, "zf_t": 1.84, "zf_b": 1.43, "zr_b - zf_t": 2.87, "zr_t - zf_t": 3.404, "x_te": 10.135, "y_tn": -0.216, "y_tf": -7.118}, "notes": {"s": "column bay, the one published dimension used for scale", "c": "west cantilever, slab end to first column", "W": "house width, south to north fascia", "zf_t": "", "zf_b": "", "zr_t": "", "zr_b": "", "x_te": "terrace east end", "y_tf": "terrace south edge", "y_tn": "terrace north edge", "h_t": "", "d_t": "", "x_p": "terrace support post", "y_p": "", "g_x": "west glass wall of the enclosure", "g_y": "glass set-back from the south slab edge"}, "fixed": ["s"], "grades": {"s": "P", "c": "D", "W": "D", "zf_t": "D", "zf_b": "D", "zr_t": "D", "zr_b": "D", "x_te": "D", "y_tf": "D", "y_tn": "D", "h_t": "D", "d_t": "D", "x_p": "D", "y_p": "D", "g_x": "D", "g_y": "D"}, "camera": {"pos": [11.819, -23.815, 1.707], "target": [8.963, -14.242, 2.156], "f_px": 2889.2, "hfov_deg": 36.76, "lens_35mm": 54.2, "up": [0.0109, -0.0437, 0.999], "R": [[0.9583036, 0.2857446, 0.0020683], [-0.0108682, 0.0436796, -0.9989865], [-0.2855454, 0.9573098, 0.0449639]]}, "pp": [960.0, 640.0], "params": {"s": 6.7, "c": 1.7519, "W": 8.9932, "zf_t": 1.7988, "zf_b": 1.4174, "zr_t": 5.2352, "zr_b": 4.6764, "x_te": 9.7372, "y_tf": -2.9197, "y_tn": 5.9382, "h_t": 0.9074, "d_t": 0.4776, "x_p": 7.3925, "y_p": -2.3846, "g_x": 6.7519, "g_y": 0.2019}, "sd": {"c": 0.0274, "W": 0.2058, "zf_t": 0.3922, "zf_b": 0.3927, "zr_t": 0.3981, "zr_b": 0.396, "x_te": 0.486, "y_tf": 5.0067, "y_tn": 7.2702, "h_t": 0.212, "d_t": 0.1304, "x_p": 1.0514, "y_p": 5.0168, "g_x": 0.0427, "g_y": 0.1575}, "photos": 1, "uses": {"s": ["L6 column S2 west edge"], "c": ["L5 column S1 west edge", "L6 column S2 west edge", "L7 column N1 west edge", "L8 roof bottom back"], "W": ["C roof bottom, back-west", "L7 column N1 west edge", "L8 roof bottom back"], "zf_t": ["D floor top, front-west", "GB glass SW corner, sill", "L3 floor top front", "L12 glass SW mullion"], "zf_b": ["E floor bottom, front-west", "L4 floor bottom front"], "zr_t": ["A roof top, front-west", "L1 roof top front"], "zr_b": ["B roof bottom, front-west", "C roof bottom, back-west", "GT glass SW corner, head", "L2 roof bottom front", "L8 roof bottom back", "L12 glass SW mullion"], "x_te": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "T3 terrace top, back-east", "L9 terrace top front", "L10 terrace top back"], "y_tf": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "L9 terrace top front"], "y_tn": ["T3 terrace top, back-east", "L10 terrace top back"], "h_t": ["T1 terrace top, front-east", "T2 terrace bottom, front-east", "T3 terrace top, back-east", "L9 terrace top front", "L10 terrace top back"], "d_t": ["T2 terrace bottom, front-east"], "x_p": ["G post foot on grade", "L11 post west edge"], "y_p": ["G post foot on grade", "L11 post west edge"], "g_x": ["GT glass SW corner, head", "GB glass SW corner, sill", "L12 glass SW mullion"], "g_y": ["GT glass SW corner, head", "GB glass SW corner, sill", "L12 glass SW mullion"]}}, {"id": "crownhall", "model": "crownhall", "title": "S. R. Crown Hall", "by": "Mies van der Rohe, 1956", "ref": "published figures", "labels": {"b": "mullion bay (10 ft)", "c": "cantilever (end out of frame)", "s": "column bay under the girders", "wc": "column width", "d_c": "column in front of the glass", "zg": "top of the girders", "zr_t": "top of the roof", "zr_b": "underside of the roof", "z_tt": "horizontal mullion", "z_mb": "bottom of the middle glass tier", "zg - zr_t": "girder above the roof", "n": "number of girders - 1"}, "photo": "../photos/crownhall/c1.jpg", "source": "Joe Ravi, public domain, commons.wikimedia.org/wiki/File:Crown_Hall_2.jpg", "points": [{"id": "P1 column 2 top-left", "px": [503, 427.5], "xyz": ["c + s - wc/2", "-d_c", "zg"]}, {"id": "P2 column 3 top-left", "px": [1632, 183.5], "xyz": ["c + 2*s - wc/2", "-d_c", "zg"]}, {"id": "P3 column 3 foot-left (grade)", "px": [1631, 1045], "xyz": ["c + 2*s - wc/2", "-d_c", "0"]}, {"id": "P4 column 3 foot-right (grade)", "px": [1660.5, 1045], "xyz": ["c + 2*s + wc/2", "-d_c", "0"]}], "lines": [{"id": "G1 girder 1 top (east edge)", "px": [[20, 567], [185, 600]], "xyz": [["c + 0.25", "2", "zg"], ["c + 0.25", "12", "zg"]]}, {"id": "G2 girder 2 top (east edge)", "px": [[517, 425], [725, 506]], "xyz": [["c + s + 0.25", "2", "zg"], ["c + s + 0.25", "12", "zg"]]}, {"id": "F1 roof fascia top", "px": [[300, 578], [1900, 313]], "xyz": [["c + 1", "0", "zr_t"], ["c + 2*s + 8", "0", "zr_t"]]}, {"id": "F2 roof fascia bottom", "px": [[900, 527], [1900, 384]], "xyz": [["c + s + 3", "0", "zr_b"], ["c + 2*s + 8", "0", "zr_b"]]}, {"id": "T1 transom", "px": [[1680, 697], [1880, 683]], "xyz": [["c + 2*s + 1", "0", "z_tt"], ["c + 2*s + 5", "0", "z_tt"]]}, {"id": "T2 middle tier bottom", "px": [[1680, 874], [1720, 872]], "xyz": [["c + 2*s + 1", "0", "z_mb"], ["c + 2*s + 2", "0", "z_mb"]], "w": 0.5}, {"id": "C2 column 2 west edge", "px": [[503, 450], [503, 640]], "xyz": [["c + s - wc/2", "-d_c", "z_tt"], ["c + s - wc/2", "-d_c", "zr_t"]]}, {"id": "C3 column 3 west edge", "px": [[1631, 300], [1631, 1000]], "xyz": [["c + 2*s - wc/2", "-d_c", "1"], ["c + 2*s - wc/2", "-d_c", "zr_t"]]}, {"id": "M+1 mullion", "px": [[659, 600], [659, 690]], "xyz": [["c + s + 1*b", "0", "z_tt + 0.3"], ["c + s + 1*b", "0", "zr_b - 0.3"]]}, {"id": "M+2 mullion", "px": [[810, 600], [810, 690]], "xyz": [["c + s + 2*b", "0", "z_tt + 0.3"], ["c + s + 2*b", "0", "zr_b - 0.3"]]}, {"id": "M+3 mullion", "px": [[981, 600], [981, 690]], "xyz": [["c + s + 3*b", "0", "z_tt + 0.3"], ["c + s + 3*b", "0", "zr_b - 0.3"]]}, {"id": "M+4 mullion", "px": [[1177, 600], [1177, 690]], "xyz": [["c + s + 4*b", "0", "z_tt + 0.3"], ["c + s + 4*b", "0", "zr_b - 0.3"]]}, {"id": "M+5 mullion", "px": [[1401, 600], [1401, 690]], "xyz": [["c + s + 5*b", "0", "z_tt + 0.3"], ["c + s + 5*b", "0", "zr_b - 0.3"]]}, {"id": "M-1 mullion", "px": [[409, 640], [409, 690]], "xyz": [["c + s - 1*b", "0", "z_tt + 0.3"], ["c + s - 1*b", "0", "zr_b - 0.3"]]}, {"id": "M-2 mullion", "px": [[304, 640], [304, 690]], "xyz": [["c + s - 2*b", "0", "z_tt + 0.3"], ["c + s - 2*b", "0", "zr_b - 0.3"]]}, {"id": "M-3 mullion", "px": [[210, 640], [210, 690]], "xyz": [["c + s - 3*b", "0", "z_tt + 0.3"], ["c + s - 3*b", "0", "zr_b - 0.3"]]}, {"id": "M-4 mullion", "px": [[123, 640], [123, 690]], "xyz": [["c + s - 4*b", "0", "z_tt + 0.3"], ["c + s - 4*b", "0", "zr_b - 0.3"]]}], "truth": {"s": 18.288, "zg - zr_t": 1.905, "zr_b": 7.315, "z_tt - z_mb": 2.362, "zr_b - z_tt": 3.7}, "notes": {"b": "mullion bay, 10 ft, the one published dimension used for scale", "c": "gauge: the west end is out of frame, so the cantilever cannot be measured; origin moved to the girder 1 axis", "s": "girder column spacing", "wc": "girder column width", "d_c": "column face in front of the glass plane", "zg": "girder top", "zr_t": "", "zr_b": "", "z_tt": "transom between upper lights and middle tier", "z_mb": "bottom of the middle tier"}, "fixed": ["b", "c"], "grades": {"b": "P", "c": "A", "s": "D", "wc": "D", "d_c": "D", "zg": "D", "zr_t": "D", "zr_b": "D", "z_tt": "D", "z_mb": "D"}, "camera": {"pos": [37.495, -18.994, 1.466], "target": [32.631, -10.257, 1.509], "f_px": 1461.5, "hfov_deg": 66.6, "lens_35mm": 27.4, "up": [-0.0012, -0.0056, 1.0], "R": [[0.8737582, 0.4863459, 0.0037844], [0.0012393, 0.0055547, -0.9999838], [-0.4863591, 0.8737487, 0.0042507]]}, "pp": [960.0, 908.7], "params": {"b": 3.048, "c": 0.0, "s": 18.1051, "wc": 0.3112, "d_c": 0.4702, "zg": 9.9656, "zr_t": 8.1104, "zr_b": 7.3231, "z_tt": 4.0692, "z_mb": 2.0291}, "sd": {"s": 0.0468, "wc": 0.0267, "d_c": 0.0507, "zg": 0.1039, "zr_t": 0.0848, "zr_b": 0.0819, "z_tt": 0.0522, "z_mb": 0.0832}, "photos": 1, "uses": {"b": ["M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "c": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "G1 girder 1 top (east edge)", "G2 girder 2 top (east edge)", "F1 roof fascia top", "F2 roof fascia bottom", "T1 transom", "T2 middle tier bottom", "C2 column 2 west edge", "C3 column 3 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "s": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "G2 girder 2 top (east edge)", "F1 roof fascia top", "F2 roof fascia bottom", "T1 transom", "T2 middle tier bottom", "C2 column 2 west edge", "C3 column 3 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "wc": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "C2 column 2 west edge", "C3 column 3 west edge"], "d_c": ["P1 column 2 top-left", "P2 column 3 top-left", "P3 column 3 foot-left (grade)", "P4 column 3 foot-right (grade)", "C2 column 2 west edge", "C3 column 3 west edge"], "zg": ["P1 column 2 top-left", "P2 column 3 top-left", "G1 girder 1 top (east edge)", "G2 girder 2 top (east edge)"], "zr_t": ["F1 roof fascia top", "C2 column 2 west edge", "C3 column 3 west edge"], "zr_b": ["F2 roof fascia bottom", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "z_tt": ["T1 transom", "C2 column 2 west edge", "M+1 mullion", "M+2 mullion", "M+3 mullion", "M+4 mullion", "M+5 mullion", "M-1 mullion", "M-2 mullion", "M-3 mullion", "M-4 mullion"], "z_mb": ["T2 middle tier bottom"]}}, {"id": "robie", "model": "robie", "title": "Robie House", "by": "one photo", "ref": "HABS ILL-1005 measured drawings", "labels": {"Lw": "west wall of the enclosure", "Ls": "south wall of the enclosure", "h_ct": "top of the stone coping", "h_cb": "underside of the coping", "h_b": "bottom of the brick", "rx": "west edge of the roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia", "h_cb - h_b": "height of the brick", "ryn - rys": "roof, north to south", "fascia": "roof fascia depth", "depth": "living floor depth"}, "photo": "../photos/robie/w1.jpg", "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL.jpg (iPhone 15 Pro, 24 mm equivalent, 5383 px wide crop of a 5712 px frame)", "points": [{"id": "sw_ct", "px": [490, 549], "xyz": ["0", "0", "h_ct"], "w": 0.7}, {"id": "sw_cb", "px": [492, 577], "xyz": ["0", "0", "h_cb"]}, {"id": "sw_bb", "px": [497, 845], "xyz": ["0", "0", "h_b"]}, {"id": "sw_grade", "px": [495, 896], "xyz": ["0", "0", "0"], "w": 0.5}, {"id": "nw_cb", "px": [103, 621], "xyz": ["0", "Lw", "h_cb"]}, {"id": "nw_bb", "px": [103, 829], "xyz": ["0", "Lw", "h_b"]}, {"id": "in_cb", "px": [868, 606], "xyz": ["Ls", "0", "h_cb"]}, {"id": "in_bb", "px": [870, 814], "xyz": ["Ls", "0", "h_b"]}, {"id": "roof_sw", "px": [758, 274], "xyz": ["rx", "rys", "rzt"]}, {"id": "roof_nw", "px": [240, 418], "xyz": ["rx", "ryn", "rzt"]}], "lines": [{"id": "cb_west", "px": [[120.6, 618.9], [494.1, 573.7]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]}, {"id": "cb_south", "px": [[523.1, 578.0], [873.1, 603.4]], "xyz": [["0", "0", "h_cb"], ["Ls", "0", "h_cb"]]}, {"id": "roof_west_top", "px": [[241.3, 412.4], [729.6, 281.6]], "xyz": [["rx", "ryn", "rzt"], ["rx", "rys", "rzt"]]}, {"id": "sw_vertical", "px": [[492, 577], [497, 845]], "xyz": [["0", "0", "h_cb"], ["0", "0", "h_b"]]}, {"id": "nw_vertical", "px": [[103, 621], [103, 829]], "xyz": [["0", "Lw", "h_cb"], ["0", "Lw", "h_b"]]}, {"id": "in_vertical", "px": [[868, 606], [870, 814]], "xyz": [["Ls", "0", "h_cb"], ["Ls", "0", "h_b"]]}, {"id": "eave_south_1", "px": [[785.0, 283.6], [1336.8, 460.9]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_2", "px": [[1305.4, 450.1], [1547.7, 533.0]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_3", "px": [[1635.9, 569.9], [1707.8, 595.2]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "bb_west", "px": [[103, 829], [497, 845]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]}, {"id": "bb_south", "px": [[497, 845], [870, 814]], "xyz": [["0", "0", "h_b"], ["Ls", "0", "h_b"]]}], "truth": {"Ls": 4.01, "h_ct": 2.56, "h_cb": 2.35, "h_b": 0.31, "rx": 1.83, "rys": -0.7, "ryn": 8.0}, "notes": {"Lw": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale", "Ls": "south face of the enclosure, to the inner corner of the stair-wall jog", "h_ct": "top of the stone coping", "h_cb": "underside of the coping (top of brick)", "h_b": "bottom of brick (top of the stone base)", "rx": "west edge of the living-room roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"}, "fixed": ["Lw", "rzt"], "grades": {"Lw": "P", "Ls": "D", "h_ct": "D", "h_cb": "D", "h_b": "D", "rx": "D", "rys": "D", "ryn": "D", "rzt": "P"}, "camera": {"pos": [-7.715, -10.49, 1.252], "target": [0.303, -4.515, 1.339], "f_px": 1525.6, "hfov_deg": 64.36, "lens_35mm": 28.6, "up": [0.0049, -0.021, 0.9998], "R": [[0.5975206, -0.8016096, -0.019775], [-0.0049089, 0.0210043, -0.9997673], [0.8018385, 0.5974787, 0.0086154]]}, "pp": [960.0, 720.0], "params": {"Lw": 6.85, "rzt": 4.91, "Ls": 4.743, "h_ct": 2.8328, "h_cb": 2.6296, "h_b": 0.4102, "rx": 0.9951, "rys": -2.1234, "ryn": 5.7728}, "sd": {"Ls": 0.0883, "h_ct": 0.0459, "h_cb": 0.038, "h_b": 0.0206, "rx": 0.1389, "rys": 0.1748, "ryn": 0.278}, "photos": 1, "uses": {"Lw": ["nw_cb", "nw_bb", "cb_west", "nw_vertical", "bb_west"], "Ls": ["in_cb", "in_bb", "cb_south", "in_vertical", "bb_south"], "h_ct": ["sw_ct"], "h_cb": ["sw_cb", "nw_cb", "in_cb", "cb_west", "cb_south", "sw_vertical", "nw_vertical", "in_vertical"], "h_b": ["sw_bb", "nw_bb", "in_bb", "sw_vertical", "nw_vertical", "in_vertical", "bb_west", "bb_south"], "rx": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "rys": ["roof_sw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "ryn": ["roof_nw", "roof_west_top"], "rzt": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"]}}, {"id": "robie2", "model": "robie", "title": "Robie House", "by": "two photos together", "ref": "HABS ILL-1005 measured drawings", "labels": {"Lw": "west wall of the enclosure", "Ls": "south wall of the enclosure", "h_ct": "top of the stone coping", "h_cb": "underside of the coping", "h_b": "bottom of the brick", "rx": "west edge of the roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia", "h_cb - h_b": "height of the brick", "ryn - rys": "roof, north to south", "fascia": "roof fascia depth", "depth": "living floor depth"}, "photo": "../photos/robie/w1.jpg", "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL.jpg (iPhone 15 Pro, 24 mm equivalent, 5383 px wide crop of a 5712 px frame)", "points": [{"id": "sw_ct", "px": [490, 549], "xyz": ["0", "0", "h_ct"], "w": 0.7}, {"id": "sw_cb", "px": [492, 577], "xyz": ["0", "0", "h_cb"]}, {"id": "sw_bb", "px": [497, 845], "xyz": ["0", "0", "h_b"]}, {"id": "sw_grade", "px": [495, 896], "xyz": ["0", "0", "0"], "w": 0.5}, {"id": "nw_cb", "px": [103, 621], "xyz": ["0", "Lw", "h_cb"]}, {"id": "nw_bb", "px": [103, 829], "xyz": ["0", "Lw", "h_b"]}, {"id": "in_cb", "px": [868, 606], "xyz": ["Ls", "0", "h_cb"]}, {"id": "in_bb", "px": [870, 814], "xyz": ["Ls", "0", "h_b"]}, {"id": "roof_sw", "px": [758, 274], "xyz": ["rx", "rys", "rzt"]}, {"id": "roof_nw", "px": [240, 418], "xyz": ["rx", "ryn", "rzt"]}], "lines": [{"id": "cb_west", "px": [[120.6, 618.9], [494.1, 573.7]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]}, {"id": "cb_south", "px": [[523.1, 578.0], [873.1, 603.4]], "xyz": [["0", "0", "h_cb"], ["Ls", "0", "h_cb"]]}, {"id": "roof_west_top", "px": [[241.3, 412.4], [729.6, 281.6]], "xyz": [["rx", "ryn", "rzt"], ["rx", "rys", "rzt"]]}, {"id": "sw_vertical", "px": [[492, 577], [497, 845]], "xyz": [["0", "0", "h_cb"], ["0", "0", "h_b"]]}, {"id": "nw_vertical", "px": [[103, 621], [103, 829]], "xyz": [["0", "Lw", "h_cb"], ["0", "Lw", "h_b"]]}, {"id": "in_vertical", "px": [[868, 606], [870, 814]], "xyz": [["Ls", "0", "h_cb"], ["Ls", "0", "h_b"]]}, {"id": "eave_south_1", "px": [[785.0, 283.6], [1336.8, 460.9]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_2", "px": [[1305.4, 450.1], [1547.7, 533.0]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "eave_south_3", "px": [[1635.9, 569.9], [1707.8, 595.2]], "xyz": [["rx", "rys", "rzt"], ["rx + 10", "rys", "rzt"]]}, {"id": "bb_west", "px": [[103, 829], [497, 845]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]}, {"id": "bb_south", "px": [[497, 845], [870, 814]], "xyz": [["0", "0", "h_b"], ["Ls", "0", "h_b"]]}], "truth": {"Ls": 4.01, "h_ct": 2.56, "h_cb": 2.35, "h_b": 0.31, "rx": 1.83, "rys": -0.7, "ryn": 8.0}, "notes": {"Lw": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale", "Ls": "south face of the enclosure, to the inner corner of the stair-wall jog", "h_ct": "top of the stone coping", "h_cb": "underside of the coping (top of brick)", "h_b": "bottom of brick (top of the stone base)", "rx": "west edge of the living-room roof", "rys": "south edge of the roof", "ryn": "north edge of the roof", "rzt": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"}, "fixed": ["Lw", "rzt"], "grades": {"Lw": "P", "Ls": "D", "h_ct": "D", "h_cb": "D", "h_b": "D", "rx": "D", "rys": "D", "ryn": "D", "rzt": "P"}, "camera": {"pos": [-6.023, -8.998, 1.266], "target": [1.845, -2.826, 1.288], "f_px": 1423.8, "hfov_deg": 67.98, "lens_35mm": 26.7, "up": [0.0042, -0.0088, 1.0], "R": [[0.6172331, -0.7867229, -0.0095062], [-0.0041826, 0.0088012, -0.9999525], [0.7867692, 0.6172435, 0.0021418]]}, "pp": [960.0, 720.0], "params": {"Lw": 6.85, "rzt": 4.91, "Ls": 4.0513, "h_ct": 2.5589, "h_cb": 2.3533, "h_b": 0.4227, "rx": 1.8827, "rys": -0.8009, "ryn": 7.7857}, "sd": {"Ls": 0.0472, "h_ct": 0.0198, "h_cb": 0.0173, "h_b": 0.0143, "rx": 0.018, "rys": 0.0229, "ryn": 0.0145}, "photos": 2, "uses": {"Lw": ["nw_cb", "nw_bb", "cb_west", "nw_vertical", "bb_west"], "Ls": ["in_cb", "in_bb", "cb_south", "in_vertical", "bb_south"], "h_ct": ["sw_ct"], "h_cb": ["sw_cb", "nw_cb", "in_cb", "cb_west", "cb_south", "sw_vertical", "nw_vertical", "in_vertical"], "h_b": ["sw_bb", "nw_bb", "in_bb", "sw_vertical", "nw_vertical", "in_vertical", "bb_west", "bb_south"], "rx": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "rys": ["roof_sw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"], "ryn": ["roof_nw", "roof_west_top"], "rzt": ["roof_sw", "roof_nw", "roof_west_top", "eave_south_1", "eave_south_2", "eave_south_3"]}}, {"id": "gamble", "model": "gamble", "title": "Gamble House", "by": "Greene & Greene, 1908", "ref": "Greene & Greene drawings, 1908", "labels": {"Ww": "width of the wing", "ov": "gable overhang", "w2x0": "upper windows, left", "w2x1": "upper windows, right", "w2t": "upper windows, head", "w2b": "upper windows, sill", "w1x0": "lower windows, left", "w1x1": "lower windows, right", "w1t": "lower windows, head", "w1b": "lower windows, sill", "zap": "ridge (top of the verge)", "zve": "verge, lower ends", "dv": "verge in front of the wall", "D": "depth of the wing"}, "photo": "../photos/gamble/g5.jpg", "source": "Codera23, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Gamble_House_5.jpg (iPhone 6s Plus, 29 mm equivalent, 4032 px)", "points": [{"id": "wall_bl", "px": [189, 843], "xyz": ["0", "0", "0"]}, {"id": "wall_br", "px": [637.5, 843], "xyz": ["Ww", "0", "0"]}, {"id": "w2_tl", "px": [323, 539], "xyz": ["w2x0", "0", "w2t"]}, {"id": "w2_tr", "px": [503.6, 539], "xyz": ["w2x1", "0", "w2t"]}, {"id": "w2_bl", "px": [323, 625], "xyz": ["w2x0", "0", "w2b"]}, {"id": "w2_br", "px": [503.6, 625], "xyz": ["w2x1", "0", "w2b"]}, {"id": "w1_tl", "px": [282.6, 707], "xyz": ["w1x0", "0", "w1t"]}, {"id": "w1_tr", "px": [437.7, 707], "xyz": ["w1x1", "0", "w1t"]}, {"id": "w1_bl", "px": [282.6, 796], "xyz": ["w1x0", "0", "w1b"]}, {"id": "w1_br", "px": [437.7, 796], "xyz": ["w1x1", "0", "w1b"]}, {"id": "apex", "px": [366, 415.5], "xyz": ["Ww / 2", "-dv", "zap"]}, {"id": "verge_l", "px": [51, 503], "xyz": ["-ov", "-dv", "zve"]}, {"id": "verge_r", "px": [698, 491], "xyz": ["Ww + ov", "-dv", "zve"]}], "lines": [], "truth": {"w2x0": 2.153, "w2x1": 5.668, "w2t": 5.631, "w2b": 3.873, "w1x0": 1.733, "w1x1": 4.591, "w1t": 2.475, "w1b": 0.743, "zap": 7.326, "zve": 5.674, "ov": 1.778}, "notes": {"ov": "gable overhang beyond the side walls", "Ww": "front wall of the wing, 25'-0\" dimensioned on the first floor plan (HABS sheet 3); the scale. The elevation scales to 7.87 m", "w2x0": "", "w2x1": "", "w2t": "", "w2b": "", "w1x0": "", "w1x1": "", "w1t": "", "w1b": "", "zap": "top of the verge boards at the apex", "zve": "top of the verge boards at their lower ends", "dv": "how far the gable verge stands in front of the wall"}, "fixed": ["Ww"], "grades": {"ov": "D", "Ww": "P", "w2x0": "D", "w2x1": "D", "w2t": "D", "w2b": "D", "w1x0": "D", "w1x1": "D", "w1t": "D", "w1b": "D", "zap": "D", "zve": "D", "dv": "D"}, "camera": {"pos": [16.127, -25.183, 0.357], "target": [14.875, -15.282, 0.992], "f_px": 1619.3, "hfov_deg": 61.32, "lens_35mm": 30.4, "up": [0.0041, -0.0636, 0.998], "R": [[0.9921156, 0.125265, 0.0039079], [-0.0040931, 0.063551, -0.9979702], [-0.1252591, 0.9900858, 0.0635627]]}, "pp": [960.0, 720.0], "params": {"Ww": 7.62, "ov": 1.52, "w2x0": 2.2336, "w2x1": 5.3896, "w2t": 5.0228, "w2b": 3.597, "w1x0": 1.6916, "w1x1": 4.3508, "w1t": 2.1758, "w1b": 0.7818, "zap": 6.7061, "zve": 5.3545, "dv": 1.6174}, "sd": {"ov": 0.0555, "w2x0": 0.0139, "w2x1": 0.0301, "w2t": 0.0967, "w2b": 0.0624, "w1x0": 0.021, "w1x1": 0.0276, "w1t": 0.049, "w1b": 0.0241, "zap": 0.1074, "zve": 0.0839, "dv": 0.07}, "photos": 2, "uses": {"ov": ["verge_l", "verge_r"], "Ww": ["wall_br", "apex", "verge_r"], "w2x0": ["w2_tl", "w2_bl"], "w2x1": ["w2_tr", "w2_br"], "w2t": ["w2_tl", "w2_tr"], "w2b": ["w2_bl", "w2_br"], "w1x0": ["w1_tl", "w1_bl"], "w1x1": ["w1_tr", "w1_br"], "w1t": ["w1_tl", "w1_tr"], "w1b": ["w1_bl", "w1_br"], "zap": ["apex"], "zve": ["verge_l", "verge_r"], "dv": ["apex", "verge_l", "verge_r"]}}];</script>
+<script type="module">
+import * as THREE from 'three';
+
+const $ = id => document.getElementById(id);
+const GC = { D: '#e0218a', I: '#4f8cff', A: '#c99400', P: '#2f7d4f' };
+
+// ---------- parametric models: elements are boxes and gables whose coordinates are formulas over P
+const box = (id, b, g, m = 'clay') => ({ id, t: 'box', b, g, m });
+const gable = (id, b, g, m = 'roof') => ({ id, t: 'gable', b, g, m });   // b: x0,x1 (eaves), y0,y1 (ridge), ze, zr
+const dim = (a, b, off) => ({ a, b, off });
+
+const MODELS = {
+  farnsworth: {
+    design: { n: { init: 3, min: 2, max: 6, step: 1, g: 'I' }, t_len: { init: 16.8, min: 0, max: 24, step: 0.1, g: 'A' },
+              carport: { init: 0, min: 0, max: 1, step: 1, g: 'A' } },
+    cut: 3.0,
+    handles(P) {
+      const n = Math.round(P.n), L = 2 * P.c + n * P.s;
+      return [{ k: 's', at: [L, P.W / 2], dir: [1, 0], per: 1 / n, label: 'bays' }, { k: 'W', at: [L / 2, P.W], dir: [0, 1], per: 1, label: 'width' },
+              { k: 'g_x', at: [P.g_x, P.W / 2], dir: [1, 0], per: 1, label: 'glass wall' }];
+    },
+    proposals: [
+      { name: 'Set the glass back 0.45 m', by: 'agent', note: 'deeper shade on the south porch', changes: { g_y: 0.45 } },
+      { name: 'Bays to 6.90 m', by: 'M. Sokolova, architect', note: 'room for a second bedroom', changes: { s: 6.9 } },
+      { name: 'Carport instead of the terrace', by: 'client meeting', note: '', changes: { t_len: 0, carport: 1 } },
+    ],
+    build(P) {
+      const n = Math.round(P.n), L = 2 * P.c + n * P.s, col = 0.2, E = [];
+      E.push(box('floor slab', [0, L, 0, P.W, P.zf_b, P.zf_t], 'D'));
+      E.push(box('roof slab', [0, L, 0, P.W, P.zr_b, P.zr_t], 'D'));
+      for (let i = 0; i <= n; i++) {
+        const x = P.c + i * P.s, g = i < 2 ? 'D' : 'I';
+        E.push(box('column S' + i, [x - col / 2, x + col / 2, -col, 0, 0, P.zr_t - 0.03], g, 'steel'));
+        E.push(box('column N' + i, [x - col / 2, x + col / 2, P.W, P.W + col, 0, P.zr_t - 0.03], g, 'steel'));
+      }
+      E.push(box('glass', [P.g_x, L - P.g_y, P.g_y, P.W - P.g_y, P.zf_t, P.zr_b], 'D', 'glass'));
+      if (P.t_len > 0.05) E.push(box('terrace', [P.x_te - P.t_len, P.x_te, P.y_tf, P.y_tn, P.h_t - P.d_t, P.h_t], 'A'));
+      if (P.carport > 0.5) E.push(box('carport', [L + 3, L + 9, 0, 6, 0, 2.7], 'A'));
+      return E;
+    },
+    dims(P) {
+      const n = Math.round(P.n), L = 2 * P.c + n * P.s, D = [dim([0, 0], [P.c, 0], 1.6)];
+      for (let i = 0; i < n; i++) D.push(dim([P.c + i * P.s, 0], [P.c + (i + 1) * P.s, 0], 1.6));
+      D.push(dim([L - P.c, 0], [L, 0], 1.6), dim([0, 0], [L, 0], 3.2), dim([0, P.W], [0, 0], 1.6));
+      return D;
+    },
+    metrics(P) {
+      const n = Math.round(P.n), L = 2 * P.c + n * P.s;
+      return [['length, 2c + n·s', L, 'm'], ['width', P.W, 'm'], ['bays', n, ''],
+              ['floor above grade', P.zf_t, 'm'], ['floor to ceiling', P.zr_b - P.zf_t, 'm'],
+              ['glass enclosure', (L - P.g_x - P.g_y) * (P.W - 2 * P.g_y), 'm²']];
+    },
+  },
+  crownhall: {
+    design: { n: { init: 3, min: 2, max: 6, step: 1, g: 'I' } },
+    cut: 3.0,
+    handles: P => [{ k: 's', at: [Math.round(P.n) * P.s + 2 * P.b, 6 * P.b], dir: [1, 0], per: 1 / Math.round(P.n), label: 'span' }],
+    proposals: [{ name: 'Four girder bays', by: 'agent', note: 'a larger studio hall', changes: { n: 4 } }],
+    build(P) {
+      const n = Math.round(P.n), cant = 2 * P.b, D = 12 * P.b, x0 = -cant, x1 = n * P.s + cant, gw = 0.5, E = [];
+      E.push(box('podium', [x0, x1, 0, D, 0, P.z_mb], 'A'));
+      E.push(box('glass', [x0, x1, 0, D, P.z_mb, P.zr_b], 'I', 'glass'));
+      E.push(box('roof', [x0, x1, 0, D, P.zr_b, P.zr_t], 'D'));
+      E.push(box('transom', [x0, x1, -0.08, 0, P.z_tt - 0.06, P.z_tt + 0.06], 'D', 'steel'));
+      for (let k = 0; k <= n; k++) {
+        const x = k * P.s, g = k < 3 ? 'D' : 'I';
+        E.push(box('girder ' + k, [x - gw / 2, x + gw / 2, -P.d_c, D + P.d_c, P.zr_t, P.zg], g, 'steel'));
+        E.push(box('column S' + k, [x - P.wc / 2, x + P.wc / 2, -P.d_c, -P.d_c + P.wc, 0, P.zg], g, 'steel'));
+        E.push(box('column N' + k, [x - P.wc / 2, x + P.wc / 2, D + P.d_c - P.wc, D + P.d_c, 0, P.zg], 'I', 'steel'));
+      }
+      const m = Math.round((x1 - x0) / P.b);
+      for (let i = 0; i <= m; i++) {
+        const x = x0 + i * P.b;
+        E.push(box('mullion ' + i, [x - 0.05, x + 0.05, -0.12, 0, P.z_mb, P.zr_b], 'D', 'steel'));
+      }
+      return E;
+    },
+    dims(P) {
+      const n = Math.round(P.n), cant = 2 * P.b, D = 12 * P.b, out = [dim([-cant, 0], [0, 0], 2.4)];
+      for (let k = 0; k < n; k++) out.push(dim([k * P.s, 0], [(k + 1) * P.s, 0], 2.4));
+      out.push(dim([n * P.s, 0], [n * P.s + cant, 0], 2.4), dim([-cant, 0], [n * P.s + cant, 0], 4.6), dim([-cant, D], [-cant, 0], 2.4));
+      return out;
+    },
+    metrics(P) {
+      const n = Math.round(P.n), cant = 2 * P.b, L = n * P.s + 2 * cant, D = 12 * P.b;
+      return [['length, n·s + 4b', L, 'm'], ['depth, 12b', D, 'm'], ['clear span', P.s, 'm'],
+              ['girder depth', P.zg - P.zr_t, 'm'], ['ceiling', P.zr_b, 'm'], ['main floor', L * D, 'm²']];
+    },
+  },
+  robie: {
+    design: { fascia: { init: 0.25, min: 0.1, max: 0.6, step: 0.01, g: 'A' } },
+    cut: 1.2,
+    handles: P => [{ k: 'Ls', at: [P.Ls, P.Lw / 2], dir: [1, 0], per: 1, label: 'enclosure' },
+                   { k: 'ryn', at: [P.rx + 12, P.ryn], dir: [0, 1], per: 1, label: 'roof' }],
+    proposals: [],
+    build(P) {
+      return [
+        box('stone base', [0, P.Ls, 0, P.Lw, 0, P.h_b], 'D', 'stone'),
+        box('brick wall', [0, P.Ls, 0, P.Lw, P.h_b, P.h_cb], 'D', 'brick'),
+        box('coping', [-0.06, P.Ls + 0.06, -0.06, P.Lw + 0.06, P.h_cb, P.h_ct], 'D', 'stone'),
+        box('living floor', [P.rx + 1.5, P.rx + 23.5, P.rys + 1.4, P.ryn - 1.4, P.h_ct, P.rzt - P.fascia], 'A', 'brick'),
+        box('roof', [P.rx, P.rx + 25, P.rys, P.ryn, P.rzt - P.fascia, P.rzt], 'D', 'roof'),
+      ];
+    },
+    dims: P => [dim([0, 0], [P.Ls, 0], 1.4), dim([0, P.Lw], [0, 0], 1.4), dim([P.rx, P.rys], [P.rx, P.ryn], -1.4)],
+    metrics: P => [['enclosure', P.Ls * P.Lw, 'm²'], ['coping', P.h_ct, 'm'], ['brick', P.h_cb - P.h_b, 'm'],
+                   ['roof, north to south', P.ryn - P.rys, 'm'], ['roof edge, west', P.rx, 'm']],
+  },
+  gamble: {
+    design: { D: { init: 9.0, min: 5, max: 14, step: 0.1, g: 'A' } },
+    cut: 1.5,
+    handles: P => [{ k: 'ov', at: [P.Ww + P.ov, P.D / 2], dir: [1, 0], per: 1, label: 'overhang' },
+                   { k: 'D', at: [P.Ww / 2, P.D + 0.6], dir: [0, 1], per: 1, label: 'depth' }],
+    proposals: [],
+    build(P) {
+      return [
+        box('plinth', [-0.12, P.Ww + 0.12, -0.12, P.D, -0.6, 0], 'A', 'stone'),
+        box('walls', [0, P.Ww, 0, P.D, 0, P.zve], 'D'),
+        gable('roof', [-P.ov, P.Ww + P.ov, -P.dv, P.D + 0.6, P.zve, P.zap], 'D'),
+        box('upper windows', [P.w2x0, P.w2x1, -0.08, 0, P.w2b, P.w2t], 'D', 'window'),
+        box('lower windows', [P.w1x0, P.w1x1, -0.08, 0, P.w1b, P.w1t], 'D', 'window'),
+      ];
+    },
+    dims: P => [dim([0, -P.dv], [P.Ww, -P.dv], 2.0), dim([-P.ov, -P.dv], [0, -P.dv], 1.0), dim([P.Ww, -P.dv], [P.Ww + P.ov, -P.dv], 1.0),
+                dim([-P.ov, P.D + 0.6], [-P.ov, -P.dv], 1.2)],
+    metrics: P => [['wing width', P.Ww, 'm'], ['ridge', P.zap, 'm'],
+                   ['roof pitch', Math.atan2(P.zap - P.zve, P.Ww / 2 + P.ov) * 180 / Math.PI, '°'],
+                   ['gable overhang', P.ov, 'm'], ['verge in front of the wall', P.dv, 'm']],
+  },
+};
+
+// ---------- state
+let cur, P, P0, view = '3d', hot = null, deps = {}, photoSize = [1920, 1280];
+let main, hist = [], props = [], rev = null, planTf = null, planDrag = null;  // versions, proposals, the one under review
+let pose = null, flight = null, grow = 0, spin = false, orbit = { az: -0.95, el: 0.38, dist: 40, target: new THREE.Vector3() };
+
+// ---------- three.js
+const glc = $('gl'), ovc = $('ov'), octx = ovc.getContext('2d');
+const renderer = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(32, 1.5, 0.1, 3000);
+cam.matrixAutoUpdate = true;
+const hemi = new THREE.HemisphereLight(0xffffff, 0xc9c2b6, 1.35); hemi.position.set(0, 0, 1); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+scene.add(sun, sun.target);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.17 }));
+ground.receiveShadow = true; scene.add(ground);
+let model = new THREE.Group(); scene.add(model);
+
+const MAT = {
+  clay: 0xe9e5dd, stone: 0xdcd6ca, brick: 0xd8c5b8, roof: 0xb8b2a9, steel: 0x8e959c,
+  glass: 0xa8c8d8, window: 0x5e6b75,
+};
+function material(m) {
+  const glass = m === 'glass';
+  return new THREE.MeshStandardMaterial({ color: MAT[m] || MAT.clay, roughness: glass ? 0.2 : 0.92, metalness: 0,
+    transparent: true, opacity: glass ? 0.32 : 1, depthWrite: !glass, emissive: 0x000000 });
+}
+
+function gableGeometry(w, l, h) {
+  // cross-section in x (width w), extruded along y (length l), from z = 0 to the ridge h; origin at bottom centre
+  const a = [-w / 2, -l / 2, 0], b = [w / 2, -l / 2, 0], c = [0, -l / 2, h], a2 = [-w / 2, l / 2, 0], b2 = [w / 2, l / 2, 0], c2 = [0, l / 2, h];
+  const tri = [a, b, c, a2, c2, b2, a, c, c2, a, c2, a2, b, b2, c2, b, c2, c, a, a2, b2, a, b2, b];
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(tri.flat(), 3));
+  g.computeVertexNormals();
+  return g;
+}
+
+function edgesOf(e) {
+  const [x0, x1, y0, y1, z0, z1] = e.b;
+  if (e.t === 'gable') {
+    const xm = (x0 + x1) / 2, A = [x0, y0, z0], B = [x1, y0, z0], C = [xm, y0, z1], A2 = [x0, y1, z0], B2 = [x1, y1, z0], C2 = [xm, y1, z1];
+    return [[A, B], [B, B2], [B2, A2], [A2, A], [C, C2], [A, C], [B, C], [A2, C2], [B2, C2]];
+  }
+  const V = [];
+  for (const z of [z0, z1]) V.push([x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]);
+  return [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]].map(([i, j]) => [V[i], V[j]]);
+}
+
+function rebuild(animate) {
+  scene.remove(model);
+  model.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+  model = new THREE.Group();
+  const E = MODELS[cur.model].build(P);
+  const zs = E.map(e => e.b[4]).sort((a, b) => a - b);
+  for (const e of E) {
+    const [x0, x1, y0, y1, z0, z1] = e.b;
+    const w = Math.max(x1 - x0, 1e-3), l = Math.max(y1 - y0, 1e-3), h = Math.max(z1 - z0, 1e-3);
+    let geo;
+    if (e.t === 'gable') geo = gableGeometry(w, l, h);
+    else { geo = new THREE.BoxGeometry(w, l, h); geo.translate(0, 0, h / 2); }
+    const mesh = new THREE.Mesh(geo, material(e.m));
+    mesh.position.set((x0 + x1) / 2, (y0 + y1) / 2, z0);
+    mesh.castShadow = e.m !== 'glass'; mesh.receiveShadow = true;
+    const lines = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25),
+      new THREE.LineBasicMaterial({ color: 0x2e3439, transparent: true, opacity: e.m === 'glass' ? 0.35 : 0.6 }));
+    mesh.add(lines);
+    mesh.userData = { id: e.id, delay: animate ? 90 * zs.indexOf(z0) + 25 * model.children.length : -1 };
+    if (animate) mesh.scale.z = 0.001;
+    model.add(mesh);
+  }
+  scene.add(model);
+  if (animate) grow = performance.now();
+  applyClay();
+  highlight();
+  paintReview();
+}
+
+function bounds() {
+  const bb = new THREE.Box3().setFromObject(model);
+  return bb.isEmpty() ? new THREE.Box3(new THREE.Vector3(-5, -5, 0), new THREE.Vector3(5, 5, 5)) : bb;
+}
+function frameModel() {
+  const bb = bounds(), c = bb.getCenter(new THREE.Vector3()), s = bb.getSize(new THREE.Vector3());
+  orbit.target.copy(c); orbit.target.z = Math.min(c.z, s.z * 0.4);
+  orbit.dist = Math.max(s.x, s.y, s.z * 1.6) * 1.65;
+  const r = Math.max(s.x, s.y) * 0.9 + 10;
+  sun.position.set(c.x - r * 0.6, c.y - r, c.z + r * 1.1); sun.target.position.copy(c);
+  Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r, near: 0.5, far: r * 4 });
+  sun.shadow.camera.updateProjectionMatrix();
+}
+
+// ---------- cameras: every view is a pose = position, orientation, frustum at unit distance
+function orbitPose() {
+  const { az, el, dist, target } = orbit;
+  const pos = new THREE.Vector3(Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)).multiplyScalar(dist).add(target);
+  const m = new THREE.Matrix4().lookAt(pos, target, new THREE.Vector3(0, 0, 1));
+  const t = Math.tan(THREE.MathUtils.degToRad(16)), a = photoSize[0] / photoSize[1];
+  return { pos, quat: new THREE.Quaternion().setFromRotationMatrix(m), fr: [-t * a, t * a, t, -t] };
+}
+function photoPose() {
+  const R = cur.camera.R, f = cur.camera.f_px, [W, H] = photoSize, [cx, cy] = cur.pp;
+  const x = new THREE.Vector3(...R[0]), y = new THREE.Vector3(...R[1]).negate(), z = new THREE.Vector3(...R[2]).negate();
+  const m = new THREE.Matrix4().makeBasis(x, y, z);
+  return { pos: new THREE.Vector3(...cur.camera.pos), quat: new THREE.Quaternion().setFromRotationMatrix(m),
+           fr: [-cx / f, (W - cx) / f, cy / f, -(H - cy) / f] };
+}
+function applyPose(p) {
+  cam.position.copy(p.pos); cam.quaternion.copy(p.quat); cam.updateMatrixWorld(true);
+  const n = 0.1; cam.projectionMatrix.makePerspective(p.fr[0] * n, p.fr[1] * n, p.fr[2] * n, p.fr[3] * n, n, 3000);
+  cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
+}
+function fly(to, ms, done) {
+  const from = pose || to;
+  flight = { from: { pos: from.pos.clone(), quat: from.quat.clone(), fr: from.fr.slice() }, to, t0: performance.now(), ms, done };
+}
+
+// ---------- the photo's own camera, exactly as the solver uses it
+function project(X) {
+  const R = cur.camera.R, C = cur.camera.pos, f = cur.camera.f_px, [cx, cy] = cur.pp;
+  const d = [X[0] - C[0], X[1] - C[1], X[2] - C[2]];
+  const xc = R.map(r => r[0] * d[0] + r[1] * d[1] + r[2] * d[2]);
+  return { u: cx + f * xc[0] / xc[2], v: cy + f * xc[1] / xc[2], z: xc[2] };
+}
+const exprCache = {};
+function evalXYZ(xyz, Q) {
+  const names = Object.keys(Q), vals = names.map(k => Q[k]);
+  return xyz.map(e => {
+    const key = names.join(',') + '|' + e;
+    if (!exprCache[key]) exprCache[key] = new Function(...names, 'return (' + e + ');');
+    return exprCache[key](...vals);
+  });
+}
+function rms(Q) {
+  const r = [];
+  for (const m of cur.points) { const p = project(evalXYZ(m.xyz, Q)), w = m.w || 1; r.push(w * (p.u - m.px[0]), w * (p.v - m.px[1])); }
+  for (const m of cur.lines) {
+    const [a, b] = m.px, w = m.w || 1; let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const L = Math.hypot(nx, ny); nx /= L; ny /= L;
+    for (const e of m.xyz) { const p = project(evalXYZ(e, Q)); r.push(w * (nx * (p.u - a[0]) + ny * (p.v - a[1]))); }
+  }
+  return Math.sqrt(r.reduce((s, x) => s + x * x, 0) / r.length);
+}
+
+// ---------- overlay: wireframe by grade, the drawings' model, marks
+function drawOverlay() {
+  const W = ovc.width, H = ovc.height;
+  octx.setTransform(1, 0, 0, 1, 0, 0); octx.clearRect(0, 0, W, H);
+  if (view !== 'photo' || flight) return;
+  const s = W / photoSize[0];
+  octx.setTransform(s, 0, 0, s, 0, 0);
+  const seg = (a, b) => {
+    let pa = project(a), pb = project(b); const near = 0.3;
+    if (pa.z < near && pb.z < near) return;
+    if (pa.z < near || pb.z < near) {
+      const t = (near - pa.z) / (pb.z - pa.z), m = a.map((v, i) => v + t * (b[i] - v)), pm = project(m);
+      if (pa.z < near) pa = pm; else pb = pm;
+    }
+    octx.beginPath(); octx.moveTo(pa.u, pa.v); octx.lineTo(pb.u, pb.v); octx.stroke();
+  };
+  if ($('oTruth').checked) {
+    const T = { ...P }; for (const [k, v] of Object.entries(cur.truth)) if (k in T) T[k] = v;
+    octx.lineWidth = 3.2 / s * 1.4; octx.strokeStyle = GC.P; octx.setLineDash([10, 6]);
+    for (const e of MODELS[cur.model].build(T)) for (const [a, b] of edgesOf(e)) seg(a, b);
+    octx.setLineDash([]);
+  }
+  octx.lineWidth = 2.2 / s * 1.2;
+  for (const e of MODELS[cur.model].build(P)) {
+    octx.strokeStyle = hot && (deps[hot] || new Set()).has(e.id) ? '#ffd400' : GC[e.g];
+    for (const [a, b] of edgesOf(e)) seg(a, b);
+  }
+  if ($('oMarks').checked) {
+    const on = m => !hot || (cur.uses[hot] || []).includes(m.id);
+    for (const m of cur.points) {
+      if (!on(m)) continue;
+      const p = project(evalXYZ(m.xyz, P));
+      octx.strokeStyle = '#00c2e0'; octx.lineWidth = 2.4 / s;
+      octx.beginPath(); octx.arc(m.px[0], m.px[1], 7, 0, 7); octx.stroke();
+      octx.beginPath(); octx.moveTo(m.px[0], m.px[1]); octx.lineTo(p.u, p.v); octx.stroke();
+    }
+  }
+}
+
+// ---------- plan: cut at the model's cut height, with the recovered dimensions
+function drawPlan() {
+  const svg = $('plan'), W = svg.clientWidth, H = svg.clientHeight, E = MODELS[cur.model].build(P), cut = MODELS[cur.model].cut;
+  if (W < 50 || H < 50) return;
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (const e of E) { x0 = Math.min(x0, e.b[0]); x1 = Math.max(x1, e.b[1]); y0 = Math.min(y0, e.b[2]); y1 = Math.max(y1, e.b[3]); }
+  // while a grip is dragged the drawing keeps its scale, so the grip stays under the hand
+  if (!planDrag) { const pad = 110, kk = Math.min((W - 2 * pad) / (x1 - x0), (H - 2 * pad) / (y1 - y0));
+    planTf = { k: kk, ox: (W - kk * (x1 - x0)) / 2, oy: (H - kk * (y1 - y0)) / 2, x0, y1 }; }
+  const { k, ox, oy } = planTf; x0 = planTf.x0; y1 = planTf.y1;
+  const X = x => ox + (x - x0) * k, Y = y => oy + (y1 - y) * k;
+  const rect = (e, cls) => `<rect x="${X(e.b[0])}" y="${Y(e.b[3])}" width="${(e.b[1] - e.b[0]) * k}" height="${(e.b[3] - e.b[2]) * k}" class="${cls}"/>`;
+  const hotIds = hot ? deps[hot] || new Set() : new Set();
+  let below = '', above = '', cutS = '';
+  for (const e of E) {
+    const h = hotIds.has(e.id) ? ' hot' : '';
+    if (e.b[4] >= cut) above += rect(e, 'above' + h) + (e.t === 'gable' ? `<line x1="${X((e.b[0] + e.b[1]) / 2)}" y1="${Y(e.b[2])}" x2="${X((e.b[0] + e.b[1]) / 2)}" y2="${Y(e.b[3])}" class="above${h}"/>` : '');
+    else if (e.b[5] <= cut) below += rect(e, 'below' + h);
+    else cutS += rect(e, (e.m === 'glass' || e.m === 'window' ? 'glasscut' : 'cut') + h);
+  }
+  let dims = '';
+  for (const d of MODELS[cur.model].dims(P)) {
+    const ax = X(d.a[0]), ay = Y(d.a[1]), bx = X(d.b[0]), by = Y(d.b[1]);
+    const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, o = d.off * k;
+    const p = [ax + nx * o, ay + ny * o], q = [bx + nx * o, by + ny * o];
+    const len = Math.hypot(d.b[0] - d.a[0], d.b[1] - d.a[1]);
+    const tick = (x, y) => `<line x1="${x - 5}" y1="${y + 5}" x2="${x + 5}" y2="${y - 5}" class="tick"/>`;
+    const ang = Math.atan2(dy, dx) * 180 / Math.PI, a2 = ang > 90 || ang < -90 ? ang + 180 : ang;
+    const mx = (p[0] + q[0]) / 2 + nx * 12, my = (p[1] + q[1]) / 2 + ny * 12;
+    dims += `<line x1="${ax}" y1="${ay}" x2="${p[0] + nx * 6}" y2="${p[1] + ny * 6}" class="ext"/><line x1="${bx}" y1="${by}" x2="${q[0] + nx * 6}" y2="${q[1] + ny * 6}" class="ext"/>`
+         + `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" class="dim"/>${tick(...p)}${tick(...q)}`
+         + `<text x="${mx}" y="${my}" transform="rotate(${a2} ${mx} ${my})" class="dt">${len.toFixed(2)}</text>`;
+  }
+  svg.innerHTML = `<style>
+    .below{fill:#f2f4f6;stroke:#9aa3ab;stroke-width:1}.above{fill:none;stroke:#8d969e;stroke-width:1;stroke-dasharray:6 4}
+    .cut{fill:#2b3035;stroke:#15202b;stroke-width:1.5}.glasscut{fill:#d6e8f0;stroke:#4f7d93;stroke-width:1.5}
+    .hot{stroke:#e6b800 !important;stroke-width:3 !important}.cut.hot{fill:#8a7300}
+    .dim,.ext,.tick{stroke:#15202b;stroke-width:1}.ext{stroke-width:.7}.tick{stroke-width:1.6}
+    .dt{font:500 13px "Golos Text",system-ui,sans-serif;fill:#15202b;text-anchor:middle;dominant-baseline:middle}
+    .tb{font:13px "Golos Text",system-ui,sans-serif;fill:#5b6875}
+    .grip{fill:#fff;stroke:#e0218a;stroke-width:2.5;cursor:grab}.grip.on{fill:#ffd400;stroke:#15202b}
+    .gt{font:600 12px "Golos Text",system-ui,sans-serif;fill:#e0218a}</style>`
+    + below + above + cutS + dims + grips(X, Y)
+    + `<text x="24" y="${H - 22}" class="tb">${cur.title} · plan cut at +${cut.toFixed(2)} m · dimensions in metres, recovered from ${cur.photos === 1 ? 'one photo' : cur.photos + ' photos'}</text>`;
+}
+
+function grips(X, Y) {
+  const hs = MODELS[cur.model].handles ? MODELS[cur.model].handles(P) : [];
+  return hs.map(h => `<circle cx="${X(h.at[0])}" cy="${Y(h.at[1])}" r="9" class="grip${planDrag && planDrag.k === h.k ? ' on' : ''}" data-k="${h.k}"/>`
+    + `<text x="${X(h.at[0]) + 13}" y="${Y(h.at[1]) - 12}" class="gt">${h.label}</text>`).join('');
+}
+function bindGrips() {
+  $('plan').querySelectorAll('.grip').forEach(g => g.addEventListener('pointerdown', e => {
+    const h = MODELS[cur.model].handles(P).find(x => x.k === g.dataset.k);
+    planDrag = { k: h.k, start: P[h.k], sx: e.clientX, sy: e.clientY, dir: h.dir, per: h.per };
+    setHot(h.k); e.preventDefault();
+  }));
+}
+window.addEventListener('pointermove', e => {
+  if (!planDrag) return;
+  const d = ((e.clientX - planDrag.sx) * planDrag.dir[0] - (e.clientY - planDrag.sy) * planDrag.dir[1]) / planTf.k;
+  window.studio.set(planDrag.k, Math.round((planDrag.start + d * planDrag.per) * 100) / 100);
+});
+window.addEventListener('pointerup', () => { if (planDrag) { planDrag = null; setHot(null); } });
+
+// ---------- dependency graph: parameters to elements, found by perturbing each parameter
+function computeDeps() {
+  const sig = Q => Object.fromEntries(MODELS[cur.model].build(Q).map(e => [e.id, e.b.map(v => v.toFixed(5)).join(',')]));
+  const base = sig(P); deps = {};
+  for (const k of Object.keys(P)) {
+    const st = MODELS[cur.model].design[k]?.step === 1 ? 1 : Math.max(0.05, Math.abs(P[k]) * 0.03);
+    const alt = sig({ ...P, [k]: P[k] + st }), s = new Set();
+    for (const id of new Set([...Object.keys(base), ...Object.keys(alt)])) if (base[id] !== alt[id]) s.add(id);
+    deps[k] = s;
+  }
+}
+const groupOf = id => id.replace(/ ?[SN]?\d+$/, '').replace(/ \d+$/, '');
+function drawGraph() {
+  const svg = $('graph'), W = svg.clientWidth, H = svg.clientHeight;
+  if (W < 50 || H < 50) return;
+  const ks = Object.keys(P), groups = [...new Set(MODELS[cur.model].build(P).map(e => groupOf(e.id)))];
+  const yk = i => 70 + i * (H - 120) / Math.max(1, ks.length - 1), yg = i => 90 + i * (H - 160) / Math.max(1, groups.length - 1);
+  const xl = 330, xr = W - 360;
+  let curves = '', nodes = '';
+  ks.forEach((k, i) => {
+    const gs = new Set([...(deps[k] || [])].map(groupOf));
+    groups.forEach((g, j) => {
+      if (!gs.has(g)) return;
+      const on = !hot || hot === k, c = hot === k ? '#e6b800' : '#19a974';
+      curves += `<path d="M${xl} ${yk(i)} C${(xl + xr) / 2} ${yk(i)} ${(xl + xr) / 2} ${yg(j)} ${xr} ${yg(j)}" fill="none" stroke="${c}" stroke-width="${hot === k ? 2.6 : 1.3}" opacity="${on ? 0.8 : 0.08}"/>`;
+    });
+    const g = gradeOf(k), lab = cur.labels[k] || k;
+    nodes += `<g data-k="${k}" style="cursor:pointer"><circle cx="${xl}" cy="${yk(i)}" r="5" fill="${GC[g]}"/>`
+           + `<text x="${xl - 12}" y="${yk(i)}" text-anchor="end" dominant-baseline="middle" class="gl${hot === k ? ' on' : ''}">${lab} <tspan class="gv">${fmt(P[k])}</tspan></text></g>`;
+  });
+  groups.forEach((g, j) => {
+    nodes += `<circle cx="${xr}" cy="${yg(j)}" r="5" fill="#15202b"/><text x="${xr + 12}" y="${yg(j)}" dominant-baseline="middle" class="gl">${g}</text>`;
+  });
+  svg.innerHTML = `<style>.gl{font:13px "Golos Text",system-ui,sans-serif;fill:#15202b}.gl.on{font-weight:700}.gv{fill:#5b6875}
+    .gh{font:600 13px "Golos Text",system-ui,sans-serif;fill:#5b6875}</style>
+    <text x="${xl}" y="34" text-anchor="end" class="gh">parameters</text><text x="${xr}" y="34" class="gh">elements they move</text>` + curves + nodes;
+  svg.querySelectorAll('g[data-k]').forEach(n => {
+    n.addEventListener('mouseenter', () => setHot(n.dataset.k)); n.addEventListener('mouseleave', () => setHot(null));
+  });
+}
+
+// ---------- side panel and info
+const gradeOf = k => cur.grades[k] || MODELS[cur.model].design[k]?.g || 'A';
+const fmt = v => Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v - Math.round(v)) < 1e-9 && Math.abs(v) < 20 ? String(v) : v.toFixed(2);
+
+function buildParams() {
+  const box = $('params'); box.innerHTML = '';
+  const design = MODELS[cur.model].design, groups = [
+    ['From the photo', Object.keys(cur.params).filter(k => !cur.fixed.includes(k))],
+    ['Fixed from the drawings', cur.fixed],
+    ['Design logic and assumptions', Object.keys(design)]];
+  for (const [title, keys] of groups) {
+    if (!keys.length) continue;
+    const h = document.createElement('h2'); h.textContent = title; box.appendChild(h);
+    for (const k of keys) {
+      const g = gradeOf(k), row = document.createElement('div'); row.className = 'param'; row.dataset.k = k;
+      row.innerHTML = `<span class="badge" style="background:${GC[g]}">${g}</span><span class="name" title="${(cur.notes[k] || '').replace(/"/g, '&quot;')}">${cur.labels[k] || k}</span><span class="val" id="v_${CSS.escape(k)}"></span>`;
+      const inp = document.createElement('input'); inp.type = 'range'; inp.setAttribute('aria-label', k);
+      const d = design[k];
+      if (d) { inp.min = d.min; inp.max = d.max; inp.step = d.step; }
+      else { const v = P0[k], sp = Math.max(Math.abs(v) * 0.3, 0.6); inp.min = v - sp; inp.max = v + sp; inp.step = 0.01; }
+      inp.value = P[k]; inp.disabled = cur.fixed.includes(k);
+      inp.addEventListener('input', () => { P[k] = parseFloat(inp.value); changed(k); });  // in review, slider edits join the proposal
+      row.appendChild(inp); box.appendChild(row);
+      row.addEventListener('mouseenter', () => setHot(k)); row.addEventListener('mouseleave', () => setHot(null));
+      showVal(k);
+    }
+  }
+}
+function showVal(k) {
+  const el = document.getElementById('v_' + k); if (!el) return;
+  el.textContent = fmt(P[k]) + (MODELS[cur.model].design[k]?.step === 1 ? '' : ' m');
+  el.classList.toggle('moved', Math.abs(P[k] - (main || P0)[k]) > 1e-9);
+}
+function info() {
+  if (view === 'review') return reviewPanel();
+  const m = MODELS[cur.model].metrics(P), names = Object.keys(P), vals = names.map(k => P[k]);
+  let checks = '';
+  for (const [k, t] of Object.entries(cur.truth)) {
+    let v; try { v = new Function(...names, 'return (' + k + ');')(...vals); } catch (e) { continue; }
+    const e = 100 * (v - t) / t, c = Math.abs(e) <= 5 ? '#2f7d4f' : Math.abs(e) <= 10 ? '#c99400' : '#c0392b';
+    checks += `<tr><td><span class="dot" style="background:${c}"></span>${cur.labels[k] || k}</td><td>${v.toFixed(2)} / ${t.toFixed(2)} · ${e > 0 ? '+' : ''}${e.toFixed(1)} %</td></tr>`;
+  }
+  const n = { P: 0, D: 0, I: 0, A: 0 }; for (const k of names) n[gradeOf(k)]++;
+  $('info').innerHTML = `<h1>${cur.title}</h1><p class="by">${cur.by}</p>
+    <table>${m.map(([l, v, u]) => `<tr><td>${l}</td><td><b>${u === '' ? v : v.toFixed(u === '°' ? 1 : 2)}</b> ${u}</td></tr>`).join('')}</table>
+    <div class="fit"><b>${rms(P).toFixed(1)}</b><span>px mean error on the photo${cur.photos > 1 ? ' (one of ' + cur.photos + ')' : ''}</span></div>
+    <div class="sec">Against the ${cur.ref}</div><table>${checks}</table>
+    <div class="grades">${Object.entries(n).map(([g, c]) => `<span><span class="dot" style="background:${GC[g]}"></span>${g} ${c}</span>`).join('')}</div>`;
+}
+
+function changed(k) {
+  showVal(k);
+  rebuild(false);
+  if (MODELS[cur.model].design[k]?.step === 1) { computeDeps(); }
+  info(); refreshView();
+}
+function setHot(k) {
+  hot = k;
+  document.querySelectorAll('.param').forEach(r => r.classList.toggle('hot', r.dataset.k === k));
+  highlight(); refreshView();
+}
+function highlight() {
+  const ids = hot ? deps[hot] || new Set() : null;
+  model.children.forEach(m => m.material.emissive.setHex(ids && ids.has(m.userData.id) ? 0x8a6d00 : 0x000000));
+}
+function applyClay() {
+  const f = view === 'photo' ? $('oClay').value / 100 : 1;
+  model.children.forEach(m => {
+    const glass = m.material.depthWrite === false;
+    m.material.opacity = (glass ? 0.32 : 1) * f;
+    m.children[0].material.opacity = (view === 'photo' ? 0 : glass ? 0.35 : 0.6);
+  });
+  ground.visible = view !== 'photo';
+}
+function refreshView() {
+  // SVG elements have no .hidden property; the attribute works with the [hidden] rule
+  $('plan').toggleAttribute('hidden', view !== 'plan'); $('graph').toggleAttribute('hidden', view !== 'graph');
+  if (view === 'plan') { drawPlan(); bindGrips(); }
+  if (view === 'graph') drawGraph();
+}
+
+// ---------- review: the model's history and proposed changes, without git words
+const sigOf = Q => Object.fromEntries(MODELS[cur.model].build(Q).map(e => [e.id, e.b.map(v => v.toFixed(4)).join(',')]));
+function elemDiff(A, B) {
+  const a = sigOf(A), b = sigOf(B), out = { moved: [], added: [], removed: [] };
+  for (const id in b) { if (!(id in a)) out.added.push(id); else if (a[id] !== b[id]) out.moved.push(id); }
+  for (const id in a) if (!(id in b)) out.removed.push(id);
+  return out;
+}
+function checkState(Q) {
+  const names = Object.keys(Q), vals = names.map(k => Q[k]), out = {};
+  for (const [k, t] of Object.entries(cur.truth)) {
+    try { const v = new Function(...names, 'return (' + k + ');')(...vals); out[k] = Math.abs(100 * (v - t) / t) <= 5; } catch (e) {}
+  }
+  return out;
+}
+function conflicts() {
+  // the proposal was drawn on an older version: what changed since, and what it changes, both touch these elements
+  if (!rev || rev.prop.base === hist.length) return [];
+  const base = hist[rev.prop.base - 1].P, theirs = elemDiff(base, main), ours = elemDiff(base, { ...base, ...rev.prop.changes });
+  const t = new Set([...theirs.moved, ...theirs.removed]);
+  const since = hist.slice(rev.prop.base).map(h => h.name).join(', ');
+  return [...ours.moved, ...ours.removed].filter(id => t.has(id)).map(id => ({ id, since }));
+}
+function reviewPanel() {
+  const vers = hist.map((h, i) => `<tr><td><b>v${i + 1}</b> ${h.name}</td><td>${h.by}${i === hist.length - 1 ? ' · <b>current</b>' : ''}</td></tr>`).reverse().join('');
+  const open = props.map((pr, i) => pr.status === 'open'
+    ? `<tr><td>${pr.name}<br><small style="color:var(--muted)">${pr.by}${pr.note ? ' · ' + pr.note : ''}</small></td><td><button class="rv" data-i="${i}">${rev && rev.i === i ? 'Reviewing' : 'Review'}</button></td></tr>` : '').join('');
+  let body = '';
+  if (rev) {
+    const d = elemDiff(main, P), pr = rev.prop, label = k => cur.labels[k] || k;
+    const params = Object.keys(P).filter(k => Math.abs(P[k] - main[k]) > 1e-9)
+      .map(k => `<tr><td>${label(k)}</td><td>${fmt(main[k])} → <b>${fmt(P[k])}</b></td></tr>`).join('');
+    const why = id => { const ks = Object.keys(P).filter(k => Math.abs(P[k] - main[k]) > 1e-9 && deps[k] && deps[k].has(id)); return ks.length ? ' <small style="color:var(--muted)">by ' + ks.map(label).join(', ') + '</small>' : ''; };
+    const groupList = (ids, c) => [...new Set(ids.map(groupOf))].map(g => { const n = ids.filter(id => groupOf(id) === g).length;
+      return `<tr><td><span class="dot" style="background:${c}"></span>${g}${n > 1 ? ' ×' + n : ''}${why(ids.find(id => groupOf(id) === g))}</td><td></td></tr>`; }).join('');
+    const c0 = checkState(main), c1 = checkState(P);
+    const flips = Object.keys(c1).filter(k => c0[k] !== c1[k]).map(k => `<tr><td><span class="dot" style="background:${c1[k] ? '#2f7d4f' : '#c0392b'}"></span>${label(k)}</td><td>${c1[k] ? 'now within 5 %' : 'now off the drawings'}</td></tr>`).join('');
+    const cf = conflicts();
+    body = `<div class="sec">Proposal: ${pr.name}</div><p class="by" style="margin:0 0 6px">${pr.by}, drawn on v${pr.base}</p>
+      <table>${params}</table>
+      <div class="sec">Elements</div><table>${groupList(d.moved, '#f0aa14')}${groupList(d.added, '#28aa46')}${groupList(d.removed, '#dc3232')}</table>
+      ${flips ? `<div class="sec">Checks against the drawings</div><table>${flips}</table>` : ''}
+      ${cf.length ? `<div class="conflict"><b>Design conflict.</b> ${[...new Set(cf.map(c => groupOf(c.id)))].join(', ')} also changed in ${cf[0].since}. Nobody has seen the two together yet: check the combination in 3D before accepting.</div>` : ''}
+      <div class="acts"><button class="ok" id="accept">${cf.length ? 'Accept the combination' : 'Accept into the model'}</button><button id="reject">Reject</button></div>`;
+  }
+  $('info').innerHTML = `<h1>${cur.title}</h1><p class="by">model history</p><table>${vers}</table>
+    ${open ? `<div class="sec">Open proposals</div><table>${open}</table>` : `<p class="by" style="margin-top:8px">No open proposals. Move a slider to propose a change.</p>`}${body}`;
+  $('info').querySelectorAll('.rv').forEach(b => b.addEventListener('click', () => openProposal(+b.dataset.i)));
+  if (rev) { $('accept').addEventListener('click', accept); $('reject').addEventListener('click', reject); }
+}
+function openProposal(i) {
+  rev = { i, prop: props[i] };
+  if (view !== 'review') setView('review');
+  P = { ...main, ...props[i].changes }; buildParams(); computeDeps(); rebuild(false); info();
+}
+function accept() {
+  hist.push({ name: rev.prop.name, by: rev.prop.by, P: { ...P } }); rev.prop.status = 'accepted';
+  main = { ...P }; rev = null; rebuild(false); info();
+}
+function reject() {
+  rev.prop.status = 'rejected'; rev = null; P = { ...main }; buildParams(); computeDeps(); rebuild(false); info();
+}
+function paintReview() {
+  if (view !== 'review') return;
+  const d = elemDiff(main, P), col = { moved: 0xf0aa14, added: 0x28aa46 };
+  const st = {}; for (const k of ['moved', 'added']) for (const id of d[k]) st[id] = k;
+  model.children.forEach(m => {
+    const s = st[m.userData.id];
+    if (s) { m.material.color.setHex(col[s]); m.material.opacity = 1; }
+    else { m.material.opacity = m.material.depthWrite === false ? 0.15 : 0.45; }
+  });
+  for (const e of MODELS[cur.model].build(main)) {
+    if (!d.removed.includes(e.id)) continue;
+    const [x0, x1, y0, y1, z0, z1] = e.b, geo = new THREE.BoxGeometry(Math.max(x1 - x0, 1e-3), Math.max(y1 - y0, 1e-3), Math.max(z1 - z0, 1e-3));
+    geo.translate(0, 0, (z1 - z0) / 2);
+    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xdc3232, transparent: true, opacity: 0.55, roughness: 0.9 }));
+    m.position.set((x0 + x1) / 2, (y0 + y1) / 2, z0); m.userData = { id: e.id, delay: -1, ghost: true };
+    model.add(m);
+  }
+}
+
+// ---------- layout, views, cases
+function layout() {
+  const st = $('stage'), a = photoSize[0] / photoSize[1];
+  const side = st.clientWidth > 1100 ? 362 : 0;  // the info panel keeps its own column on wide screens
+  const W = st.clientWidth - side - 40, H = st.clientHeight - 40;
+  let fw = W, fh = W / a; if (fh > H) { fh = H; fw = H * a; }
+  Object.assign($('frame').style, { width: fw + 'px', height: fh + 'px', left: 20 + (W - fw) / 2 + 'px', top: (st.clientHeight - fh) / 2 + 'px' });
+  renderer.setSize(fw, fh, false);
+  const dpr = Math.min(2, window.devicePixelRatio || 1); ovc.width = fw * dpr; ovc.height = fh * dpr;
+  refreshView();
+}
+function setView(v, ms = 1600) {
+  const was = view; view = v;
+  if (was === 'review' && v !== 'review') { rev = null; P = { ...main }; buildParams(); computeDeps(); }
+  document.querySelectorAll('#views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  $('legend').hidden = v !== 'photo';
+  if (v === 'photo') {
+    fly(photoPose(), was === 'photo' ? 0 : ms, () => { $('photo').style.opacity = 1; applyClay(); });
+  } else {
+    $('photo').style.opacity = 0;
+    if (was === 'photo') fly(orbitPose(), ms);
+    applyClay();
+  }
+  rebuild(false); info();
+  refreshView();
+}
+function select(i) {
+  cur = DATA[i]; hot = null;
+  const design = MODELS[cur.model].design;
+  P0 = { ...Object.fromEntries(Object.entries(design).map(([k, d]) => [k, d.init])), ...cur.params };
+  P = { ...P0 }; main = { ...P0 }; rev = null;
+  hist = [{ name: 'Solved from ' + (cur.photos === 1 ? 'one photo' : cur.photos + ' photos'), by: 'solver', P: { ...P0 } }];
+  props = (MODELS[cur.model].proposals || []).map(p => ({ ...p, base: 1, status: 'open' }));
+  document.querySelectorAll('#cases button').forEach((b, j) => b.setAttribute('aria-pressed', i === j));
+  $('photo').style.opacity = 0;
+  $('photo').onload = () => { photoSize = [$('photo').naturalWidth, $('photo').naturalHeight]; layout(); if (view === 'photo') applyPose(pose = photoPose()); };
+  $('photo').src = cur.photo; $('refimg').src = cur.photo;
+  $('refcap').textContent = 'Reference: ' + cur.source.split(',').slice(0, 2).join(',');
+  rebuild(true); frameModel(); computeDeps(); buildParams(); info();
+  pose = view === 'photo' ? photoPose() : orbitPose(); applyPose(pose); flight = null;
+  if (view === 'photo') $('photo').style.opacity = 1;
+  applyClay(); refreshView();
+}
+function reference(ms) {
+  $('ref').classList.add('on');
+  return new Promise(r => setTimeout(() => { $('ref').classList.remove('on'); r(); }, ms));
+}
+
+// ---------- interaction
+let drag = null;
+glc.addEventListener('pointerdown', e => { if (view !== '3d' && view !== 'review') return; drag = [e.clientX, e.clientY]; glc.setPointerCapture(e.pointerId); });
+glc.addEventListener('pointermove', e => {
+  if (!drag) return;
+  orbit.az -= (e.clientX - drag[0]) * 0.006; orbit.el = Math.min(1.45, Math.max(0.05, orbit.el + (e.clientY - drag[1]) * 0.005));
+  drag = [e.clientX, e.clientY];
+});
+glc.addEventListener('pointerup', () => { drag = null; });
+glc.addEventListener('wheel', e => { if (view === '3d' || view === 'review') { orbit.dist *= Math.exp(e.deltaY * 0.001); e.preventDefault(); } }, { passive: false });
+DATA.forEach((c, i) => {
+  const b = document.createElement('button'); b.innerHTML = `${c.title}<small>${c.by}</small>`;
+  b.addEventListener('click', () => select(i)); $('cases').appendChild(b);
+});
+document.querySelectorAll('#views button').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+$('reset').addEventListener('click', () => { P = { ...main }; buildParams(); rebuild(false); computeDeps(); info(); refreshView(); });
+$('oSpin').addEventListener('input', () => { spin = $('oSpin').checked; });
+$('oClay').addEventListener('input', applyClay);
+['oTruth', 'oMarks'].forEach(id => $(id).addEventListener('input', () => {}));
+window.addEventListener('resize', layout);
+
+// ---------- loop
+let last = performance.now();
+function tick(now) {
+  requestAnimationFrame(tick);  // first, so one bad frame cannot stop the loop
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (spin && (view === '3d' || view === 'review') && !drag) orbit.az += dt * 0.12;
+  if (flight) {
+    const t = flight.ms ? Math.min(1, (now - flight.t0) / flight.ms) : 1, e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const f = flight.from, to = flight.to;
+    pose = { pos: f.pos.clone().lerp(to.pos, e), quat: f.quat.clone().slerp(to.quat, e), fr: f.fr.map((v, i) => v + (to.fr[i] - v) * e) };
+    if (t >= 1) { const d = flight.done; flight = null; pose = to; if (d) d(); }
+  } else if (view !== 'photo') pose = orbitPose();
+  applyPose(pose);
+  if (grow) {
+    let all = true;
+    for (const m of model.children) {
+      const s = Math.min(1, Math.max(0.001, (now - grow - m.userData.delay) / 450));
+      m.scale.z = 1 - Math.pow(1 - s, 3); if (s < 1) all = false;
+    }
+    if (all) grow = 0;
+  }
+  renderer.render(scene, cam);
+  drawOverlay();
+}
+
+// an API for scripted walkthroughs (media/record_studio.py)
+window.studio = {
+  select, view: setView, reference, hot: setHot,
+  spin: on => { spin = on; $('oSpin').checked = on; },
+  truth: on => { $('oTruth').checked = on; },
+  set(k, v) { P[k] = v; const inp = document.querySelector(`input[aria-label="${k}"]`); if (inp) inp.value = v; changed(k); },
+  get: k => P[k],
+  animate(k, to, ms) {  // move a parameter smoothly, as a hand on the slider would
+    const from = P[k], t0 = performance.now(), step = MODELS[cur.model].design[k]?.step === 1;
+    return new Promise(done => {
+      const go = now => {
+        const t = Math.min(1, (now - t0) / ms), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        let v = from + (to - from) * e; if (step) v = Math.round(v);
+        if (v !== P[k]) this.set(k, v);
+        if (t < 1) requestAnimationFrame(go); else done();
+      };
+      requestAnimationFrame(go);
+    });
+  },
+  reset: () => $('reset').click(),
+  review: i => openProposal(i), accept: () => accept(), reject: () => reject(),
+  orbit,
+};
+
+select(0); setView('3d', 0); layout();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

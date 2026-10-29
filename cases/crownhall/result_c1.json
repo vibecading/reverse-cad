@@ -1,0 +1,147 @@
+{
+ "camera": {
+  "pos": [
+   37.495,
+   -18.994,
+   1.466
+  ],
+  "target": [
+   32.631,
+   -10.257,
+   1.509
+  ],
+  "f_px": 1461.5,
+  "hfov_deg": 66.6,
+  "lens_35mm": 27.4,
+  "up": [
+   -0.0012,
+   -0.0056,
+   1.0
+  ],
+  "R": [
+   [
+    0.8737582,
+    0.4863459,
+    0.0037844
+   ],
+   [
+    0.0012393,
+    0.0055547,
+    -0.9999838
+   ],
+   [
+    -0.4863591,
+    0.8737487,
+    0.0042507
+   ]
+  ]
+ },
+ "principal_point": [
+  960.0,
+  908.7
+ ],
+ "params": {
+  "b": 3.048,
+  "c": 0.0,
+  "s": 18.1051,
+  "wc": 0.3112,
+  "d_c": 0.4702,
+  "zg": 9.9656,
+  "zr_t": 8.1104,
+  "zr_b": 7.3231,
+  "z_tt": 4.0692,
+  "z_mb": 2.0291
+ },
+ "rms_px": 1.63,
+ "max_px": 5.16,
+ "per_mark_px": {
+  "P1 column 2 top-left": 2.88,
+  "P2 column 3 top-left": 0.23,
+  "P3 column 3 foot-left (grade)": 0.74,
+  "P4 column 3 foot-right (grade)": 0.63,
+  "G1 girder 1 top (east edge)": 5.16,
+  "G2 girder 2 top (east edge)": 1.28,
+  "F1 roof fascia top": 0.74,
+  "F2 roof fascia bottom": 4.21,
+  "T1 transom": 1.74,
+  "T2 middle tier bottom": 1.02,
+  "C2 column 2 west edge": 1.21,
+  "C3 column 3 west edge": 0.9,
+  "M+1 mullion": 2.41,
+  "M+2 mullion": 0.83,
+  "M+3 mullion": 0.91,
+  "M+4 mullion": 1.87,
+  "M+5 mullion": 0.72,
+  "M-1 mullion": 1.83,
+  "M-2 mullion": 0.74,
+  "M-3 mullion": 1.79,
+  "M-4 mullion": 1.68,
+  "prior d_c": 0.47
+ },
+ "param_sd": {
+  "s": 0.0468,
+  "wc": 0.0267,
+  "d_c": 0.0507,
+  "zg": 0.1039,
+  "zr_t": 0.0848,
+  "zr_b": 0.0819,
+  "z_tt": 0.0522,
+  "z_mb": 0.0832
+ },
+ "holdout_px": {
+  "P1 column 2 top-left": 4.06,
+  "P2 column 3 top-left": 0.73,
+  "P3 column 3 foot-left (grade)": 1.28,
+  "P4 column 3 foot-right (grade)": 5.35,
+  "G1 girder 1 top (east edge)": 8.77,
+  "G2 girder 2 top (east edge)": 19.62,
+  "F1 roof fascia top": 290.38,
+  "F2 roof fascia bottom": 282.84,
+  "T1 transom": 302.35,
+  "T2 middle tier bottom": 1.02,
+  "C2 column 2 west edge": 3.92,
+  "C3 column 3 west edge": 1.45,
+  "M+1 mullion": 3.09,
+  "M+2 mullion": 1.08,
+  "M+3 mullion": 1.15,
+  "M+4 mullion": 2.42,
+  "M+5 mullion": 2.51,
+  "M-1 mullion": 2.21,
+  "M-2 mullion": 0.9,
+  "M-3 mullion": 2.47,
+  "M-4 mullion": 3.06
+ },
+ "holdout_median_px": 2.51,
+ "vs_truth": {
+  "s": {
+   "solved": 18.105,
+   "truth": 18.288,
+   "err_m": -0.183,
+   "err_pct": -1.0
+  },
+  "zg - zr_t": {
+   "solved": 1.855,
+   "truth": 1.905,
+   "err_m": -0.05,
+   "err_pct": -2.6
+  },
+  "zr_b": {
+   "solved": 7.323,
+   "truth": 7.315,
+   "err_m": 0.008,
+   "err_pct": 0.1
+  },
+  "z_tt - z_mb": {
+   "solved": 2.04,
+   "truth": 2.362,
+   "err_m": -0.322,
+   "err_pct": -13.6
+  },
+  "zr_b - z_tt": {
+   "solved": 3.254,
+   "truth": 3.7,
+   "err_m": -0.446,
+   "err_pct": -12.1
+  }
+ }
+}

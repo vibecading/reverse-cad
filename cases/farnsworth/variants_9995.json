@@ -1,0 +1,170 @@
+{
+ "variants": {
+  "pinhole": {
+   "rms_px": 0.46,
+   "f_px": 3216.0,
+   "k1": 0.0,
+   "pp": [
+    960.0,
+    640.0
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.84,
+    "zf_b": 1.396,
+    "zr_t": 5.205,
+    "zr_b": 4.639
+   },
+   "plausible": true
+  },
+  "pp_y": {
+   "rms_px": 0.46,
+   "f_px": 3216.0,
+   "k1": 0.0,
+   "pp": [
+    960.0,
+    670.8
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.841,
+    "zf_b": 1.398,
+    "zr_t": 5.207,
+    "zr_b": 4.641
+   },
+   "plausible": true
+  },
+  "k1": {
+   "rms_px": 0.46,
+   "f_px": 3216.0,
+   "k1": -0.0005,
+   "pp": [
+    960.0,
+    640.0
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.84,
+    "zf_b": 1.396,
+    "zr_t": 5.206,
+    "zr_b": 4.64
+   },
+   "plausible": true
+  },
+  "k1+pp_y": {
+   "rms_px": 0.46,
+   "f_px": 3216.0,
+   "k1": -0.0004,
+   "pp": [
+    960.0,
+    669.1
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.841,
+    "zf_b": 1.398,
+    "zr_t": 5.208,
+    "zr_b": 4.642
+   },
+   "plausible": true
+  },
+  "pp_xy": {
+   "rms_px": 0.45,
+   "f_px": 3215.9,
+   "k1": 0.0,
+   "pp": [
+    120548.4,
+    212.8
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 0.88,
+    "zf_b": 0.662,
+    "zr_t": 2.588,
+    "zr_b": 2.311
+   },
+   "plausible": false
+  },
+  "no_f_prior": {
+   "rms_px": 0.42,
+   "f_px": 200.0,
+   "k1": 0.0,
+   "pp": [
+    960.0,
+    640.0
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.728,
+    "zf_b": 1.216,
+    "zr_t": 5.615,
+    "zr_b": 4.962
+   },
+   "plausible": false
+  },
+  "f_prior_tight": {
+   "rms_px": 0.46,
+   "f_px": 3216.0,
+   "k1": 0.0,
+   "pp": [
+    960.0,
+    640.0
+   ],
+   "params": {
+    "wc": 0.243,
+    "zf_t": 1.84,
+    "zf_b": 1.396,
+    "zr_t": 5.205,
+    "zr_b": 4.639
+   },
+   "plausible": true
+  }
+ },
+ "fitting_variants": [
+  "pinhole",
+  "pp_y",
+  "k1",
+  "k1+pp_y",
+  "f_prior_tight"
+ ],
+ "tol_pct": 5.0,
+ "spread": {
+  "wc": {
+   "min": 0.243,
+   "max": 0.243,
+   "spread_pct": 0.0,
+   "stable": true
+  },
+  "zf_t": {
+   "min": 1.84,
+   "max": 1.841,
+   "spread_pct": 0.1,
+   "stable": true
+  },
+  "zf_b": {
+   "min": 1.396,
+   "max": 1.398,
+   "spread_pct": 0.1,
+   "stable": true
+  },
+  "zr_t": {
+   "min": 5.205,
+   "max": 5.208,
+   "spread_pct": 0.1,
+   "stable": true
+  },
+  "zr_b": {
+   "min": 4.639,
+   "max": 4.642,
+   "spread_pct": 0.1,
+   "stable": true
+  }
+ },
+ "unstable": [],
+ "truth": {
+  "zf_t": 1.84,
+  "zf_b": 1.43,
+  "zr_b - zf_t": 2.87,
+  "zr_t - zf_t": 3.404
+ }
+}

@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>paramgraph</title>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#e9edf1;--ink:#15202b;--muted:#5b6875}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 "Golos Text",system-ui,sans-serif}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;padding:40px 48px;height:100vh}
+h1{margin:0 0 6px;font-size:30px} .sub{margin:0 0 18px;color:var(--muted);max-width:60ch}
+pre{margin:0;background:#101820;color:#d7dde3;border-radius:6px;padding:22px 24px;font:15px/1.5 "JetBrains Mono",Consolas,monospace;white-space:pre;overflow:hidden;height:auto;max-height:calc(100vh - 210px)}
+.add{color:#5fd38d}.del{color:#ff6b6b}.mod{color:#ffc857}.head{color:#9fb3c8;font-weight:600}.warn{color:#ff6b6b;font-weight:600}
+.cmd{color:#7fdbff}
+figure{margin:0;display:flex;flex-direction:column;gap:10px} figure img{width:100%;background:#fff;border-radius:6px}
+figcaption{color:var(--muted);font-size:15px}
+.legend span{display:inline-block;margin-right:16px}.sw{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px}
+[hidden]{display:none!important}
+</style></head><body>
+<div class="wrap">
+ <section>
+  <h1>The model is text, so a change is a diff</h1>
+  <p class="sub">paramgraph keeps a building as named parameters, rules and elements in plain text. Git versions it; the dependency graph explains every change.</p>
+  <pre id="diff"><span class="cmd">$ pg diff house.pg house_edited.pg</span>
+<span class="head">parameters</span>
+<span class="mod">  ~ s  6.706 -&gt; 7.01 (+0.304)</span>
+<span class="mod">  ~ W  8.993 -&gt; 9.5 (+0.507), grade D -&gt; A</span>
+<span class="head">elements</span>
+<span class="mod">  ~ col_N[0]  moved up to 0.507 m because of W, s</span>
+<span class="mod">  ~ col_N[1]  moved up to 0.507 m because of W, s</span>
+<span class="mod">  ~ col_N_east[2]  moved up to 0.608 m because of W, s</span>
+<span class="mod">  ~ col_N_east[3]  moved up to 0.912 m because of W, s</span>
+<span class="mod">  ~ col_S[1]  moved up to 0.304 m because of s</span>
+<span class="mod">  ~ col_S_east[2]  moved up to 0.608 m because of s</span>
+<span class="mod">  ~ col_S_east[3]  moved up to 0.912 m because of s</span>
+<span class="mod">  ~ floor_slab  moved up to 0.912 m because of W, s</span>
+<span class="mod">  ~ glass  moved up to 0.912 m because of W, s</span>
+<span class="mod">  ~ roof_slab  moved up to 0.912 m because of W, s</span>
+<span class="del">  - terrace  x -7.063..9.737, y -2.920..5.938, z 0.429..0.907</span>
+<span class="add">  + carport  x 26.534..32.534, y 0.000..6.000, z 0.000..2.600</span>
+<span class="head">checks</span>
+<span class="mod">  ~ W  9.500 vs 8.738 : pass -&gt; <b class="warn">FAIL</b></span>
+<span class="mod">  ~ L  24.534 vs 23.57 : pass -&gt; <b class="warn">FAIL</b></span>
+</pre>
+  <pre id="merge" hidden><span class="cmd">$ git merge agent</span>
+<span class="head">== plain git: the edits are on different lines, so it merges silently</span>
+Auto-merging house.pg
+merged, nobody looked at the glass wall
+
+<span class="head">== git with pg as the merge driver</span>
+<span class="head">design conflicts</span>
+  box glass: ours changed s, theirs changed g_y; the combination was never seen by either side
+taken from theirs: param g_y
+Auto-merging house.pg
+<span class="warn">CONFLICT (content): Merge conflict in house.pg</span>
+Automatic merge failed; fix conflicts and then commit the result.</pre>
+ </section>
+ <figure>
+  <img src="farnsworth_diff.png" alt="removed red, added green, moved amber">
+  <figcaption class="legend"><span><i class="sw" style="background:#dc3232"></i>removed</span><span><i class="sw" style="background:#28aa46"></i>added</span><span><i class="sw" style="background:#f0aa14"></i>moved</span><span><i class="sw" style="background:#b9b9b9"></i>unchanged</span></figcaption>
+ </figure>
+</div>
+<script>function showMerge(){document.getElementById('diff').hidden=true;document.getElementById('merge').hidden=false;}</script>
+</body></html>

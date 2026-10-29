@@ -1,0 +1,704 @@
+{
+ "nodes": [
+  {
+   "id": "s",
+   "kind": "param",
+   "grade": "P",
+   "note": "column bay, the one published dimension used for scale"
+  },
+  {
+   "id": "c",
+   "kind": "param",
+   "grade": "D",
+   "note": "west cantilever, slab end to first column"
+  },
+  {
+   "id": "W",
+   "kind": "param",
+   "grade": "D",
+   "note": "house width, south to north fascia"
+  },
+  {
+   "id": "zf_t",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "zf_b",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "zr_t",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "zr_b",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "x_te",
+   "kind": "param",
+   "grade": "D",
+   "note": "terrace east end"
+  },
+  {
+   "id": "y_tf",
+   "kind": "param",
+   "grade": "D",
+   "note": "terrace south edge"
+  },
+  {
+   "id": "y_tn",
+   "kind": "param",
+   "grade": "D",
+   "note": "terrace north edge"
+  },
+  {
+   "id": "h_t",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "d_t",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "x_p",
+   "kind": "param",
+   "grade": "D",
+   "note": "terrace support post"
+  },
+  {
+   "id": "y_p",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "g_x",
+   "kind": "param",
+   "grade": "D",
+   "note": "west glass wall of the enclosure"
+  },
+  {
+   "id": "g_y",
+   "kind": "param",
+   "grade": "D",
+   "note": "glass set-back from the south slab edge"
+  },
+  {
+   "id": "mark:A roof top, front-west",
+   "kind": "mark",
+   "shape": "point",
+   "label": "A roof top, front-west"
+  },
+  {
+   "id": "mark:B roof bottom, front-west",
+   "kind": "mark",
+   "shape": "point",
+   "label": "B roof bottom, front-west"
+  },
+  {
+   "id": "mark:C roof bottom, back-west",
+   "kind": "mark",
+   "shape": "point",
+   "label": "C roof bottom, back-west"
+  },
+  {
+   "id": "mark:D floor top, front-west",
+   "kind": "mark",
+   "shape": "point",
+   "label": "D floor top, front-west"
+  },
+  {
+   "id": "mark:E floor bottom, front-west",
+   "kind": "mark",
+   "shape": "point",
+   "label": "E floor bottom, front-west"
+  },
+  {
+   "id": "mark:T1 terrace top, front-east",
+   "kind": "mark",
+   "shape": "point",
+   "label": "T1 terrace top, front-east"
+  },
+  {
+   "id": "mark:T2 terrace bottom, front-east",
+   "kind": "mark",
+   "shape": "point",
+   "label": "T2 terrace bottom, front-east"
+  },
+  {
+   "id": "mark:T3 terrace top, back-east",
+   "kind": "mark",
+   "shape": "point",
+   "label": "T3 terrace top, back-east"
+  },
+  {
+   "id": "mark:G post foot on grade",
+   "kind": "mark",
+   "shape": "point",
+   "label": "G post foot on grade"
+  },
+  {
+   "id": "mark:GT glass SW corner, head",
+   "kind": "mark",
+   "shape": "point",
+   "label": "GT glass SW corner, head"
+  },
+  {
+   "id": "mark:GB glass SW corner, sill",
+   "kind": "mark",
+   "shape": "point",
+   "label": "GB glass SW corner, sill"
+  },
+  {
+   "id": "mark:L1 roof top front",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L1 roof top front"
+  },
+  {
+   "id": "mark:L2 roof bottom front",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L2 roof bottom front"
+  },
+  {
+   "id": "mark:L3 floor top front",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L3 floor top front"
+  },
+  {
+   "id": "mark:L4 floor bottom front",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L4 floor bottom front"
+  },
+  {
+   "id": "mark:L5 column S1 west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L5 column S1 west edge"
+  },
+  {
+   "id": "mark:L6 column S2 west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L6 column S2 west edge"
+  },
+  {
+   "id": "mark:L7 column N1 west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L7 column N1 west edge"
+  },
+  {
+   "id": "mark:L8 roof bottom back",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L8 roof bottom back"
+  },
+  {
+   "id": "mark:L9 terrace top front",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L9 terrace top front"
+  },
+  {
+   "id": "mark:L10 terrace top back",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L10 terrace top back"
+  },
+  {
+   "id": "mark:L11 post west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L11 post west edge"
+  },
+  {
+   "id": "mark:L12 glass SW mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "L12 glass SW mullion"
+  },
+  {
+   "id": "prior:y_p - y_tf",
+   "kind": "prior",
+   "label": "y_p - y_tf",
+   "value": 0.6
+  },
+  {
+   "id": "check:c",
+   "kind": "check",
+   "label": "c",
+   "value": 1.724
+  },
+  {
+   "id": "check:W",
+   "kind": "check",
+   "label": "W",
+   "value": 8.738
+  },
+  {
+   "id": "rule:2*c + 3*s",
+   "kind": "rule",
+   "label": "2*c + 3*s"
+  },
+  {
+   "id": "check:2*c + 3*s",
+   "kind": "check",
+   "label": "2*c + 3*s",
+   "value": 23.57
+  },
+  {
+   "id": "check:g_x",
+   "kind": "check",
+   "label": "g_x",
+   "value": 6.712
+  },
+  {
+   "id": "check:zf_t",
+   "kind": "check",
+   "label": "zf_t",
+   "value": 1.84
+  },
+  {
+   "id": "check:zf_b",
+   "kind": "check",
+   "label": "zf_b",
+   "value": 1.43
+  },
+  {
+   "id": "rule:zr_b - zf_t",
+   "kind": "rule",
+   "label": "zr_b - zf_t"
+  },
+  {
+   "id": "check:zr_b - zf_t",
+   "kind": "check",
+   "label": "zr_b - zf_t",
+   "value": 2.87
+  },
+  {
+   "id": "rule:zr_t - zf_t",
+   "kind": "rule",
+   "label": "zr_t - zf_t"
+  },
+  {
+   "id": "check:zr_t - zf_t",
+   "kind": "check",
+   "label": "zr_t - zf_t",
+   "value": 3.404
+  },
+  {
+   "id": "check:x_te",
+   "kind": "check",
+   "label": "x_te",
+   "value": 10.135
+  },
+  {
+   "id": "check:y_tn",
+   "kind": "check",
+   "label": "y_tn",
+   "value": -0.216
+  },
+  {
+   "id": "check:y_tf",
+   "kind": "check",
+   "label": "y_tf",
+   "value": -7.118
+  }
+ ],
+ "edges": [
+  [
+   "zr_t",
+   "mark:A roof top, front-west"
+  ],
+  [
+   "zr_b",
+   "mark:B roof bottom, front-west"
+  ],
+  [
+   "W",
+   "mark:C roof bottom, back-west"
+  ],
+  [
+   "zr_b",
+   "mark:C roof bottom, back-west"
+  ],
+  [
+   "zf_t",
+   "mark:D floor top, front-west"
+  ],
+  [
+   "zf_b",
+   "mark:E floor bottom, front-west"
+  ],
+  [
+   "h_t",
+   "mark:T1 terrace top, front-east"
+  ],
+  [
+   "x_te",
+   "mark:T1 terrace top, front-east"
+  ],
+  [
+   "y_tf",
+   "mark:T1 terrace top, front-east"
+  ],
+  [
+   "d_t",
+   "mark:T2 terrace bottom, front-east"
+  ],
+  [
+   "h_t",
+   "mark:T2 terrace bottom, front-east"
+  ],
+  [
+   "x_te",
+   "mark:T2 terrace bottom, front-east"
+  ],
+  [
+   "y_tf",
+   "mark:T2 terrace bottom, front-east"
+  ],
+  [
+   "h_t",
+   "mark:T3 terrace top, back-east"
+  ],
+  [
+   "x_te",
+   "mark:T3 terrace top, back-east"
+  ],
+  [
+   "y_tn",
+   "mark:T3 terrace top, back-east"
+  ],
+  [
+   "x_p",
+   "mark:G post foot on grade"
+  ],
+  [
+   "y_p",
+   "mark:G post foot on grade"
+  ],
+  [
+   "g_x",
+   "mark:GT glass SW corner, head"
+  ],
+  [
+   "g_y",
+   "mark:GT glass SW corner, head"
+  ],
+  [
+   "zr_b",
+   "mark:GT glass SW corner, head"
+  ],
+  [
+   "g_x",
+   "mark:GB glass SW corner, sill"
+  ],
+  [
+   "g_y",
+   "mark:GB glass SW corner, sill"
+  ],
+  [
+   "zf_t",
+   "mark:GB glass SW corner, sill"
+  ],
+  [
+   "zr_t",
+   "mark:L1 roof top front"
+  ],
+  [
+   "zr_b",
+   "mark:L2 roof bottom front"
+  ],
+  [
+   "zf_t",
+   "mark:L3 floor top front"
+  ],
+  [
+   "zf_b",
+   "mark:L4 floor bottom front"
+  ],
+  [
+   "c",
+   "mark:L5 column S1 west edge"
+  ],
+  [
+   "c",
+   "mark:L6 column S2 west edge"
+  ],
+  [
+   "s",
+   "mark:L6 column S2 west edge"
+  ],
+  [
+   "W",
+   "mark:L7 column N1 west edge"
+  ],
+  [
+   "c",
+   "mark:L7 column N1 west edge"
+  ],
+  [
+   "W",
+   "mark:L8 roof bottom back"
+  ],
+  [
+   "c",
+   "mark:L8 roof bottom back"
+  ],
+  [
+   "zr_b",
+   "mark:L8 roof bottom back"
+  ],
+  [
+   "h_t",
+   "mark:L9 terrace top front"
+  ],
+  [
+   "x_te",
+   "mark:L9 terrace top front"
+  ],
+  [
+   "y_tf",
+   "mark:L9 terrace top front"
+  ],
+  [
+   "h_t",
+   "mark:L10 terrace top back"
+  ],
+  [
+   "x_te",
+   "mark:L10 terrace top back"
+  ],
+  [
+   "y_tn",
+   "mark:L10 terrace top back"
+  ],
+  [
+   "x_p",
+   "mark:L11 post west edge"
+  ],
+  [
+   "y_p",
+   "mark:L11 post west edge"
+  ],
+  [
+   "g_x",
+   "mark:L12 glass SW mullion"
+  ],
+  [
+   "g_y",
+   "mark:L12 glass SW mullion"
+  ],
+  [
+   "zf_t",
+   "mark:L12 glass SW mullion"
+  ],
+  [
+   "zr_b",
+   "mark:L12 glass SW mullion"
+  ],
+  [
+   "y_p",
+   "prior:y_p - y_tf"
+  ],
+  [
+   "y_tf",
+   "prior:y_p - y_tf"
+  ],
+  [
+   "c",
+   "check:c"
+  ],
+  [
+   "W",
+   "check:W"
+  ],
+  [
+   "c",
+   "rule:2*c + 3*s"
+  ],
+  [
+   "s",
+   "rule:2*c + 3*s"
+  ],
+  [
+   "rule:2*c + 3*s",
+   "check:2*c + 3*s"
+  ],
+  [
+   "g_x",
+   "check:g_x"
+  ],
+  [
+   "zf_t",
+   "check:zf_t"
+  ],
+  [
+   "zf_b",
+   "check:zf_b"
+  ],
+  [
+   "zf_t",
+   "rule:zr_b - zf_t"
+  ],
+  [
+   "zr_b",
+   "rule:zr_b - zf_t"
+  ],
+  [
+   "rule:zr_b - zf_t",
+   "check:zr_b - zf_t"
+  ],
+  [
+   "zf_t",
+   "rule:zr_t - zf_t"
+  ],
+  [
+   "zr_t",
+   "rule:zr_t - zf_t"
+  ],
+  [
+   "rule:zr_t - zf_t",
+   "check:zr_t - zf_t"
+  ],
+  [
+   "x_te",
+   "check:x_te"
+  ],
+  [
+   "y_tn",
+   "check:y_tn"
+  ],
+  [
+   "y_tf",
+   "check:y_tf"
+  ]
+ ],
+ "uses": {
+  "s": [
+   "L6 column S2 west edge"
+  ],
+  "c": [
+   "L5 column S1 west edge",
+   "L6 column S2 west edge",
+   "L7 column N1 west edge",
+   "L8 roof bottom back"
+  ],
+  "W": [
+   "C roof bottom, back-west",
+   "L7 column N1 west edge",
+   "L8 roof bottom back"
+  ],
+  "zf_t": [
+   "D floor top, front-west",
+   "GB glass SW corner, sill",
+   "L3 floor top front",
+   "L12 glass SW mullion"
+  ],
+  "zf_b": [
+   "E floor bottom, front-west",
+   "L4 floor bottom front"
+  ],
+  "zr_t": [
+   "A roof top, front-west",
+   "L1 roof top front"
+  ],
+  "zr_b": [
+   "B roof bottom, front-west",
+   "C roof bottom, back-west",
+   "GT glass SW corner, head",
+   "L2 roof bottom front",
+   "L8 roof bottom back",
+   "L12 glass SW mullion"
+  ],
+  "x_te": [
+   "T1 terrace top, front-east",
+   "T2 terrace bottom, front-east",
+   "T3 terrace top, back-east",
+   "L9 terrace top front",
+   "L10 terrace top back"
+  ],
+  "y_tf": [
+   "T1 terrace top, front-east",
+   "T2 terrace bottom, front-east",
+   "L9 terrace top front"
+  ],
+  "y_tn": [
+   "T3 terrace top, back-east",
+   "L10 terrace top back"
+  ],
+  "h_t": [
+   "T1 terrace top, front-east",
+   "T2 terrace bottom, front-east",
+   "T3 terrace top, back-east",
+   "L9 terrace top front",
+   "L10 terrace top back"
+  ],
+  "d_t": [
+   "T2 terrace bottom, front-east"
+  ],
+  "x_p": [
+   "G post foot on grade",
+   "L11 post west edge"
+  ],
+  "y_p": [
+   "G post foot on grade",
+   "L11 post west edge"
+  ],
+  "g_x": [
+   "GT glass SW corner, head",
+   "GB glass SW corner, sill",
+   "L12 glass SW mullion"
+  ],
+  "g_y": [
+   "GT glass SW corner, head",
+   "GB glass SW corner, sill",
+   "L12 glass SW mullion"
+  ]
+ },
+ "report": {
+  "free_without_marks": [],
+  "free_on_one_mark": {
+   "d_t": "T2 terrace bottom, front-east"
+  },
+  "fixed_unused": [],
+  "checked": [
+   "W",
+   "c",
+   "g_x",
+   "s",
+   "x_te",
+   "y_tf",
+   "y_tn",
+   "zf_b",
+   "zf_t",
+   "zr_b",
+   "zr_t"
+  ],
+  "free_unchecked": [
+   "h_t",
+   "d_t",
+   "x_p",
+   "y_p",
+   "g_y"
+  ]
+ }
+}

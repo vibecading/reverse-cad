@@ -1,0 +1,115 @@
+{
+ "camera": {
+  "pos": [
+   3.482,
+   -19.524,
+   2.558
+  ],
+  "target": [
+   3.208,
+   -9.528,
+   2.56
+  ],
+  "f_px": 3216.0,
+  "hfov_deg": 33.24,
+  "lens_35mm": 60.3,
+  "up": [
+   0.0003,
+   -0.0002,
+   1.0
+  ],
+  "R": [
+   [
+    0.9996263,
+    0.0273344,
+    -0.0002517
+   ],
+   [
+    -0.0002572,
+    0.0001998,
+    -0.9999999
+   ],
+   [
+    -0.0273343,
+    0.9996263,
+    0.0002067
+   ]
+  ]
+ },
+ "principal_point": [
+  960.0,
+  640.0
+ ],
+ "params": {
+  "s": 6.7,
+  "wc": 0.2432,
+  "zf_t": 1.8395,
+  "zf_b": 1.3959,
+  "zr_t": 5.205,
+  "zr_b": 4.6389
+ },
+ "rms_px": 0.46,
+ "max_px": 1.03,
+ "per_mark_px": {
+  "left column foot, left edge": 0.56,
+  "left column foot, right edge": 0.7,
+  "right column foot, left edge": 0.69,
+  "right column foot, right edge": 0.55,
+  "roof fascia top": 0.55,
+  "roof fascia bottom": 0.33,
+  "floor slab top": 0.58,
+  "floor slab bottom": 1.03,
+  "left column, left edge": 0.08,
+  "left column, right edge": 0.07,
+  "right column, left edge": 0.07,
+  "right column, right edge": 0.09
+ },
+ "param_sd": {
+  "wc": 0.007,
+  "zf_t": 0.0122,
+  "zf_b": 0.0097,
+  "zr_t": 0.0317,
+  "zr_b": 0.0259
+ },
+ "holdout_px": {
+  "left column foot, left edge": 1.0,
+  "left column foot, right edge": 1.18,
+  "right column foot, left edge": 1.18,
+  "right column foot, right edge": 0.99,
+  "roof fascia top": 59.07,
+  "roof fascia bottom": 0.45,
+  "floor slab top": 10855.91,
+  "floor slab bottom": 3618.95,
+  "left column, left edge": 0.19,
+  "left column, right edge": 0.12,
+  "right column, left edge": 0.11,
+  "right column, right edge": 0.2
+ },
+ "holdout_median_px": 0.99,
+ "vs_truth": {
+  "zf_t": {
+   "solved": 1.84,
+   "truth": 1.84,
+   "err_m": -0.001,
+   "err_pct": -0.0
+  },
+  "zf_b": {
+   "solved": 1.396,
+   "truth": 1.43,
+   "err_m": -0.034,
+   "err_pct": -2.4
+  },
+  "zr_b - zf_t": {
+   "solved": 2.799,
+   "truth": 2.87,
+   "err_m": -0.071,
+   "err_pct": -2.5
+  },
+  "zr_t - zf_t": {
+   "solved": 3.366,
+   "truth": 3.404,
+   "err_m": -0.038,
+   "err_pct": -1.1
+  }
+ }
+}

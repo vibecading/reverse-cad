@@ -1,0 +1,52 @@
+{
+ "image": "photos/robie/w2.jpg",
+ "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL_-_54214023795.jpg (iPhone 15 Pro, 24 mm equivalent, 5491 px wide)",
+ "frame": "same as w1: origin at the outer south-west corner of the ground-floor west enclosure, x east, y north, z up from grade; metres. This photo is taken from the north-west, so the west face runs across the frame and both its corners are visible",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "Lw": {"fixed": 6.85, "note": "west face of the enclosure, HABS sheets 2 and 6; the scale, as in w1"},
+  "rzt": {"fixed": 4.91, "note": "top of the roof fascia, HABS sheet 6, as in w1"},
+  "h_ct": {"init": 2.5, "note": "top of the stone coping"},
+  "h_cb": {"init": 2.3, "note": "underside of the coping (top of brick)"},
+  "h_b": {"init": 0.3, "note": "bottom of brick (top of the stone base)"},
+  "rx": {"init": 2.0, "note": "west edge of the living-room roof"},
+  "rys": {"init": -0.5, "note": "south edge of the roof"},
+  "ryn": {"init": 8.0, "note": "north edge of the roof"}
+ },
+ "camera": {
+  "pos": [-9, 13, 1.5],
+  "target": [0, 3, 1.8],
+  "f_px": 1385,
+  "f_px_prior": {"value": 1385, "sigma_frac": 0.1, "note": "24 mm equivalent on the 4:3 diagonal = 24/34.6 x 5712 px, file is a 5491 px crop, scaled to 1920"}
+ },
+ "points": [
+  {"id": "nw_cb", "px": [797, 537], "xyz": ["0", "Lw", "h_cb"]},
+  {"id": "nw_bb", "px": [797, 906], "xyz": ["0", "Lw", "h_b"]},
+  {"id": "nw_ct", "px": [788, 490], "xyz": ["0", "Lw", "h_ct"], "w": 0.5},
+  {"id": "nw_grade", "px": [797, 984], "xyz": ["0", "Lw", "0"], "w": 0.5},
+  {"id": "sw_cb", "px": [1840, 571], "xyz": ["0", "0", "h_cb"]},
+  {"id": "sw_bb", "px": [1840, 870], "xyz": ["0", "0", "h_b"]},
+  {"id": "roof_nw", "px": [593, 138], "xyz": ["rx", "ryn", "rzt"]},
+  {"id": "roof_sw", "px": [1714, 287], "xyz": ["rx", "rys", "rzt"]}
+ ],
+ "lines": [
+  {"id": "cb_west_a", "px": [[818.2, 543.3], [986.9, 550.0]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]},
+  {"id": "cb_west_b", "px": [[1595.6, 563.4], [1840.6, 569.4]], "xyz": [["0", "Lw", "h_cb"], ["0", "0", "h_cb"]]},
+  {"id": "bb_west_a", "px": [[800.4, 905.3], [1379.3, 885.1]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]},
+  {"id": "bb_west_b", "px": [[1506.8, 882.8], [1788.2, 871.3]], "xyz": [["0", "Lw", "h_b"], ["0", "0", "h_b"]]},
+  {"id": "bb_north", "px": [[797.1, 907.3], [729.3, 858.8]], "xyz": [["0", "Lw", "h_b"], ["3", "Lw", "h_b"]]},
+  {"id": "nw_vertical", "px": [[797, 545], [797, 900]], "xyz": [["0", "Lw", "h_cb"], ["0", "Lw", "h_b"]]},
+  {"id": "sw_vertical", "px": [[1840, 575], [1840, 866]], "xyz": [["0", "0", "h_cb"], ["0", "0", "h_b"]]},
+  {"id": "roof_west_top", "px": [[592.9, 137.7], [1444.7, 244.7]], "xyz": [["rx", "ryn", "rzt"], ["rx", "rys", "rzt"]]},
+  {"id": "roof_north_top", "px": [[591.7, 137.0], [568.8, 290.5]], "xyz": [["rx", "ryn", "rzt"], ["rx + 10", "ryn", "rzt"]]}
+ ],
+ "truth": {
+  "h_ct": 2.56,
+  "h_cb": 2.35,
+  "h_b": 0.31,
+  "h_cb - h_b": 2.04,
+  "rx": 1.83,
+  "ryn - rys": 8.7
+ },
+ "truth_source": "HABS ILL,16-CHIG,33- (1963), sheets 2, 4, 5, 6; see sources/robie/SOURCES.md"
+}

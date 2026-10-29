@@ -1,0 +1,200 @@
+{
+ "camera": {
+  "pos": [
+   11.819,
+   -23.815,
+   1.707
+  ],
+  "target": [
+   8.963,
+   -14.242,
+   2.156
+  ],
+  "f_px": 2889.2,
+  "hfov_deg": 36.76,
+  "lens_35mm": 54.2,
+  "up": [
+   0.0109,
+   -0.0437,
+   0.999
+  ],
+  "R": [
+   [
+    0.9583036,
+    0.2857446,
+    0.0020683
+   ],
+   [
+    -0.0108682,
+    0.0436796,
+    -0.9989865
+   ],
+   [
+    -0.2855454,
+    0.9573098,
+    0.0449639
+   ]
+  ]
+ },
+ "principal_point": [
+  960.0,
+  640.0
+ ],
+ "params": {
+  "s": 6.7,
+  "c": 1.7519,
+  "W": 8.9932,
+  "zf_t": 1.7988,
+  "zf_b": 1.4174,
+  "zr_t": 5.2352,
+  "zr_b": 4.6764,
+  "x_te": 9.7372,
+  "y_tf": -2.9197,
+  "y_tn": 5.9382,
+  "h_t": 0.9074,
+  "d_t": 0.4776,
+  "x_p": 7.3925,
+  "y_p": -2.3846,
+  "g_x": 6.7519,
+  "g_y": 0.2019
+ },
+ "rms_px": 2.01,
+ "max_px": 9.06,
+ "per_mark_px": {
+  "A roof top, front-west": 3.16,
+  "B roof bottom, front-west": 3.81,
+  "C roof bottom, back-west": 9.09,
+  "D floor top, front-west": 0.95,
+  "E floor bottom, front-west": 1.35,
+  "T1 terrace top, front-east": 0.64,
+  "T2 terrace bottom, front-east": 0.1,
+  "T3 terrace top, back-east": 1.03,
+  "G post foot on grade": 0.93,
+  "GT glass SW corner, head": 0.28,
+  "GB glass SW corner, sill": 0.45,
+  "L1 roof top front": 2.87,
+  "L2 roof bottom front": 4.45,
+  "L3 floor top front": 0.54,
+  "L4 floor bottom front": 0.02,
+  "L5 column S1 west edge": 2.7,
+  "L6 column S2 west edge": 0.82,
+  "L7 column N1 west edge": 1.93,
+  "L8 roof bottom back": 3.61,
+  "L9 terrace top front": 1.81,
+  "L10 terrace top back": 2.79,
+  "L11 post west edge": 0.48,
+  "L12 glass SW mullion": 0.22,
+  "prior y_p - y_tf": -0.22
+ },
+ "param_sd": {
+  "c": 0.0274,
+  "W": 0.2058,
+  "zf_t": 0.3922,
+  "zf_b": 0.3927,
+  "zr_t": 0.3981,
+  "zr_b": 0.396,
+  "x_te": 0.486,
+  "y_tf": 5.0067,
+  "y_tn": 7.2702,
+  "h_t": 0.212,
+  "d_t": 0.1304,
+  "x_p": 1.0514,
+  "y_p": 5.0168,
+  "g_x": 0.0427,
+  "g_y": 0.1575
+ },
+ "holdout_px": {
+  "A roof top, front-west": 3.73,
+  "B roof bottom, front-west": 6.33,
+  "C roof bottom, back-west": 13.34,
+  "D floor top, front-west": 1.56,
+  "E floor bottom, front-west": 2.16,
+  "T1 terrace top, front-east": 1.06,
+  "T2 terrace bottom, front-east": 5093.14,
+  "T3 terrace top, back-east": 285.62,
+  "G post foot on grade": 1227.55,
+  "GT glass SW corner, head": 15.42,
+  "GB glass SW corner, sill": 0.47,
+  "L1 roof top front": 12.91,
+  "L2 roof bottom front": 11.02,
+  "L3 floor top front": 1.35,
+  "L4 floor bottom front": 0.22,
+  "L5 column S1 west edge": 17.58,
+  "L6 column S2 west edge": 36.74,
+  "L7 column N1 west edge": 12.6,
+  "L8 roof bottom back": 5.32,
+  "L9 terrace top front": 2.93,
+  "L10 terrace top back": 4.37,
+  "L11 post west edge": 19.92,
+  "L12 glass SW mullion": 0.22
+ },
+ "holdout_median_px": 6.33,
+ "vs_truth": {
+  "c": {
+   "solved": 1.752,
+   "truth": 1.724,
+   "err_m": 0.028,
+   "err_pct": 1.6
+  },
+  "W": {
+   "solved": 8.993,
+   "truth": 8.738,
+   "err_m": 0.255,
+   "err_pct": 2.9
+  },
+  "2*c + 3*s": {
+   "solved": 23.604,
+   "truth": 23.57,
+   "err_m": 0.034,
+   "err_pct": 0.1
+  },
+  "g_x": {
+   "solved": 6.752,
+   "truth": 6.712,
+   "err_m": 0.04,
+   "err_pct": 0.6
+  },
+  "zf_t": {
+   "solved": 1.799,
+   "truth": 1.84,
+   "err_m": -0.041,
+   "err_pct": -2.2
+  },
+  "zf_b": {
+   "solved": 1.417,
+   "truth": 1.43,
+   "err_m": -0.013,
+   "err_pct": -0.9
+  },
+  "zr_b - zf_t": {
+   "solved": 2.878,
+   "truth": 2.87,
+   "err_m": 0.008,
+   "err_pct": 0.3
+  },
+  "zr_t - zf_t": {
+   "solved": 3.436,
+   "truth": 3.404,
+   "err_m": 0.032,
+   "err_pct": 1.0
+  },
+  "x_te": {
+   "solved": 9.737,
+   "truth": 10.135,
+   "err_m": -0.398,
+   "err_pct": -3.9
+  },
+  "y_tn": {
+   "solved": 5.938,
+   "truth": -0.216,
+   "err_m": 6.154,
+   "err_pct": -2849.2
+  },
+  "y_tf": {
+   "solved": -2.92,
+   "truth": -7.118,
+   "err_m": 4.198,
+   "err_pct": -59.0
+  }
+ }
+}

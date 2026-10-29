@@ -1,0 +1,142 @@
+{
+ "camera": {
+  "pos": [
+   -6.986,
+   8.233,
+   1.366
+  ],
+  "target": [
+   2.536,
+   5.181,
+   1.311
+  ],
+  "f_px": 1413.2,
+  "hfov_deg": 68.38,
+  "lens_35mm": 26.5,
+  "up": [
+   0.0067,
+   0.003,
+   1.0
+  ],
+  "R": [
+   [
+    -0.3052103,
+    -0.9522725,
+    0.0048632
+   ],
+   [
+    -0.006718,
+    -0.0029536,
+    -0.9999731
+   ],
+   [
+    0.9522613,
+    -0.3052348,
+    -0.0054959
+   ]
+  ]
+ },
+ "principal_point": [
+  960.0,
+  720.0
+ ],
+ "k1": 0.0,
+ "aspect": 1.0,
+ "params": {
+  "Lw": 6.85,
+  "rzt": 4.91,
+  "h_ct": 2.4736,
+  "h_cb": 2.2318,
+  "h_b": 0.3824,
+  "rx": 2.0782,
+  "rys": -1.0745,
+  "ryn": 7.7422
+ },
+ "rms_px": 3.87,
+ "max_px": 13.55,
+ "per_mark_px": {
+  "nw_cb": 1.66,
+  "nw_bb": 1.88,
+  "nw_ct": 5.05,
+  "nw_grade": 0.49,
+  "sw_cb": 12.02,
+  "sw_bb": 2.3,
+  "roof_nw": 1.34,
+  "roof_sw": 8.38,
+  "cb_west_a": 4.09,
+  "cb_west_b": 13.55,
+  "bb_west_a": 2.31,
+  "bb_west_b": 4.07,
+  "bb_north": 2.97,
+  "nw_vertical": 0.9,
+  "sw_vertical": 1.26,
+  "roof_west_top": 1.27,
+  "roof_north_top": 0.7
+ },
+ "param_sd": {
+  "h_ct": 0.024,
+  "h_cb": 0.0264,
+  "h_b": 0.0152,
+  "rx": 0.0978,
+  "rys": 0.1065,
+  "ryn": 0.0257
+ },
+ "holdout_px": {
+  "nw_cb": 2.87,
+  "nw_bb": 2.92,
+  "nw_ct": 1510.04,
+  "nw_grade": 110469.67,
+  "sw_cb": 13.54,
+  "sw_bb": 2.9,
+  "roof_nw": 2.24,
+  "roof_sw": 1116.94,
+  "cb_west_a": 7.33,
+  "cb_west_b": 14.13,
+  "bb_west_a": 3.66,
+  "bb_west_b": 5.25,
+  "bb_north": 8.06,
+  "nw_vertical": 1.01,
+  "sw_vertical": 1.76,
+  "roof_west_top": 3.06,
+  "roof_north_top": 23.8
+ },
+ "holdout_median_px": 5.25,
+ "vs_truth": {
+  "h_ct": {
+   "solved": 2.474,
+   "truth": 2.56,
+   "err_m": -0.086,
+   "err_pct": -3.4
+  },
+  "h_cb": {
+   "solved": 2.232,
+   "truth": 2.35,
+   "err_m": -0.118,
+   "err_pct": -5.0
+  },
+  "h_b": {
+   "solved": 0.382,
+   "truth": 0.31,
+   "err_m": 0.072,
+   "err_pct": 23.4
+  },
+  "h_cb - h_b": {
+   "solved": 1.849,
+   "truth": 2.04,
+   "err_m": -0.191,
+   "err_pct": -9.3
+  },
+  "rx": {
+   "solved": 2.078,
+   "truth": 1.83,
+   "err_m": 0.248,
+   "err_pct": 13.6
+  },
+  "ryn - rys": {
+   "solved": 8.817,
+   "truth": 8.7,
+   "err_m": 0.117,
+   "err_pct": 1.3
+  }
+ }
+}

@@ -1,0 +1,311 @@
+{
+ "image": "photos/farnsworth/9995.jpg",
+ "source": "Paul R. Burley, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Farnsworth_House_Plano-9995.jpg",
+ "frame": "north facade seen almost head-on; x along the facade from the left column axis, y away from the camera from the fascia plane, z up from grade; metres",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "s": {
+   "fixed": 6.7,
+   "note": "column bay, scale"
+  },
+  "wc": {
+   "init": 0.2,
+   "note": "column width"
+  },
+  "zf_t": {
+   "init": 1.6
+  },
+  "zf_b": {
+   "init": 1.2
+  },
+  "zr_t": {
+   "init": 5.0
+  },
+  "zr_b": {
+   "init": 4.5
+  }
+ },
+ "camera": {
+  "pos": [
+   3.35,
+   -25,
+   1.6
+  ],
+  "target": [
+   3.35,
+   0,
+   1.6
+  ],
+  "f_px": 3216,
+  "f_px_prior": {
+   "value": 3216,
+   "sigma_frac": 0.03,
+   "note": "EXIF: Canon EOS Rebel T6s, 38 mm, focal-plane 6718.9 px/in at 6000 px wide; scaled to 1920 px"
+  }
+ },
+ "points": [
+  {
+   "id": "left column foot, left edge",
+   "px": [
+    451,
+    1064
+   ],
+   "xyz": [
+    "-wc/2",
+    "-0.2",
+    "0"
+   ]
+  },
+  {
+   "id": "left column foot, right edge",
+   "px": [
+    491,
+    1064
+   ],
+   "xyz": [
+    "wc/2",
+    "-0.2",
+    "0"
+   ]
+  },
+  {
+   "id": "right column foot, left edge",
+   "px": [
+    1566,
+    1069
+   ],
+   "xyz": [
+    "s - wc/2",
+    "-0.2",
+    "0"
+   ]
+  },
+  {
+   "id": "right column foot, right edge",
+   "px": [
+    1607,
+    1069
+   ],
+   "xyz": [
+    "s + wc/2",
+    "-0.2",
+    "0"
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "id": "roof fascia top",
+   "px": [
+    [
+     620,
+     206
+    ],
+    [
+     1700,
+     202.5
+    ]
+   ],
+   "xyz": [
+    [
+     "-1.9",
+     "0",
+     "zr_t"
+    ],
+    [
+     "7.4",
+     "0",
+     "zr_t"
+    ]
+   ]
+  },
+  {
+   "id": "roof fascia bottom",
+   "px": [
+    [
+     150,
+     301
+    ],
+    [
+     880,
+     298
+    ]
+   ],
+   "xyz": [
+    [
+     "-1.9",
+     "0",
+     "zr_b"
+    ],
+    [
+     "2.4",
+     "0",
+     "zr_b"
+    ]
+   ]
+  },
+  {
+   "id": "floor slab top",
+   "px": [
+    [
+     150,
+     759
+    ],
+    [
+     1700,
+     759
+    ]
+   ],
+   "xyz": [
+    [
+     "-1.9",
+     "0",
+     "zf_t"
+    ],
+    [
+     "7.4",
+     "0",
+     "zf_t"
+    ]
+   ]
+  },
+  {
+   "id": "floor slab bottom",
+   "px": [
+    [
+     150,
+     832
+    ],
+    [
+     1300,
+     831.5
+    ]
+   ],
+   "xyz": [
+    [
+     "-1.9",
+     "0",
+     "zf_b"
+    ],
+    [
+     "5.0",
+     "0",
+     "zf_b"
+    ]
+   ]
+  },
+  {
+   "id": "left column, left edge",
+   "px": [
+    [
+     451,
+     850
+    ],
+    [
+     451,
+     1040
+    ]
+   ],
+   "xyz": [
+    [
+     "-wc/2",
+     "-0.2",
+     "0.3"
+    ],
+    [
+     "-wc/2",
+     "-0.2",
+     "1.2"
+    ]
+   ]
+  },
+  {
+   "id": "left column, right edge",
+   "px": [
+    [
+     491,
+     850
+    ],
+    [
+     491,
+     1040
+    ]
+   ],
+   "xyz": [
+    [
+     "wc/2",
+     "-0.2",
+     "0.3"
+    ],
+    [
+     "wc/2",
+     "-0.2",
+     "1.2"
+    ]
+   ]
+  },
+  {
+   "id": "right column, left edge",
+   "px": [
+    [
+     1566,
+     850
+    ],
+    [
+     1566,
+     1040
+    ]
+   ],
+   "xyz": [
+    [
+     "s - wc/2",
+     "-0.2",
+     "0.3"
+    ],
+    [
+     "s - wc/2",
+     "-0.2",
+     "1.2"
+    ]
+   ]
+  },
+  {
+   "id": "right column, right edge",
+   "px": [
+    [
+     1607,
+     850
+    ],
+    [
+     1607,
+     1040
+    ]
+   ],
+   "xyz": [
+    [
+     "s + wc/2",
+     "-0.2",
+     "0.3"
+    ],
+    [
+     "s + wc/2",
+     "-0.2",
+     "1.2"
+    ]
+   ]
+  }
+ ],
+ "truth": {
+  "zf_t": 1.84,
+  "zf_b": 1.43,
+  "zr_b - zf_t": 2.87,
+  "zr_t - zf_t": 3.404
+ },
+ "truth_source": "HABS IL-1105 (2009), sheets 3 and 5 of 8, Library of Congress via Wikimedia Commons, public domain. Dimension strings read off the plan; floor heights scaled off section A-A with the drawing's scale bar (26.8 px/ft at 3840 px)",
+ "cross_photo": "cases/farnsworth/result_9970.json",
+ "truth_wikipedia": {
+  "zf_t": 1.6,
+  "zr_b - zf_t": 2.9
+ },
+ "truth_note": "Wikipedia gives the floor 5 ft 3 in (1.60 m) above grade; the HABS section shows 6 ft 0 in at the west column, which both photos reproduce"
+}

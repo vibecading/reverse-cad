@@ -1,0 +1,523 @@
+{
+ "nodes": [
+  {
+   "id": "Lw",
+   "kind": "param",
+   "grade": "P",
+   "note": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale"
+  },
+  {
+   "id": "Ls",
+   "kind": "param",
+   "grade": "D",
+   "note": "south face of the enclosure, to the inner corner of the stair-wall jog"
+  },
+  {
+   "id": "h_ct",
+   "kind": "param",
+   "grade": "D",
+   "note": "top of the stone coping"
+  },
+  {
+   "id": "h_cb",
+   "kind": "param",
+   "grade": "D",
+   "note": "underside of the coping (top of brick)"
+  },
+  {
+   "id": "h_b",
+   "kind": "param",
+   "grade": "D",
+   "note": "bottom of brick (top of the stone base)"
+  },
+  {
+   "id": "rx",
+   "kind": "param",
+   "grade": "D",
+   "note": "west edge of the living-room roof"
+  },
+  {
+   "id": "rys",
+   "kind": "param",
+   "grade": "D",
+   "note": "south edge of the roof"
+  },
+  {
+   "id": "ryn",
+   "kind": "param",
+   "grade": "D",
+   "note": "north edge of the roof"
+  },
+  {
+   "id": "rzt",
+   "kind": "param",
+   "grade": "P",
+   "note": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"
+  },
+  {
+   "id": "mark:sw_ct",
+   "kind": "mark",
+   "shape": "point",
+   "label": "sw_ct"
+  },
+  {
+   "id": "mark:sw_cb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "sw_cb"
+  },
+  {
+   "id": "mark:sw_bb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "sw_bb"
+  },
+  {
+   "id": "mark:sw_grade",
+   "kind": "mark",
+   "shape": "point",
+   "label": "sw_grade"
+  },
+  {
+   "id": "mark:nw_cb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "nw_cb"
+  },
+  {
+   "id": "mark:nw_bb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "nw_bb"
+  },
+  {
+   "id": "mark:in_cb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "in_cb"
+  },
+  {
+   "id": "mark:in_bb",
+   "kind": "mark",
+   "shape": "point",
+   "label": "in_bb"
+  },
+  {
+   "id": "mark:roof_sw",
+   "kind": "mark",
+   "shape": "point",
+   "label": "roof_sw"
+  },
+  {
+   "id": "mark:roof_nw",
+   "kind": "mark",
+   "shape": "point",
+   "label": "roof_nw"
+  },
+  {
+   "id": "mark:cb_west",
+   "kind": "mark",
+   "shape": "line",
+   "label": "cb_west"
+  },
+  {
+   "id": "mark:cb_south",
+   "kind": "mark",
+   "shape": "line",
+   "label": "cb_south"
+  },
+  {
+   "id": "mark:roof_west_top",
+   "kind": "mark",
+   "shape": "line",
+   "label": "roof_west_top"
+  },
+  {
+   "id": "mark:sw_vertical",
+   "kind": "mark",
+   "shape": "line",
+   "label": "sw_vertical"
+  },
+  {
+   "id": "mark:nw_vertical",
+   "kind": "mark",
+   "shape": "line",
+   "label": "nw_vertical"
+  },
+  {
+   "id": "mark:in_vertical",
+   "kind": "mark",
+   "shape": "line",
+   "label": "in_vertical"
+  },
+  {
+   "id": "mark:eave_south_1",
+   "kind": "mark",
+   "shape": "line",
+   "label": "eave_south_1"
+  },
+  {
+   "id": "mark:eave_south_2",
+   "kind": "mark",
+   "shape": "line",
+   "label": "eave_south_2"
+  },
+  {
+   "id": "mark:eave_south_3",
+   "kind": "mark",
+   "shape": "line",
+   "label": "eave_south_3"
+  },
+  {
+   "id": "mark:bb_west",
+   "kind": "mark",
+   "shape": "line",
+   "label": "bb_west"
+  },
+  {
+   "id": "mark:bb_south",
+   "kind": "mark",
+   "shape": "line",
+   "label": "bb_south"
+  },
+  {
+   "id": "check:Ls",
+   "kind": "check",
+   "label": "Ls",
+   "value": 4.01
+  },
+  {
+   "id": "check:h_ct",
+   "kind": "check",
+   "label": "h_ct",
+   "value": 2.56
+  },
+  {
+   "id": "check:h_cb",
+   "kind": "check",
+   "label": "h_cb",
+   "value": 2.35
+  },
+  {
+   "id": "check:h_b",
+   "kind": "check",
+   "label": "h_b",
+   "value": 0.31
+  },
+  {
+   "id": "check:rx",
+   "kind": "check",
+   "label": "rx",
+   "value": 2.2
+  },
+  {
+   "id": "check:rys",
+   "kind": "check",
+   "label": "rys",
+   "value": -0.7
+  },
+  {
+   "id": "check:ryn",
+   "kind": "check",
+   "label": "ryn",
+   "value": 8.0
+  }
+ ],
+ "edges": [
+  [
+   "h_ct",
+   "mark:sw_ct"
+  ],
+  [
+   "h_cb",
+   "mark:sw_cb"
+  ],
+  [
+   "h_b",
+   "mark:sw_bb"
+  ],
+  [
+   "Lw",
+   "mark:nw_cb"
+  ],
+  [
+   "h_cb",
+   "mark:nw_cb"
+  ],
+  [
+   "Lw",
+   "mark:nw_bb"
+  ],
+  [
+   "h_b",
+   "mark:nw_bb"
+  ],
+  [
+   "Ls",
+   "mark:in_cb"
+  ],
+  [
+   "h_cb",
+   "mark:in_cb"
+  ],
+  [
+   "Ls",
+   "mark:in_bb"
+  ],
+  [
+   "h_b",
+   "mark:in_bb"
+  ],
+  [
+   "rx",
+   "mark:roof_sw"
+  ],
+  [
+   "rys",
+   "mark:roof_sw"
+  ],
+  [
+   "rzt",
+   "mark:roof_sw"
+  ],
+  [
+   "rx",
+   "mark:roof_nw"
+  ],
+  [
+   "ryn",
+   "mark:roof_nw"
+  ],
+  [
+   "rzt",
+   "mark:roof_nw"
+  ],
+  [
+   "Lw",
+   "mark:cb_west"
+  ],
+  [
+   "h_cb",
+   "mark:cb_west"
+  ],
+  [
+   "Ls",
+   "mark:cb_south"
+  ],
+  [
+   "h_cb",
+   "mark:cb_south"
+  ],
+  [
+   "rx",
+   "mark:roof_west_top"
+  ],
+  [
+   "ryn",
+   "mark:roof_west_top"
+  ],
+  [
+   "rys",
+   "mark:roof_west_top"
+  ],
+  [
+   "rzt",
+   "mark:roof_west_top"
+  ],
+  [
+   "h_b",
+   "mark:sw_vertical"
+  ],
+  [
+   "h_cb",
+   "mark:sw_vertical"
+  ],
+  [
+   "Lw",
+   "mark:nw_vertical"
+  ],
+  [
+   "h_b",
+   "mark:nw_vertical"
+  ],
+  [
+   "h_cb",
+   "mark:nw_vertical"
+  ],
+  [
+   "Ls",
+   "mark:in_vertical"
+  ],
+  [
+   "h_b",
+   "mark:in_vertical"
+  ],
+  [
+   "h_cb",
+   "mark:in_vertical"
+  ],
+  [
+   "rx",
+   "mark:eave_south_1"
+  ],
+  [
+   "rys",
+   "mark:eave_south_1"
+  ],
+  [
+   "rzt",
+   "mark:eave_south_1"
+  ],
+  [
+   "rx",
+   "mark:eave_south_2"
+  ],
+  [
+   "rys",
+   "mark:eave_south_2"
+  ],
+  [
+   "rzt",
+   "mark:eave_south_2"
+  ],
+  [
+   "rx",
+   "mark:eave_south_3"
+  ],
+  [
+   "rys",
+   "mark:eave_south_3"
+  ],
+  [
+   "rzt",
+   "mark:eave_south_3"
+  ],
+  [
+   "Lw",
+   "mark:bb_west"
+  ],
+  [
+   "h_b",
+   "mark:bb_west"
+  ],
+  [
+   "Ls",
+   "mark:bb_south"
+  ],
+  [
+   "h_b",
+   "mark:bb_south"
+  ],
+  [
+   "Ls",
+   "check:Ls"
+  ],
+  [
+   "h_ct",
+   "check:h_ct"
+  ],
+  [
+   "h_cb",
+   "check:h_cb"
+  ],
+  [
+   "h_b",
+   "check:h_b"
+  ],
+  [
+   "rx",
+   "check:rx"
+  ],
+  [
+   "rys",
+   "check:rys"
+  ],
+  [
+   "ryn",
+   "check:ryn"
+  ]
+ ],
+ "uses": {
+  "Lw": [
+   "nw_cb",
+   "nw_bb",
+   "cb_west",
+   "nw_vertical",
+   "bb_west"
+  ],
+  "Ls": [
+   "in_cb",
+   "in_bb",
+   "cb_south",
+   "in_vertical",
+   "bb_south"
+  ],
+  "h_ct": [
+   "sw_ct"
+  ],
+  "h_cb": [
+   "sw_cb",
+   "nw_cb",
+   "in_cb",
+   "cb_west",
+   "cb_south",
+   "sw_vertical",
+   "nw_vertical",
+   "in_vertical"
+  ],
+  "h_b": [
+   "sw_bb",
+   "nw_bb",
+   "in_bb",
+   "sw_vertical",
+   "nw_vertical",
+   "in_vertical",
+   "bb_west",
+   "bb_south"
+  ],
+  "rx": [
+   "roof_sw",
+   "roof_nw",
+   "roof_west_top",
+   "eave_south_1",
+   "eave_south_2",
+   "eave_south_3"
+  ],
+  "rys": [
+   "roof_sw",
+   "roof_west_top",
+   "eave_south_1",
+   "eave_south_2",
+   "eave_south_3"
+  ],
+  "ryn": [
+   "roof_nw",
+   "roof_west_top"
+  ],
+  "rzt": [
+   "roof_sw",
+   "roof_nw",
+   "roof_west_top",
+   "eave_south_1",
+   "eave_south_2",
+   "eave_south_3"
+  ]
+ },
+ "report": {
+  "free_without_marks": [],
+  "free_on_one_mark": {
+   "h_ct": "sw_ct"
+  },
+  "fixed_unused": [],
+  "checked": [
+   "Ls",
+   "h_b",
+   "h_cb",
+   "h_ct",
+   "rx",
+   "ryn",
+   "rys"
+  ],
+  "free_unchecked": []
+ }
+}

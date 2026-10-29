@@ -1,0 +1,571 @@
+{
+ "image": "photos/crownhall/c1.jpg",
+ "source": "Joe Ravi, public domain, commons.wikimedia.org/wiki/File:Crown_Hall_2.jpg",
+ "frame": "x east from the girder 1 column axis (west end out of frame), y north from the glass plane, z up from grade; metres",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "b": {
+   "fixed": 3.048,
+   "note": "mullion bay, 10 ft, the one published dimension used for scale"
+  },
+  "c": {
+   "fixed": 0.0,
+   "note": "gauge: the west end is out of frame, so the cantilever cannot be measured; origin moved to the girder 1 axis"
+  },
+  "s": {
+   "init": 18.0,
+   "note": "girder column spacing"
+  },
+  "wc": {
+   "init": 0.36,
+   "note": "girder column width"
+  },
+  "d_c": {
+   "init": 0.4,
+   "note": "column face in front of the glass plane"
+  },
+  "zg": {
+   "init": 9.5,
+   "note": "girder top"
+  },
+  "zr_t": {
+   "init": 7.5
+  },
+  "zr_b": {
+   "init": 6.8
+  },
+  "z_tt": {
+   "init": 4.5,
+   "note": "transom between upper lights and middle tier"
+  },
+  "z_mb": {
+   "init": 2.0,
+   "note": "bottom of the middle tier"
+  }
+ },
+ "camera": {
+  "pos": [
+   33,
+   -22,
+   1.6
+  ],
+  "target": [
+   33,
+   10,
+   1.6
+  ],
+  "f_px": 1300,
+  "free_principal_point": "y"
+ },
+ "priors": [
+  {
+   "expr": "d_c",
+   "value": 0.4,
+   "sigma_m": 0.3,
+   "note": "assumption: columns stand just outside the glass"
+  }
+ ],
+ "points": [
+  {
+   "id": "P1 column 2 top-left",
+   "px": [
+    503,
+    427.5
+   ],
+   "xyz": [
+    "c + s - wc/2",
+    "-d_c",
+    "zg"
+   ]
+  },
+  {
+   "id": "P2 column 3 top-left",
+   "px": [
+    1632,
+    183.5
+   ],
+   "xyz": [
+    "c + 2*s - wc/2",
+    "-d_c",
+    "zg"
+   ]
+  },
+  {
+   "id": "P3 column 3 foot-left (grade)",
+   "px": [
+    1631,
+    1045
+   ],
+   "xyz": [
+    "c + 2*s - wc/2",
+    "-d_c",
+    "0"
+   ]
+  },
+  {
+   "id": "P4 column 3 foot-right (grade)",
+   "px": [
+    1660.5,
+    1045
+   ],
+   "xyz": [
+    "c + 2*s + wc/2",
+    "-d_c",
+    "0"
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "id": "G1 girder 1 top (east edge)",
+   "px": [
+    [
+     20,
+     567
+    ],
+    [
+     185,
+     600
+    ]
+   ],
+   "xyz": [
+    [
+     "c + 0.25",
+     "2",
+     "zg"
+    ],
+    [
+     "c + 0.25",
+     "12",
+     "zg"
+    ]
+   ]
+  },
+  {
+   "id": "G2 girder 2 top (east edge)",
+   "px": [
+    [
+     517,
+     425
+    ],
+    [
+     725,
+     506
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 0.25",
+     "2",
+     "zg"
+    ],
+    [
+     "c + s + 0.25",
+     "12",
+     "zg"
+    ]
+   ]
+  },
+  {
+   "id": "F1 roof fascia top",
+   "px": [
+    [
+     300,
+     578
+    ],
+    [
+     1900,
+     313
+    ]
+   ],
+   "xyz": [
+    [
+     "c + 1",
+     "0",
+     "zr_t"
+    ],
+    [
+     "c + 2*s + 8",
+     "0",
+     "zr_t"
+    ]
+   ]
+  },
+  {
+   "id": "F2 roof fascia bottom",
+   "px": [
+    [
+     900,
+     527
+    ],
+    [
+     1900,
+     384
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 3",
+     "0",
+     "zr_b"
+    ],
+    [
+     "c + 2*s + 8",
+     "0",
+     "zr_b"
+    ]
+   ]
+  },
+  {
+   "id": "T1 transom",
+   "px": [
+    [
+     1680,
+     697
+    ],
+    [
+     1880,
+     683
+    ]
+   ],
+   "xyz": [
+    [
+     "c + 2*s + 1",
+     "0",
+     "z_tt"
+    ],
+    [
+     "c + 2*s + 5",
+     "0",
+     "z_tt"
+    ]
+   ]
+  },
+  {
+   "id": "T2 middle tier bottom",
+   "px": [
+    [
+     1680,
+     874
+    ],
+    [
+     1720,
+     872
+    ]
+   ],
+   "xyz": [
+    [
+     "c + 2*s + 1",
+     "0",
+     "z_mb"
+    ],
+    [
+     "c + 2*s + 2",
+     "0",
+     "z_mb"
+    ]
+   ],
+   "w": 0.5
+  },
+  {
+   "id": "C2 column 2 west edge",
+   "px": [
+    [
+     503,
+     450
+    ],
+    [
+     503,
+     640
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - wc/2",
+     "-d_c",
+     "z_tt"
+    ],
+    [
+     "c + s - wc/2",
+     "-d_c",
+     "zr_t"
+    ]
+   ]
+  },
+  {
+   "id": "C3 column 3 west edge",
+   "px": [
+    [
+     1631,
+     300
+    ],
+    [
+     1631,
+     1000
+    ]
+   ],
+   "xyz": [
+    [
+     "c + 2*s - wc/2",
+     "-d_c",
+     "1"
+    ],
+    [
+     "c + 2*s - wc/2",
+     "-d_c",
+     "zr_t"
+    ]
+   ]
+  },
+  {
+   "id": "M+1 mullion",
+   "px": [
+    [
+     659,
+     600
+    ],
+    [
+     659,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 1*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s + 1*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M+2 mullion",
+   "px": [
+    [
+     810,
+     600
+    ],
+    [
+     810,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 2*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s + 2*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M+3 mullion",
+   "px": [
+    [
+     981,
+     600
+    ],
+    [
+     981,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 3*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s + 3*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M+4 mullion",
+   "px": [
+    [
+     1177,
+     600
+    ],
+    [
+     1177,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 4*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s + 4*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M+5 mullion",
+   "px": [
+    [
+     1401,
+     600
+    ],
+    [
+     1401,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s + 5*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s + 5*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M-1 mullion",
+   "px": [
+    [
+     409,
+     640
+    ],
+    [
+     409,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - 1*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s - 1*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M-2 mullion",
+   "px": [
+    [
+     304,
+     640
+    ],
+    [
+     304,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - 2*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s - 2*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M-3 mullion",
+   "px": [
+    [
+     210,
+     640
+    ],
+    [
+     210,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - 3*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s - 3*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  },
+  {
+   "id": "M-4 mullion",
+   "px": [
+    [
+     123,
+     640
+    ],
+    [
+     123,
+     690
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - 4*b",
+     "0",
+     "z_tt + 0.3"
+    ],
+    [
+     "c + s - 4*b",
+     "0",
+     "zr_b - 0.3"
+    ]
+   ]
+  }
+ ],
+ "truth": {
+  "s": 18.288,
+  "zg - zr_t": 1.905,
+  "zr_b": 7.315,
+  "z_tt - z_mb": 2.362,
+  "zr_b - z_tt": 3.7
+ },
+ "truth_source": "en.wikipedia.org/wiki/S._R._Crown_Hall: 220 ft = 2 x 20 ft cantilever + 3 x 60 ft bays; girders 6 1/4 ft deep; middle tier 7 3/4 ft; upper lights 11 1/2 to 12 3/4 ft (3.70 m is the middle of that range)",
+ "dropped": [
+  {
+   "id": "G3 girder 3 top",
+   "px": [
+    [
+     1671,
+     240
+    ],
+    [
+     1692,
+     331
+    ]
+   ],
+   "why": "24 px residual in the first solve; the sliver right of column 3 is seen nearly edge-on and was misread"
+  }
+ ],
+ "truth_note": "zr_b compared with 6 ft main level + 18 ft to the roof, read as floor to ceiling. Published tiers (11.5-12.75 ft upper, 7.75 ft middle) add up to more than the 18 ft storey, so the tier comparison depends on a definition the article does not give"
+}

@@ -1,0 +1,5 @@
+param fascia = 0.25 A "fascia depth, not measured"
+box base    D: x 0 .. Ls, y 0 .. Lw, z 0 .. h_b
+box brick   D: x 0 .. Ls, y 0 .. Lw, z h_b .. h_cb
+box coping  D: x 0 .. Ls, y 0 .. Lw, z h_cb .. h_ct
+box roof    D: x rx .. rx + 25, y rys .. ryn, z rzt - fascia .. rzt

@@ -1,0 +1,243 @@
+{
+ "image": "photos/gamble/g5.jpg",
+ "source": "Codera23, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Gamble_House_5.jpg (iPhone 6s Plus, 29 mm equivalent, 4032 px)",
+ "frame": "the projecting south wing of the east (entrance) front: x along its front wall from the south corner, y into the house (the street is at negative y), z up from the bottom of the shingles; metres",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "ov": {
+   "init": 1.6,
+   "note": "gable overhang beyond the side walls"
+  },
+  "Ww": {
+   "fixed": 7.62,
+   "note": "front wall of the wing, 25'-0\" dimensioned on the first floor plan (HABS sheet 3); the scale. The elevation scales to 7.87 m"
+  },
+  "w2x0": {
+   "init": 2.0
+  },
+  "w2x1": {
+   "init": 5.5
+  },
+  "w2t": {
+   "init": 5.5
+  },
+  "w2b": {
+   "init": 3.8
+  },
+  "w1x0": {
+   "init": 1.7
+  },
+  "w1x1": {
+   "init": 4.5
+  },
+  "w1t": {
+   "init": 2.4
+  },
+  "w1b": {
+   "init": 0.7
+  },
+  "zap": {
+   "init": 7.0,
+   "note": "top of the verge boards at the apex"
+  },
+  "zve": {
+   "init": 5.5,
+   "note": "top of the verge boards at their lower ends"
+  },
+  "dv": {
+   "init": 0.5,
+   "note": "how far the gable verge stands in front of the wall"
+  }
+ },
+ "camera": {
+  "pos": [
+   13.1,
+   -27.4,
+   1.1
+  ],
+  "target": [
+   13.1,
+   0,
+   1.5
+  ],
+  "f_px": 1550,
+  "f_px_prior": {
+   "value": 1609,
+   "sigma_frac": 0.08,
+   "note": "29 mm equivalent on the 4:3 diagonal: 29/34.6 x 1920"
+  }
+ },
+ "points": [
+  {
+   "id": "wall_bl",
+   "px": [
+    189,
+    843
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "id": "wall_br",
+   "px": [
+    637.5,
+    843
+   ],
+   "xyz": [
+    "Ww",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "id": "w2_tl",
+   "px": [
+    323,
+    539
+   ],
+   "xyz": [
+    "w2x0",
+    "0",
+    "w2t"
+   ]
+  },
+  {
+   "id": "w2_tr",
+   "px": [
+    503.6,
+    539
+   ],
+   "xyz": [
+    "w2x1",
+    "0",
+    "w2t"
+   ]
+  },
+  {
+   "id": "w2_bl",
+   "px": [
+    323,
+    625
+   ],
+   "xyz": [
+    "w2x0",
+    "0",
+    "w2b"
+   ]
+  },
+  {
+   "id": "w2_br",
+   "px": [
+    503.6,
+    625
+   ],
+   "xyz": [
+    "w2x1",
+    "0",
+    "w2b"
+   ]
+  },
+  {
+   "id": "w1_tl",
+   "px": [
+    282.6,
+    707
+   ],
+   "xyz": [
+    "w1x0",
+    "0",
+    "w1t"
+   ]
+  },
+  {
+   "id": "w1_tr",
+   "px": [
+    437.7,
+    707
+   ],
+   "xyz": [
+    "w1x1",
+    "0",
+    "w1t"
+   ]
+  },
+  {
+   "id": "w1_bl",
+   "px": [
+    282.6,
+    796
+   ],
+   "xyz": [
+    "w1x0",
+    "0",
+    "w1b"
+   ]
+  },
+  {
+   "id": "w1_br",
+   "px": [
+    437.7,
+    796
+   ],
+   "xyz": [
+    "w1x1",
+    "0",
+    "w1b"
+   ]
+  },
+  {
+   "id": "apex",
+   "px": [
+    366,
+    415.5
+   ],
+   "xyz": [
+    "Ww / 2",
+    "-dv",
+    "zap"
+   ]
+  },
+  {
+   "id": "verge_l",
+   "px": [
+    51,
+    503
+   ],
+   "xyz": [
+    "-ov",
+    "-dv",
+    "zve"
+   ]
+  },
+  {
+   "id": "verge_r",
+   "px": [
+    698,
+    491
+   ],
+   "xyz": [
+    "Ww + ov",
+    "-dv",
+    "zve"
+   ]
+  }
+ ],
+ "lines": [],
+ "truth": {
+  "w2x0": 2.153,
+  "w2x1": 5.668,
+  "w2t": 5.631,
+  "w2b": 3.873,
+  "w1x0": 1.733,
+  "w1x1": 4.591,
+  "w1t": 2.475,
+  "w1b": 0.743,
+  "zap": 7.326,
+  "zve": 5.674,
+  "ov": 1.778
+ },
+ "truth_source": "Greene & Greene, east elevation, sheet 5 of 19 Feb 1908, as reproduced in HABS CA-1981 sheet 6; scaled at 24.63 px/ft from the dimensioned storey heights (9'-0\", 9'-2\"), x from the wing's south wall face, z from the bottom of the shingles. The plan (HABS sheet 3) dimensions this wing 25'-0\" (7.62 m) where the elevation scales to 7.87 m"
+}

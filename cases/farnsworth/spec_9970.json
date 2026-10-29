@@ -1,0 +1,545 @@
+{
+ "image": "photos/farnsworth/9970.jpg",
+ "source": "Paul R. Burley, CC BY-SA 4.0, commons.wikimedia.org/wiki/File:Farnsworth_House_Plano-9970.jpg",
+ "frame": "x east from the west end of the house slab, y north from its south edge, z up from grade; metres",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "s": {
+   "fixed": 6.7,
+   "note": "column bay, the one published dimension used for scale"
+  },
+  "c": {
+   "init": 1.5,
+   "note": "west cantilever, slab end to first column"
+  },
+  "W": {
+   "init": 8.0,
+   "note": "house width, south to north fascia"
+  },
+  "zf_t": {
+   "init": 1.5
+  },
+  "zf_b": {
+   "init": 1.2
+  },
+  "zr_t": {
+   "init": 4.6
+  },
+  "zr_b": {
+   "init": 4.2
+  },
+  "x_te": {
+   "init": 15.0,
+   "note": "terrace east end"
+  },
+  "y_tf": {
+   "init": -6.0,
+   "note": "terrace south edge"
+  },
+  "y_tn": {
+   "init": 0.0,
+   "note": "terrace north edge"
+  },
+  "h_t": {
+   "init": 0.7
+  },
+  "d_t": {
+   "init": 0.4
+  },
+  "x_p": {
+   "init": 10.0,
+   "note": "terrace support post"
+  },
+  "y_p": {
+   "init": -5.0
+  },
+  "g_x": {
+   "init": 7.5,
+   "note": "west glass wall of the enclosure"
+  },
+  "g_y": {
+   "init": 0.3,
+   "note": "glass set-back from the south slab edge"
+  }
+ },
+ "camera": {
+  "pos": [
+   12,
+   -22,
+   1.6
+  ],
+  "target": [
+   6,
+   4,
+   2
+  ],
+  "f_px": 1800
+ },
+ "points": [
+  {
+   "id": "A roof top, front-west",
+   "px": [
+    462,
+    383
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "zr_t"
+   ]
+  },
+  {
+   "id": "B roof bottom, front-west",
+   "px": [
+    467,
+    440
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "zr_b"
+   ]
+  },
+  {
+   "id": "C roof bottom, back-west",
+   "px": [
+    790,
+    523
+   ],
+   "xyz": [
+    "0",
+    "W",
+    "zr_b"
+   ]
+  },
+  {
+   "id": "D floor top, front-west",
+   "px": [
+    462,
+    759
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "zf_t"
+   ]
+  },
+  {
+   "id": "E floor bottom, front-west",
+   "px": [
+    462,
+    801
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "zf_b"
+   ]
+  },
+  {
+   "id": "T1 terrace top, front-east",
+   "px": [
+    1518.5,
+    883
+   ],
+   "xyz": [
+    "x_te",
+    "y_tf",
+    "h_t"
+   ]
+  },
+  {
+   "id": "T2 terrace bottom, front-east",
+   "px": [
+    1519,
+    951
+   ],
+   "xyz": [
+    "x_te",
+    "y_tf",
+    "h_t - d_t"
+   ]
+  },
+  {
+   "id": "T3 terrace top, back-east",
+   "px": [
+    1607,
+    852
+   ],
+   "xyz": [
+    "x_te",
+    "y_tn",
+    "h_t"
+   ]
+  },
+  {
+   "id": "G post foot on grade",
+   "px": [
+    1211,
+    998
+   ],
+   "xyz": [
+    "x_p",
+    "y_p",
+    "0"
+   ]
+  },
+  {
+   "id": "GT glass SW corner, head",
+   "px": [
+    1197,
+    421
+   ],
+   "xyz": [
+    "g_x",
+    "g_y",
+    "zr_b"
+   ]
+  },
+  {
+   "id": "GB glass SW corner, sill",
+   "px": [
+    1197,
+    760
+   ],
+   "xyz": [
+    "g_x",
+    "g_y",
+    "zf_t"
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "id": "L1 roof top front",
+   "px": [
+    [
+     462,
+     383
+    ],
+    [
+     1900,
+     323
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "zr_t"
+    ],
+    [
+     "20",
+     "0",
+     "zr_t"
+    ]
+   ]
+  },
+  {
+   "id": "L2 roof bottom front",
+   "px": [
+    [
+     467,
+     440
+    ],
+    [
+     1900,
+     396
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "zr_b"
+    ],
+    [
+     "20",
+     "0",
+     "zr_b"
+    ]
+   ]
+  },
+  {
+   "id": "L3 floor top front",
+   "px": [
+    [
+     462,
+     759
+    ],
+    [
+     1900,
+     760
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "zf_t"
+    ],
+    [
+     "20",
+     "0",
+     "zf_t"
+    ]
+   ]
+  },
+  {
+   "id": "L4 floor bottom front",
+   "px": [
+    [
+     462,
+     801
+    ],
+    [
+     1900,
+     809
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "zf_b"
+    ],
+    [
+     "20",
+     "0",
+     "zf_b"
+    ]
+   ]
+  },
+  {
+   "id": "L5 column S1 west edge",
+   "px": [
+    [
+     620,
+     450
+    ],
+    [
+     620,
+     820
+    ]
+   ],
+   "xyz": [
+    [
+     "c - 0.1",
+     "-0.2",
+     "1"
+    ],
+    [
+     "c - 0.1",
+     "-0.2",
+     "4"
+    ]
+   ]
+  },
+  {
+   "id": "L6 column S2 west edge",
+   "px": [
+    [
+     1379,
+     450
+    ],
+    [
+     1379,
+     820
+    ]
+   ],
+   "xyz": [
+    [
+     "c + s - 0.1",
+     "-0.2",
+     "1"
+    ],
+    [
+     "c + s - 0.1",
+     "-0.2",
+     "4"
+    ]
+   ]
+  },
+  {
+   "id": "L7 column N1 west edge",
+   "px": [
+    [
+     931,
+     560
+    ],
+    [
+     931,
+     740
+    ]
+   ],
+   "xyz": [
+    [
+     "c - 0.1",
+     "W",
+     "2"
+    ],
+    [
+     "c - 0.1",
+     "W",
+     "4"
+    ]
+   ]
+  },
+  {
+   "id": "L8 roof bottom back",
+   "px": [
+    [
+     800,
+     523
+    ],
+    [
+     930,
+     524
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "W",
+     "zr_b"
+    ],
+    [
+     "c",
+     "W",
+     "zr_b"
+    ]
+   ]
+  },
+  {
+   "id": "L9 terrace top front",
+   "px": [
+    [
+     1000,
+     881.5
+    ],
+    [
+     1518,
+     883
+    ]
+   ],
+   "xyz": [
+    [
+     "8",
+     "y_tf",
+     "h_t"
+    ],
+    [
+     "x_te",
+     "y_tf",
+     "h_t"
+    ]
+   ]
+  },
+  {
+   "id": "L10 terrace top back",
+   "px": [
+    [
+     1460,
+     848.5
+    ],
+    [
+     1600,
+     851.5
+    ]
+   ],
+   "xyz": [
+    [
+     "x_te - 3",
+     "y_tn",
+     "h_t"
+    ],
+    [
+     "x_te",
+     "y_tn",
+     "h_t"
+    ]
+   ]
+  },
+  {
+   "id": "L11 post west edge",
+   "px": [
+    [
+     1190,
+     955
+    ],
+    [
+     1190,
+     995
+    ]
+   ],
+   "xyz": [
+    [
+     "x_p - 0.15",
+     "y_p",
+     "0"
+    ],
+    [
+     "x_p - 0.15",
+     "y_p",
+     "0.3"
+    ]
+   ]
+  },
+  {
+   "id": "L12 glass SW mullion",
+   "px": [
+    [
+     1197,
+     440
+    ],
+    [
+     1197,
+     740
+    ]
+   ],
+   "xyz": [
+    [
+     "g_x",
+     "g_y",
+     "zf_t + 0.3"
+    ],
+    [
+     "g_x",
+     "g_y",
+     "zr_b - 0.3"
+    ]
+   ]
+  }
+ ],
+ "truth": {
+  "c": 1.724,
+  "W": 8.738,
+  "2*c + 3*s": 23.57,
+  "g_x": 6.712,
+  "zf_t": 1.84,
+  "zf_b": 1.43,
+  "zr_b - zf_t": 2.87,
+  "zr_t - zf_t": 3.404,
+  "x_te": 10.135,
+  "y_tn": -0.216,
+  "y_tf": -7.118
+ },
+ "truth_source": "HABS IL-1105 (2009), sheets 3 and 5 of 8, Library of Congress via Wikimedia Commons, public domain. Dimension strings read off the plan; floor heights scaled off section A-A with the drawing's scale bar (26.8 px/ft at 3840 px)",
+ "priors": [
+  {
+   "expr": "y_p - y_tf",
+   "value": 0.6,
+   "sigma_m": 0.6,
+   "note": "posts sit a little behind the terrace fascia; assumption, not measured"
+  }
+ ],
+ "truth_note": "Wikipedia gives the floor 5 ft 3 in (1.60 m) above grade; the HABS section shows 6 ft 0 in at the west column, which both photos reproduce",
+ "truth_wikipedia": {
+  "c": 1.68,
+  "W": 8.74,
+  "zf_t": 1.6,
+  "zr_b - zf_t": 2.9,
+  "zr_t - zf_t": 2.9,
+  "2*c + 3*s - g_x - g_y": 16.76
+ }
+}

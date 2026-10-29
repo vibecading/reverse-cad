@@ -1,0 +1,474 @@
+{
+ "image": "photos/robie/w1.jpg",
+ "source": "w_lemay, CC BY-SA 2.0, commons.wikimedia.org/wiki/File:Frederick_C._Robie_House,_Woodlawn_Avenue_and_58th_Street,_Hyde_Park,_Chicago,_IL.jpg (iPhone 15 Pro, 24 mm equivalent, 5383 px wide crop of a 5712 px frame)",
+ "frame": "origin at the outer south-west corner of the ground-floor west enclosure (HABS sheet 2), x east, y north, z up from grade; metres",
+ "mark_sigma_px": 2.0,
+ "params": {
+  "Lw": {
+   "fixed": 6.85,
+   "note": "west face of the enclosure, outer faces 439 px on HABS sheet 2 at 19.66 px/ft vertical (the sheet's vertical scale, from the 46'-6\" dimension; horizontal is 19.98): 22'-4\"; the west elevation (sheet 6) gives 22'-5\". The one drawing value used for scale"
+  },
+  "Ls": {
+   "init": 4.0,
+   "note": "south face of the enclosure, to the inner corner of the stair-wall jog"
+  },
+  "h_ct": {
+   "init": 2.5,
+   "note": "top of the stone coping"
+  },
+  "h_cb": {
+   "init": 2.3,
+   "note": "underside of the coping (top of brick)"
+  },
+  "h_b": {
+   "init": 0.3,
+   "note": "bottom of brick (top of the stone base)"
+  },
+  "rx": {
+   "init": 2.0,
+   "note": "west edge of the living-room roof"
+  },
+  "rys": {
+   "init": -0.5,
+   "note": "south edge of the roof"
+  },
+  "ryn": {
+   "init": 8.0,
+   "note": "north edge of the roof"
+  },
+  "rzt": {
+   "fixed": 4.91,
+   "note": "top of the roof fascia, 16'-1\" above grade on the HABS west elevation (sheet 6). Fixed: a roof outline marked only at its own corners can slide along the camera rays, so it needs one tie to the building"
+  }
+ },
+ "camera": {
+  "pos": [
+   -6,
+   -7,
+   1.7
+  ],
+  "target": [
+   3,
+   3,
+   2.0
+  ],
+  "f_px": 1300,
+  "f_px_prior": {
+   "value": 1358,
+   "sigma_frac": 0.1,
+   "note": "24 mm equivalent on 5712 px = 3808 px; crop to 5383 px, scaled to 1920 px. Sigma wide: the crop may include a resize"
+  }
+ },
+ "points": [
+  {
+   "id": "sw_ct",
+   "px": [
+    490,
+    549
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "h_ct"
+   ],
+   "w": 0.7
+  },
+  {
+   "id": "sw_cb",
+   "px": [
+    492,
+    577
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "h_cb"
+   ]
+  },
+  {
+   "id": "sw_bb",
+   "px": [
+    497,
+    845
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "h_b"
+   ]
+  },
+  {
+   "id": "sw_grade",
+   "px": [
+    495,
+    896
+   ],
+   "xyz": [
+    "0",
+    "0",
+    "0"
+   ],
+   "w": 0.5
+  },
+  {
+   "id": "nw_cb",
+   "px": [
+    103,
+    621
+   ],
+   "xyz": [
+    "0",
+    "Lw",
+    "h_cb"
+   ]
+  },
+  {
+   "id": "nw_bb",
+   "px": [
+    103,
+    829
+   ],
+   "xyz": [
+    "0",
+    "Lw",
+    "h_b"
+   ]
+  },
+  {
+   "id": "in_cb",
+   "px": [
+    868,
+    606
+   ],
+   "xyz": [
+    "Ls",
+    "0",
+    "h_cb"
+   ]
+  },
+  {
+   "id": "in_bb",
+   "px": [
+    870,
+    814
+   ],
+   "xyz": [
+    "Ls",
+    "0",
+    "h_b"
+   ]
+  },
+  {
+   "id": "roof_sw",
+   "px": [
+    758,
+    274
+   ],
+   "xyz": [
+    "rx",
+    "rys",
+    "rzt"
+   ]
+  },
+  {
+   "id": "roof_nw",
+   "px": [
+    240,
+    418
+   ],
+   "xyz": [
+    "rx",
+    "ryn",
+    "rzt"
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "id": "cb_west",
+   "px": [
+    [
+     120.6,
+     618.9
+    ],
+    [
+     494.1,
+     573.7
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "Lw",
+     "h_cb"
+    ],
+    [
+     "0",
+     "0",
+     "h_cb"
+    ]
+   ]
+  },
+  {
+   "id": "cb_south",
+   "px": [
+    [
+     523.1,
+     578.0
+    ],
+    [
+     873.1,
+     603.4
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "h_cb"
+    ],
+    [
+     "Ls",
+     "0",
+     "h_cb"
+    ]
+   ]
+  },
+  {
+   "id": "roof_west_top",
+   "px": [
+    [
+     241.3,
+     412.4
+    ],
+    [
+     729.6,
+     281.6
+    ]
+   ],
+   "xyz": [
+    [
+     "rx",
+     "ryn",
+     "rzt"
+    ],
+    [
+     "rx",
+     "rys",
+     "rzt"
+    ]
+   ]
+  },
+  {
+   "id": "sw_vertical",
+   "px": [
+    [
+     492,
+     577
+    ],
+    [
+     497,
+     845
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "h_cb"
+    ],
+    [
+     "0",
+     "0",
+     "h_b"
+    ]
+   ]
+  },
+  {
+   "id": "nw_vertical",
+   "px": [
+    [
+     103,
+     621
+    ],
+    [
+     103,
+     829
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "Lw",
+     "h_cb"
+    ],
+    [
+     "0",
+     "Lw",
+     "h_b"
+    ]
+   ]
+  },
+  {
+   "id": "in_vertical",
+   "px": [
+    [
+     868,
+     606
+    ],
+    [
+     870,
+     814
+    ]
+   ],
+   "xyz": [
+    [
+     "Ls",
+     "0",
+     "h_cb"
+    ],
+    [
+     "Ls",
+     "0",
+     "h_b"
+    ]
+   ]
+  },
+  {
+   "id": "eave_south_1",
+   "px": [
+    [
+     785.0,
+     283.6
+    ],
+    [
+     1336.8,
+     460.9
+    ]
+   ],
+   "xyz": [
+    [
+     "rx",
+     "rys",
+     "rzt"
+    ],
+    [
+     "rx + 10",
+     "rys",
+     "rzt"
+    ]
+   ]
+  },
+  {
+   "id": "eave_south_2",
+   "px": [
+    [
+     1305.4,
+     450.1
+    ],
+    [
+     1547.7,
+     533.0
+    ]
+   ],
+   "xyz": [
+    [
+     "rx",
+     "rys",
+     "rzt"
+    ],
+    [
+     "rx + 10",
+     "rys",
+     "rzt"
+    ]
+   ]
+  },
+  {
+   "id": "eave_south_3",
+   "px": [
+    [
+     1635.9,
+     569.9
+    ],
+    [
+     1707.8,
+     595.2
+    ]
+   ],
+   "xyz": [
+    [
+     "rx",
+     "rys",
+     "rzt"
+    ],
+    [
+     "rx + 10",
+     "rys",
+     "rzt"
+    ]
+   ]
+  },
+  {
+   "id": "bb_west",
+   "px": [
+    [
+     103,
+     829
+    ],
+    [
+     497,
+     845
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "Lw",
+     "h_b"
+    ],
+    [
+     "0",
+     "0",
+     "h_b"
+    ]
+   ]
+  },
+  {
+   "id": "bb_south",
+   "px": [
+    [
+     497,
+     845
+    ],
+    [
+     870,
+     814
+    ]
+   ],
+   "xyz": [
+    [
+     "0",
+     "0",
+     "h_b"
+    ],
+    [
+     "Ls",
+     "0",
+     "h_b"
+    ]
+   ]
+  }
+ ],
+ "truth": {
+  "Ls": 4.01,
+  "h_ct": 2.56,
+  "h_cb": 2.35,
+  "h_b": 0.31,
+  "rx": 1.83,
+  "rys": -0.7,
+  "ryn": 8.0
+ },
+ "truth_source": "HABS ILL,16-CHIG,33- (1963). Plan values scaled from sheet 2 (first floor) and sheet 4 (roof outline, registered to sheet 2 by the south garden pier and the stair wall, about 5 px = 0.08 m), heights scaled from the west elevation on sheet 6; all at 20.0 px/ft checked on the scale bars. Scaled, not dimensioned: read to about 0.1 m",
+ "truth_note": "Ls: enclosure SW corner to the west face of the stair-wall jog, sheet 2 (263 px at 19.98 px/ft). Heights: west elevation, sheet 6, at 19.66 px/ft. Roof: sheet 4 says west edge 5'-9\" east of the wall face, north 4'-5\" beyond the enclosure, south 1'-10\" beyond it; the west elevation says north 3'-1\", south 2'-8\". rys and ryn take the mean of the two sheets; they disagree by about 0.3 m, which is the tolerance on the roof"
+}

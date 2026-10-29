@@ -1,0 +1,787 @@
+{
+ "nodes": [
+  {
+   "id": "b",
+   "kind": "param",
+   "grade": "P",
+   "note": "mullion bay, 10 ft, the one published dimension used for scale"
+  },
+  {
+   "id": "c",
+   "kind": "param",
+   "grade": "A",
+   "note": "gauge: the west end is out of frame, so the cantilever cannot be measured; origin moved to the girder 1 axis"
+  },
+  {
+   "id": "s",
+   "kind": "param",
+   "grade": "D",
+   "note": "girder column spacing"
+  },
+  {
+   "id": "wc",
+   "kind": "param",
+   "grade": "D",
+   "note": "girder column width"
+  },
+  {
+   "id": "d_c",
+   "kind": "param",
+   "grade": "D",
+   "note": "column face in front of the glass plane"
+  },
+  {
+   "id": "zg",
+   "kind": "param",
+   "grade": "D",
+   "note": "girder top"
+  },
+  {
+   "id": "zr_t",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "zr_b",
+   "kind": "param",
+   "grade": "D",
+   "note": ""
+  },
+  {
+   "id": "z_tt",
+   "kind": "param",
+   "grade": "D",
+   "note": "transom between upper lights and middle tier"
+  },
+  {
+   "id": "z_mb",
+   "kind": "param",
+   "grade": "D",
+   "note": "bottom of the middle tier"
+  },
+  {
+   "id": "mark:P1 column 2 top-left",
+   "kind": "mark",
+   "shape": "point",
+   "label": "P1 column 2 top-left"
+  },
+  {
+   "id": "mark:P2 column 3 top-left",
+   "kind": "mark",
+   "shape": "point",
+   "label": "P2 column 3 top-left"
+  },
+  {
+   "id": "mark:P3 column 3 foot-left (grade)",
+   "kind": "mark",
+   "shape": "point",
+   "label": "P3 column 3 foot-left (grade)"
+  },
+  {
+   "id": "mark:P4 column 3 foot-right (grade)",
+   "kind": "mark",
+   "shape": "point",
+   "label": "P4 column 3 foot-right (grade)"
+  },
+  {
+   "id": "mark:G1 girder 1 top (east edge)",
+   "kind": "mark",
+   "shape": "line",
+   "label": "G1 girder 1 top (east edge)"
+  },
+  {
+   "id": "mark:G2 girder 2 top (east edge)",
+   "kind": "mark",
+   "shape": "line",
+   "label": "G2 girder 2 top (east edge)"
+  },
+  {
+   "id": "mark:F1 roof fascia top",
+   "kind": "mark",
+   "shape": "line",
+   "label": "F1 roof fascia top"
+  },
+  {
+   "id": "mark:F2 roof fascia bottom",
+   "kind": "mark",
+   "shape": "line",
+   "label": "F2 roof fascia bottom"
+  },
+  {
+   "id": "mark:T1 transom",
+   "kind": "mark",
+   "shape": "line",
+   "label": "T1 transom"
+  },
+  {
+   "id": "mark:T2 middle tier bottom",
+   "kind": "mark",
+   "shape": "line",
+   "label": "T2 middle tier bottom"
+  },
+  {
+   "id": "mark:C2 column 2 west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "C2 column 2 west edge"
+  },
+  {
+   "id": "mark:C3 column 3 west edge",
+   "kind": "mark",
+   "shape": "line",
+   "label": "C3 column 3 west edge"
+  },
+  {
+   "id": "mark:M+1 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M+1 mullion"
+  },
+  {
+   "id": "mark:M+2 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M+2 mullion"
+  },
+  {
+   "id": "mark:M+3 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M+3 mullion"
+  },
+  {
+   "id": "mark:M+4 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M+4 mullion"
+  },
+  {
+   "id": "mark:M+5 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M+5 mullion"
+  },
+  {
+   "id": "mark:M-1 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M-1 mullion"
+  },
+  {
+   "id": "mark:M-2 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M-2 mullion"
+  },
+  {
+   "id": "mark:M-3 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M-3 mullion"
+  },
+  {
+   "id": "mark:M-4 mullion",
+   "kind": "mark",
+   "shape": "line",
+   "label": "M-4 mullion"
+  },
+  {
+   "id": "prior:d_c",
+   "kind": "prior",
+   "label": "d_c",
+   "value": 0.4
+  },
+  {
+   "id": "check:s",
+   "kind": "check",
+   "label": "s",
+   "value": 18.288
+  },
+  {
+   "id": "rule:zg - zr_t",
+   "kind": "rule",
+   "label": "zg - zr_t"
+  },
+  {
+   "id": "check:zg - zr_t",
+   "kind": "check",
+   "label": "zg - zr_t",
+   "value": 1.905
+  },
+  {
+   "id": "check:zr_b",
+   "kind": "check",
+   "label": "zr_b",
+   "value": 7.315
+  },
+  {
+   "id": "rule:z_tt - z_mb",
+   "kind": "rule",
+   "label": "z_tt - z_mb"
+  },
+  {
+   "id": "check:z_tt - z_mb",
+   "kind": "check",
+   "label": "z_tt - z_mb",
+   "value": 2.362
+  },
+  {
+   "id": "rule:zr_b - z_tt",
+   "kind": "rule",
+   "label": "zr_b - z_tt"
+  },
+  {
+   "id": "check:zr_b - z_tt",
+   "kind": "check",
+   "label": "zr_b - z_tt",
+   "value": 3.7
+  }
+ ],
+ "edges": [
+  [
+   "c",
+   "mark:P1 column 2 top-left"
+  ],
+  [
+   "d_c",
+   "mark:P1 column 2 top-left"
+  ],
+  [
+   "s",
+   "mark:P1 column 2 top-left"
+  ],
+  [
+   "wc",
+   "mark:P1 column 2 top-left"
+  ],
+  [
+   "zg",
+   "mark:P1 column 2 top-left"
+  ],
+  [
+   "c",
+   "mark:P2 column 3 top-left"
+  ],
+  [
+   "d_c",
+   "mark:P2 column 3 top-left"
+  ],
+  [
+   "s",
+   "mark:P2 column 3 top-left"
+  ],
+  [
+   "wc",
+   "mark:P2 column 3 top-left"
+  ],
+  [
+   "zg",
+   "mark:P2 column 3 top-left"
+  ],
+  [
+   "c",
+   "mark:P3 column 3 foot-left (grade)"
+  ],
+  [
+   "d_c",
+   "mark:P3 column 3 foot-left (grade)"
+  ],
+  [
+   "s",
+   "mark:P3 column 3 foot-left (grade)"
+  ],
+  [
+   "wc",
+   "mark:P3 column 3 foot-left (grade)"
+  ],
+  [
+   "c",
+   "mark:P4 column 3 foot-right (grade)"
+  ],
+  [
+   "d_c",
+   "mark:P4 column 3 foot-right (grade)"
+  ],
+  [
+   "s",
+   "mark:P4 column 3 foot-right (grade)"
+  ],
+  [
+   "wc",
+   "mark:P4 column 3 foot-right (grade)"
+  ],
+  [
+   "c",
+   "mark:G1 girder 1 top (east edge)"
+  ],
+  [
+   "zg",
+   "mark:G1 girder 1 top (east edge)"
+  ],
+  [
+   "c",
+   "mark:G2 girder 2 top (east edge)"
+  ],
+  [
+   "s",
+   "mark:G2 girder 2 top (east edge)"
+  ],
+  [
+   "zg",
+   "mark:G2 girder 2 top (east edge)"
+  ],
+  [
+   "c",
+   "mark:F1 roof fascia top"
+  ],
+  [
+   "s",
+   "mark:F1 roof fascia top"
+  ],
+  [
+   "zr_t",
+   "mark:F1 roof fascia top"
+  ],
+  [
+   "c",
+   "mark:F2 roof fascia bottom"
+  ],
+  [
+   "s",
+   "mark:F2 roof fascia bottom"
+  ],
+  [
+   "zr_b",
+   "mark:F2 roof fascia bottom"
+  ],
+  [
+   "c",
+   "mark:T1 transom"
+  ],
+  [
+   "s",
+   "mark:T1 transom"
+  ],
+  [
+   "z_tt",
+   "mark:T1 transom"
+  ],
+  [
+   "c",
+   "mark:T2 middle tier bottom"
+  ],
+  [
+   "s",
+   "mark:T2 middle tier bottom"
+  ],
+  [
+   "z_mb",
+   "mark:T2 middle tier bottom"
+  ],
+  [
+   "c",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "d_c",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "s",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "wc",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "z_tt",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "zr_t",
+   "mark:C2 column 2 west edge"
+  ],
+  [
+   "c",
+   "mark:C3 column 3 west edge"
+  ],
+  [
+   "d_c",
+   "mark:C3 column 3 west edge"
+  ],
+  [
+   "s",
+   "mark:C3 column 3 west edge"
+  ],
+  [
+   "wc",
+   "mark:C3 column 3 west edge"
+  ],
+  [
+   "zr_t",
+   "mark:C3 column 3 west edge"
+  ],
+  [
+   "b",
+   "mark:M+1 mullion"
+  ],
+  [
+   "c",
+   "mark:M+1 mullion"
+  ],
+  [
+   "s",
+   "mark:M+1 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M+1 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M+1 mullion"
+  ],
+  [
+   "b",
+   "mark:M+2 mullion"
+  ],
+  [
+   "c",
+   "mark:M+2 mullion"
+  ],
+  [
+   "s",
+   "mark:M+2 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M+2 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M+2 mullion"
+  ],
+  [
+   "b",
+   "mark:M+3 mullion"
+  ],
+  [
+   "c",
+   "mark:M+3 mullion"
+  ],
+  [
+   "s",
+   "mark:M+3 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M+3 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M+3 mullion"
+  ],
+  [
+   "b",
+   "mark:M+4 mullion"
+  ],
+  [
+   "c",
+   "mark:M+4 mullion"
+  ],
+  [
+   "s",
+   "mark:M+4 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M+4 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M+4 mullion"
+  ],
+  [
+   "b",
+   "mark:M+5 mullion"
+  ],
+  [
+   "c",
+   "mark:M+5 mullion"
+  ],
+  [
+   "s",
+   "mark:M+5 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M+5 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M+5 mullion"
+  ],
+  [
+   "b",
+   "mark:M-1 mullion"
+  ],
+  [
+   "c",
+   "mark:M-1 mullion"
+  ],
+  [
+   "s",
+   "mark:M-1 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M-1 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M-1 mullion"
+  ],
+  [
+   "b",
+   "mark:M-2 mullion"
+  ],
+  [
+   "c",
+   "mark:M-2 mullion"
+  ],
+  [
+   "s",
+   "mark:M-2 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M-2 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M-2 mullion"
+  ],
+  [
+   "b",
+   "mark:M-3 mullion"
+  ],
+  [
+   "c",
+   "mark:M-3 mullion"
+  ],
+  [
+   "s",
+   "mark:M-3 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M-3 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M-3 mullion"
+  ],
+  [
+   "b",
+   "mark:M-4 mullion"
+  ],
+  [
+   "c",
+   "mark:M-4 mullion"
+  ],
+  [
+   "s",
+   "mark:M-4 mullion"
+  ],
+  [
+   "z_tt",
+   "mark:M-4 mullion"
+  ],
+  [
+   "zr_b",
+   "mark:M-4 mullion"
+  ],
+  [
+   "d_c",
+   "prior:d_c"
+  ],
+  [
+   "s",
+   "check:s"
+  ],
+  [
+   "zg",
+   "rule:zg - zr_t"
+  ],
+  [
+   "zr_t",
+   "rule:zg - zr_t"
+  ],
+  [
+   "rule:zg - zr_t",
+   "check:zg - zr_t"
+  ],
+  [
+   "zr_b",
+   "check:zr_b"
+  ],
+  [
+   "z_mb",
+   "rule:z_tt - z_mb"
+  ],
+  [
+   "z_tt",
+   "rule:z_tt - z_mb"
+  ],
+  [
+   "rule:z_tt - z_mb",
+   "check:z_tt - z_mb"
+  ],
+  [
+   "z_tt",
+   "rule:zr_b - z_tt"
+  ],
+  [
+   "zr_b",
+   "rule:zr_b - z_tt"
+  ],
+  [
+   "rule:zr_b - z_tt",
+   "check:zr_b - z_tt"
+  ]
+ ],
+ "uses": {
+  "b": [
+   "M+1 mullion",
+   "M+2 mullion",
+   "M+3 mullion",
+   "M+4 mullion",
+   "M+5 mullion",
+   "M-1 mullion",
+   "M-2 mullion",
+   "M-3 mullion",
+   "M-4 mullion"
+  ],
+  "c": [
+   "P1 column 2 top-left",
+   "P2 column 3 top-left",
+   "P3 column 3 foot-left (grade)",
+   "P4 column 3 foot-right (grade)",
+   "G1 girder 1 top (east edge)",
+   "G2 girder 2 top (east edge)",
+   "F1 roof fascia top",
+   "F2 roof fascia bottom",
+   "T1 transom",
+   "T2 middle tier bottom",
+   "C2 column 2 west edge",
+   "C3 column 3 west edge",
+   "M+1 mullion",
+   "M+2 mullion",
+   "M+3 mullion",
+   "M+4 mullion",
+   "M+5 mullion",
+   "M-1 mullion",
+   "M-2 mullion",
+   "M-3 mullion",
+   "M-4 mullion"
+  ],
+  "s": [
+   "P1 column 2 top-left",
+   "P2 column 3 top-left",
+   "P3 column 3 foot-left (grade)",
+   "P4 column 3 foot-right (grade)",
+   "G2 girder 2 top (east edge)",
+   "F1 roof fascia top",
+   "F2 roof fascia bottom",
+   "T1 transom",
+   "T2 middle tier bottom",
+   "C2 column 2 west edge",
+   "C3 column 3 west edge",
+   "M+1 mullion",
+   "M+2 mullion",
+   "M+3 mullion",
+   "M+4 mullion",
+   "M+5 mullion",
+   "M-1 mullion",
+   "M-2 mullion",
+   "M-3 mullion",
+   "M-4 mullion"
+  ],
+  "wc": [
+   "P1 column 2 top-left",
+   "P2 column 3 top-left",
+   "P3 column 3 foot-left (grade)",
+   "P4 column 3 foot-right (grade)",
+   "C2 column 2 west edge",
+   "C3 column 3 west edge"
+  ],
+  "d_c": [
+   "P1 column 2 top-left",
+   "P2 column 3 top-left",
+   "P3 column 3 foot-left (grade)",
+   "P4 column 3 foot-right (grade)",
+   "C2 column 2 west edge",
+   "C3 column 3 west edge"
+  ],
+  "zg": [
+   "P1 column 2 top-left",
+   "P2 column 3 top-left",
+   "G1 girder 1 top (east edge)",
+   "G2 girder 2 top (east edge)"
+  ],
+  "zr_t": [
+   "F1 roof fascia top",
+   "C2 column 2 west edge",
+   "C3 column 3 west edge"
+  ],
+  "zr_b": [
+   "F2 roof fascia bottom",
+   "M+1 mullion",
+   "M+2 mullion",
+   "M+3 mullion",
+   "M+4 mullion",
+   "M+5 mullion",
+   "M-1 mullion",
+   "M-2 mullion",
+   "M-3 mullion",
+   "M-4 mullion"
+  ],
+  "z_tt": [
+   "T1 transom",
+   "C2 column 2 west edge",
+   "M+1 mullion",
+   "M+2 mullion",
+   "M+3 mullion",
+   "M+4 mullion",
+   "M+5 mullion",
+   "M-1 mullion",
+   "M-2 mullion",
+   "M-3 mullion",
+   "M-4 mullion"
+  ],
+  "z_mb": [
+   "T2 middle tier bottom"
+  ]
+ },
+ "report": {
+  "free_without_marks": [],
+  "free_on_one_mark": {
+   "z_mb": "T2 middle tier bottom"
+  },
+  "fixed_unused": [],
+  "checked": [
+   "s",
+   "z_mb",
+   "z_tt",
+   "zg",
+   "zr_b",
+   "zr_t"
+  ],
+  "free_unchecked": [
+   "wc",
+   "d_c"
+  ]
+ }
+}

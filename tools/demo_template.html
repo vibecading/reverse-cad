@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building from photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #e9edf1;
+    --panel: #f7f9fb;
+    --ink: #15202b;
+    --muted: #5b6875;
+    --rule: #cdd5dd;
+    --wire: #e0218a;
+    --mark: #00a3c4;
+    --warn: #b86b00;
+    --good: #2f7d4f;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font: 15px/1.45 "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 100vh; }
+  .stage { padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .stage h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .stage .sub { color: var(--muted); margin: 0; max-width: 70ch; }
+  .canvas-box { position: relative; background: #000; border-radius: 4px; overflow: hidden; }
+  canvas { display: block; width: 100%; height: auto; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; color: var(--muted); }
+  .toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .toggles input[type=range] { width: 120px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 6px; }
+
+  aside { background: var(--panel); border-left: 1px solid var(--rule); padding: 20px;
+          display: flex; flex-direction: column; gap: 18px; overflow-y: auto; max-height: 100vh; position: sticky; top: 0; }
+  .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cases button { flex: 1; padding: 9px 10px; border: 1px solid var(--rule); background: #fff; color: var(--ink);
+                  font: inherit; font-weight: 500; border-radius: 4px; cursor: pointer; text-align: left; }
+  .cases button[aria-pressed=true] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .cases small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  .fit { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; align-items: baseline; }
+  .fit .big { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fit .note { color: var(--muted); font-size: 13px; }
+  .fit .big.worse { color: var(--warn); }
+  button.reset { padding: 8px 12px; border: 1px solid var(--ink); background: var(--ink); color: #fff;
+                 font: inherit; border-radius: 4px; cursor: pointer; justify-self: start; }
+  button.reset:focus-visible, .cases button:focus-visible, input:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+  h2 { font-size: 15px; margin: 0 0 8px; font-weight: 700; }
+  .param { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; margin-bottom: 10px; }
+  .param .name { font-size: 14px; }
+  .param .name em { font-style: normal; color: var(--muted); font-size: 12px; margin-left: 4px; }
+  .param .val { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .param .val.moved { color: var(--warn); }
+  .param input { grid-column: 1 / -1; width: 100%; accent-color: var(--ink); }
+  .param .deps { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+  .param .deps.thin { color: var(--warn); }
+  .param.hot { background: #fff; box-shadow: -8px 0 0 #fff, 8px 0 0 #fff; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 5px 4px; border-bottom: 1px solid var(--rule); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 500; }
+  td.bad { color: var(--warn); }
+  .fine { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  .credit { color: var(--muted); font-size: 12px; }
+  .opencase { margin: 0; padding: 10px 12px; border-left: 3px solid var(--warn); background: #fff7ea; max-width: 80ch; font-size: 14px; }
+  .param .name em.cam { color: var(--warn); }
+  .opencase.good { border-left-color: var(--good); background: #eef7f1; }
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+    aside { position: static; max-height: none; border-left: 0; border-top: 1px solid var(--rule); }
+    .stage { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="stage">
+    <h1 id="title"></h1>
+    <p class="sub">The pink wireframe is a parametric model, projected through the camera recovered from this same photo. Move a parameter on the right and the model leaves the photo while the error grows. Reset puts the solution back.</p>
+    <div class="canvas-box"><canvas id="cv"></canvas></div>
+    <div class="toggles">
+      <label><input type="checkbox" id="tWire" checked> model wireframe</label>
+      <label><input type="checkbox" id="tMarks" checked> marks on the photo</label>
+      <label id="lTruth"><input type="checkbox" id="tTruth"> model from the drawings, same camera</label>
+      <label id="lRender">Rhino render <input type="range" id="tRender" min="0" max="100" value="0"></label>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--wire)"></span>measured from the photo</span>
+      <span><span class="sw" style="background:#4f8cff"></span>placed by a rule</span>
+      <span><span class="sw" style="background:#f2b705"></span>assumed</span>
+      <span><span class="sw" style="background:var(--mark)"></span>marks, and where the model projects them now</span>
+      <span id="legTruth"><span class="sw" style="background:#21a35b"></span>drawing values where there are any</span>
+    </div>
+    <p class="opencase" id="opencase" hidden>One photo. The solve fits this photo to 2.5 px, and hold-out and the camera sweep are quiet, yet the walls come out 11–18 % taller and longer than on the HABS measured drawings. The green dashed wireframe is the model from the drawings, seen through the same camera. No internal check sees this. A second photo does: solved together with this one, it brings the dimensions within 1 % of the drawings (next button).</p>
+    <p class="opencase good" id="jointcase" hidden>Two photos together: this photo and a second one from the north-west, solved as one building with two cameras. Coping 2.559 m against 2.56 on the HABS drawings, its underside 2.353 against 2.35, south wall 4.05 against 4.01. The price of agreeing: each photo fits a little worse than alone (4.5 px here instead of 2.5), and the dimensions are right. The green and pink wireframes nearly coincide.</p>
+    <p class="credit" id="credit"></p>
+  </main>
+  <aside>
+    <div class="cases" id="cases"></div>
+    <div class="fit">
+      <span class="big" id="rms">—</span><span class="note">mean error over the marks, px<br><span id="rms0"></span></span>
+    </div>
+    <button class="reset" id="reset">Reset to the solution</button>
+    <section><h2>Parameters</h2>
+      <p class="fine" style="margin:0 0 10px">Hover a parameter: only the marks it is measured through stay lit. That is the model’s dependency graph, which <code>tools/dag.py</code> builds from the marks.</p>
+      <div id="params"></div></section>
+    <section>
+      <h2>Check against the drawings</h2>
+      <table id="truth"><thead><tr><th>quantity</th><th>model</th><th>reference</th><th>error</th></tr></thead><tbody></tbody></table>
+      <p class="fine" id="truthnote"></p>
+    </section>
+  </aside>
+</div>
+<script>
+const DATA = /*DATA*/null;
+
+// parametric models, mirroring cases/*/model_rhino.py. Each returns boxes and lines in metres,
+// tagged with a grade: D measured from the photo, I placed by a rule, A assumed.
+const MODELS = {
+  farnsworth(P) {
+    const L = 2 * P.c + 3 * P.s, col = 0.2, out = [];
+    out.push(['box', [0, L, 0, P.W, P.zf_b, P.zf_t], 'D']);
+    out.push(['box', [0, L, 0, P.W, P.zr_b, P.zr_t], 'D']);
+    for (let i = 0; i < 4; i++) {
+      const x = P.c + i * P.s, g = i < 2 ? 'D' : 'I';
+      out.push(['box', [x - col / 2, x + col / 2, -col, 0, 0, P.zr_t - 0.03], g]);
+      out.push(['box', [x - col / 2, x + col / 2, P.W, P.W + col, 0, P.zr_t - 0.03], g]);
+    }
+    out.push(['box', [P.g_x, L - P.g_y, P.g_y, P.W - P.g_y, P.zf_t, P.zr_b], 'D']);
+    out.push(['box', [P.x_te - 16.8, P.x_te, P.y_tf, P.y_tn, P.h_t - P.d_t, P.h_t], 'A']);
+    return out;
+  },
+  crownhall(P) {
+    const cant = 2 * P.b, D = 12 * P.b, x0 = -cant, x1 = 3 * P.s + cant, gw = 0.5, out = [];
+    out.push(['box', [x0, x1, 0, D, P.zr_b, P.zr_t], 'D']);
+    out.push(['box', [x0, x1, 0, D, P.z_mb, P.zr_b], 'I']);
+    out.push(['line', [[x0, 0, P.z_tt], [x1, 0, P.z_tt]], 'D']);
+    for (let k = 0; k < 4; k++) {
+      const x = k * P.s, g = k < 3 ? 'D' : 'I';
+      out.push(['box', [x - gw / 2, x + gw / 2, -P.d_c, D + P.d_c, P.zr_t, P.zg], g]);
+      out.push(['box', [x - P.wc / 2, x + P.wc / 2, -P.d_c, -P.d_c + P.wc, 0, P.zg], g]);
+    }
+    const n = Math.round((x1 - x0) / P.b);
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + i * P.b;
+      out.push(['line', [[x, 0, P.z_mb], [x, 0, P.zr_b]], 'D']);
+    }
+    return out;
+  },
+};
+MODELS.robie = P => {
+  const out = [];
+  // the ground-floor west enclosure: brick body and stone coping
+  out.push(['box', [0, P.Ls, 0, P.Lw, P.h_b, P.h_cb], 'D']);
+  out.push(['box', [0, P.Ls, 0, P.Lw, P.h_cb, P.h_ct], 'D']);
+  out.push(['box', [0, P.Ls, 0, P.Lw, 0, P.h_b], 'D']);
+  // living-room roof: the west part of its outline, eaves running east
+  out.push(['box', [P.rx, P.rx + 25, P.rys, P.ryn, P.rzt - 0.25, P.rzt], 'D']);
+  return out;
+};
+const GRADE_COLOR = { D: '#e0218a', I: '#4f8cff', A: '#f2b705' };
+
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+let cur, P, P0, photo, render, exprCache = {}, hot = null;
+
+function expr(e, names) {
+  const key = names.join(',') + '|' + e;
+  if (!exprCache[key]) exprCache[key] = new Function(...names, 'return (' + e + ');');
+  return exprCache[key];
+}
+function evalXYZ(xyz) {
+  const names = Object.keys(P), vals = names.map(k => P[k]);
+  return xyz.map(e => expr(String(e), names)(...vals));
+}
+function project(X) {
+  const cam = cur.result.camera, R = cam.R, C = cam.pos;
+  const d = [X[0] - C[0], X[1] - C[1], X[2] - C[2]];
+  const xc = R.map(r => r[0] * d[0] + r[1] * d[1] + r[2] * d[2]);
+  const [cx, cy] = cur.result.principal_point || [photo.naturalWidth / 2, photo.naturalHeight / 2];
+  const f = cam.f_px;
+  return { u: cx + f * xc[0] / xc[2], v: cy + f * xc[1] / xc[2], z: xc[2] };
+}
+function residuals() {
+  const res = [], spec = cur.spec;
+  for (const m of spec.points || []) {
+    const p = project(evalXYZ(m.xyz)), w = m.w || 1;
+    res.push(w * (p.u - m.px[0]), w * (p.v - m.px[1]));
+  }
+  for (const m of spec.lines || []) {
+    const [a, b] = m.px, w = m.w || 1;
+    let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const L = Math.hypot(nx, ny); nx /= L; ny /= L;
+    for (const e of m.xyz) { const p = project(evalXYZ(e)); res.push(w * (nx * (p.u - a[0]) + ny * (p.v - a[1]))); }
+  }
+  for (const pr of spec.priors || []) {
+    const v = evalXYZ([pr.expr])[0]; res.push(2 * (v - pr.value) / pr.sigma_m);
+  }
+  return res;
+}
+const rms = r => Math.sqrt(r.reduce((s, x) => s + x * x, 0) / r.length);
+
+function boxEdges(b) {
+  const [x0, x1, y0, y1, z0, z1] = b, V = [];
+  for (const z of [z0, z1]) V.push([x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]);
+  const E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  return E.map(([i, j]) => [V[i], V[j]]);
+}
+function drawSeg(a, b, s) {
+  // clip against a near plane so segments passing behind the camera do not wrap around
+  let pa = project(a), pb = project(b); const near = 0.3;
+  if (pa.z < near && pb.z < near) return;
+  if (pa.z < near || pb.z < near) {
+    const t = (near - pa.z) / (pb.z - pa.z), m = a.map((v, i) => v + t * (b[i] - v)), pm = project(m);
+    if (pa.z < near) pa = pm; else pb = pm;
+  }
+  ctx.beginPath(); ctx.moveTo(pa.u * s, pa.v * s); ctx.lineTo(pb.u * s, pb.v * s); ctx.stroke();
+}
+
+function draw() {
+  if (!photo.complete || !photo.naturalWidth) return;
+  const W = cv.clientWidth, s = W / photo.naturalWidth, dpr = window.devicePixelRatio || 1;
+  cv.width = W * dpr; cv.height = photo.naturalHeight * s * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.drawImage(photo, 0, 0, W, photo.naturalHeight * s);
+  const ro = $('tRender').value / 100;
+  if (ro > 0 && render.complete && render.naturalWidth) {
+    ctx.globalAlpha = ro; ctx.drawImage(render, 0, 0, W, photo.naturalHeight * s); ctx.globalAlpha = 1;
+  }
+  if ($('tWire').checked) {
+    ctx.lineWidth = 2;
+    for (const [kind, g, grade] of MODELS[cur.model](P)) {
+      ctx.strokeStyle = GRADE_COLOR[grade];
+      if (kind === 'box') for (const [a, b] of boxEdges(g)) drawSeg(a, b, s);
+      else drawSeg(g[0], g[1], s);
+    }
+  }
+  if ($('tTruth').checked && cur.spec.truth) {
+    const T = { ...P };
+    for (const [k, v] of Object.entries(cur.spec.truth)) if (k in T) T[k] = v;
+    ctx.lineWidth = 3; ctx.strokeStyle = '#21a35b'; ctx.setLineDash([9, 5]);
+    for (const [kind, g] of MODELS[cur.model](T)) {
+      if (kind === 'box') for (const [a, b] of boxEdges(g)) drawSeg(a, b, s);
+      else drawSeg(g[0], g[1], s);
+    }
+    ctx.setLineDash([]);
+  }
+  if ($('tMarks').checked) {
+    ctx.lineWidth = 2;
+    const on = m => !hot || (cur.uses[hot] || []).includes(m.id);
+    for (const m of cur.spec.points || []) {
+      const p = project(evalXYZ(m.xyz));
+      ctx.globalAlpha = on(m) ? 1 : 0.15; ctx.lineWidth = hot && on(m) ? 3.5 : 2;
+      ctx.strokeStyle = hot && on(m) ? '#ffd400' : '#00a3c4';
+      ctx.beginPath(); ctx.arc(m.px[0] * s, m.px[1] * s, 6, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(m.px[0] * s, m.px[1] * s); ctx.lineTo(p.u * s, p.v * s); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.fillRect(p.u * s - 2, p.v * s - 2, 4, 4);
+    }
+    for (const m of cur.spec.lines || []) {
+      ctx.globalAlpha = on(m) ? 1 : 0.15; ctx.lineWidth = hot && on(m) ? 3.5 : 2;
+      ctx.strokeStyle = hot && on(m) ? '#ffd400' : 'rgba(0,163,196,0.85)'; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(m.px[0][0] * s, m.px[0][1] * s); ctx.lineTo(m.px[1][0] * s, m.px[1][1] * s); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.globalAlpha = 1;
+  }
+  const r = rms(residuals());
+  $('rms').textContent = r.toFixed(1);
+  $('rms').classList.toggle('worse', r > cur.rms0 * 1.5);
+  updateTable();
+}
+
+function plural(n, one, few, many) {
+  const a = n % 10, b = n % 100;
+  return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many;
+}
+function fmt(v) { return Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2); }
+
+function buildParams() {
+  const box = $('params'); box.innerHTML = '';
+  const specP = cur.spec.params, sd = cur.result.param_sd || {};
+  for (const k of Object.keys(specP)) {
+    const p = specP[k], row = document.createElement('div'); row.className = 'param';
+    const grade = cur.grades[k];
+    const tag = grade === 'scale' ? 'scale reference' : grade === 'gauge' ? 'not in the photo' : (sd[k] !== undefined ? '± ' + fmt(sd[k]) + ' m' : '');
+    const label = (cur.labels && cur.labels[k]) || p.note || k;
+    const sp = cur.spread && cur.spread[k];
+    const camTag = sp === undefined ? '' : sp >= 5 ? `<em class="cam">camera: ±${(sp / 2).toFixed(0)} %, not determined</em>` : `<em>camera: ±${(sp / 2).toFixed(1)} %</em>`;
+    row.innerHTML = `<span class="name">${label} <em>${tag}</em> ${camTag}</span><span class="val" id="v_${k}"></span>`;
+    const n = (cur.uses[k] || []).length, checked = (cur.dag_report.checked || []).includes(k);
+    const deps = document.createElement('span');
+    deps.className = 'deps' + (!('fixed' in p) && n < 2 ? ' thin' : '');
+    deps.textContent = ('fixed' in p ? 'fixed, ' : '') + (n ? 'in ' + n + ' mark' + (n === 1 ? '' : 's') : 'not seen in the photo')
+      + (!('fixed' in p) && n === 1 ? ': rests on one mark' : '') + (checked ? '; checked' : '');
+    row.addEventListener('mouseenter', () => { hot = k; row.classList.add('hot'); draw(); });
+    row.addEventListener('mouseleave', () => { hot = null; row.classList.remove('hot'); draw(); });
+    row.addEventListener('focusin', () => { hot = k; row.classList.add('hot'); draw(); });
+    row.addEventListener('focusout', () => { hot = null; row.classList.remove('hot'); draw(); });
+    if ('fixed' in p) {
+      row.appendChild(deps); box.appendChild(row); $('v_' + k).textContent = fmt(P[k]) + ' m'; continue;
+    }
+    const inp = document.createElement('input'); inp.type = 'range';
+    const v = P0[k], span = Math.max(Math.abs(v) * 0.3, 0.6);
+    inp.min = v - span; inp.max = v + span; inp.step = 0.01; inp.value = v;
+    inp.setAttribute('aria-label', k);
+    inp.addEventListener('input', () => { P[k] = parseFloat(inp.value); showVal(k); draw(); });
+    row.appendChild(inp); row.appendChild(deps); box.appendChild(row); showVal(k);
+  }
+}
+function showVal(k) {
+  const el = $('v_' + k); el.textContent = fmt(P[k]) + ' m';
+  el.classList.toggle('moved', Math.abs(P[k] - P0[k]) > 1e-6);
+}
+function updateTable() {
+  const tb = $('truth').querySelector('tbody'); tb.innerHTML = '';
+  const names = Object.keys(P), vals = names.map(k => P[k]);
+  for (const [k, t] of Object.entries(cur.spec.truth || {})) {
+    const v = expr(k, names)(...vals), e = 100 * (v - t) / t;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${(cur.labels && cur.labels[k]) || k}</td><td>${v.toFixed(2)}</td><td>${t.toFixed(2)}</td><td class="${Math.abs(e) > 5 ? 'bad' : ''}">${e > 0 ? '+' : ''}${e.toFixed(1)} %</td>`;
+    tb.appendChild(tr);
+  }
+  $('truthnote').textContent = (cur.spec.truth_note || '') + (cur.spec.truth_note ? '. ' : '') + 'Source: ' + (cur.spec.truth_source || '');
+}
+
+function select(i) {
+  cur = DATA[i]; exprCache = {};
+  P0 = { ...cur.result.params }; P = { ...P0 };
+  document.querySelectorAll('.cases button').forEach((b, j) => b.setAttribute('aria-pressed', i === j));
+  $('title').textContent = cur.title + (cur.joint_case ? ', two photos solved together' : ' from one photo' + (cur.open_case ? ': it misses' : ''));
+  $('credit').textContent = 'Photo: ' + cur.spec.source;
+  $('opencase').hidden = !cur.open_case;
+  $('jointcase').hidden = !cur.joint_case;
+  $('lRender').hidden = !cur.render;
+  $('tTruth').checked = !!(cur.open_case || cur.joint_case);
+  photo = new Image(); render = new Image();
+  photo.onload = () => { cur.rms0 = rms(residuals()); $('rms0').textContent = 'at the solution ' + cur.rms0.toFixed(1) + ' px'; buildParams(); draw(); };
+  render.onload = draw;
+  photo.src = cur.photo; if (cur.render) render.src = cur.render;
+}
+
+const cs = $('cases');
+DATA.forEach((c, i) => {
+  const b = document.createElement('button'); b.innerHTML = `${c.title}<small>${c.by}</small>`;
+  b.addEventListener('click', () => select(i)); cs.appendChild(b);
+});
+$('reset').addEventListener('click', () => { P = { ...P0 }; buildParams(); draw(); });
+['tWire', 'tMarks', 'tRender', 'tTruth'].forEach(id => $(id).addEventListener('input', draw));
+window.addEventListener('resize', draw);
+select(0);
+</script>
+</body>
+</html>

@@ -10,19 +10,19 @@ import subprocess
 M = pathlib.Path(__file__).resolve().parent
 # (start, end, speed) in studio.mp4
 CUTS = [
-    (4.6, 8.5, 1.5),     # the photo comes in, the model builds itself
-    (11.5, 17.0, 1.8),   # bays added with a slider
-    (22.5, 25.0, 1.3),   # dependency graph
+    (5.8, 9.8, 1.5),     # the photo comes in, the model builds itself
+    (13.0, 18.5, 1.8),   # bays added with a slider
+    (20.0, 22.5, 1.3),   # dependency graph
     (28.5, 33.0, 2.0),   # dragging a grip in the plan
-    (45.5, 50.5, 1.6),   # flying back into the photo camera
-    (62.3, 63.9, 1.0),   # Crown Hall on its photo
-    (66.0, 69.5, 1.6),   # Gamble: raise the ridge
-    (72.5, 74.5, 1.2),   # Gamble on its photo
-    (75.5, 78.0, 1.25),  # Robie, one photo: off the drawings
-    (80.5, 83.0, 1.25),  # Robie, two photos: on the drawings
-    (89.0, 92.0, 1.5),   # an agent's proposal in review
-    (95.5, 99.0, 1.6),   # a design conflict in plain words
-    (112.0, 115.0, 1.5),  # end card
+    (46.8, 51.8, 1.6),   # flying back into the photo camera
+    (62.6, 64.0, 1.0),   # Crown Hall on its photo
+    (67.2, 71.0, 1.6),   # Gamble: raise the ridge
+    (74.0, 75.9, 1.2),   # Gamble on its photo
+    (77.0, 79.5, 1.25),  # Robie, one photo: off the drawings
+    (82.0, 84.5, 1.25),  # Robie, two photos: on the drawings
+    (90.8, 94.3, 1.5),   # an agent's proposal in review, accepted
+    (97.5, 101.0, 1.6),  # a design conflict in plain words
+    (114.3, 117.3, 1.5),  # end card
 ]
 
 
@@ -38,7 +38,7 @@ def main():
                     '-c:v', 'libx264', '-preset', 'slow', '-crf', '21', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
                     str(M / 'teaser.mp4')], check=True)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(M / 'teaser.mp4'), '-vf',
-                    'fps=8,scale=800:-1:flags=lanczos,split[x][y];[x]palettegen=max_colors=96[p];[y][p]paletteuse=dither=bayer:bayer_scale=4',
+                    'fps=7,scale=800:-1:flags=lanczos,split[x][y];[x]palettegen=max_colors=80[p];[y][p]paletteuse=dither=bayer:bayer_scale=4',
                     str(M / 'teaser.gif')], check=True)
     print('teaser: %.1f s' % total)
 

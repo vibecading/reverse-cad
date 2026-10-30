@@ -70,6 +70,8 @@ for c in CASES:
     else:
         res = load(c['result'])
         res['photos'] = 1
+        vp = c['spec'].replace('spec_', 'variants_')  # the camera sweep, read as tools/bench.py reads it
+        res['unstable'] = load(vp)['unstable'] if os.path.exists(os.path.join(ROOT, vp)) else []
     grades = {k: grade(k, p) for k, p in spec['params'].items()}
     data.append({'id': c['id'], 'model': c.get('model', c['id']), 'title': c['title'], 'by': c['by'],
                  'ref': c['ref'], 'labels': c['labels'], 'photo': '../' + spec['image'],
@@ -77,7 +79,7 @@ for c in CASES:
                  'truth': spec.get('truth', {}), 'notes': {k: p.get('note', '') for k, p in spec['params'].items()},
                  'fixed': [k for k, p in spec['params'].items() if 'fixed' in p], 'grades': grades,
                  'camera': res['camera'], 'pp': res['principal_point'], 'params': res['params'],
-                 'sd': res.get('param_sd', {}), 'photos': res['photos'], 'uses': build_dag(spec)['uses']})
+                 'sd': res.get('param_sd', {}), 'unstable': res.get('unstable', []), 'photos': res['photos'], 'uses': build_dag(spec)['uses']})
 
 html = open(os.path.join(ROOT, 'tools', 'studio_template.html'), encoding='utf-8').read()
 html = html.replace('/*DATA*/null', json.dumps(data, ensure_ascii=False))

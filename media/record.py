@@ -110,7 +110,7 @@ def run():
         cap('Each parameter knows which marks measure it', 'the dependency graph, built from the marks')
         wait(3.5)
         hover('zf_t', False)
-        cap('Checked against the HABS measured drawings: 0.1–2.9 % off', 'length, width, floor and roof heights')
+        cap('Checked against the HABS measured drawings: within 4 %', 'length, width, cantilever, glass wall; heights need the second photo')
         pg.evaluate("() => document.getElementById('truth').scrollIntoView({block: 'center'})")
         wait(4.0)
         pg.evaluate("() => document.querySelector('aside').scrollTo(0, 0)")
@@ -131,7 +131,8 @@ def run():
         cap('')
 
         # the model as text
-        pg.goto((ROOT / 'media' / 'git.html').as_uri())
+        # do not wait for the web fonts: on a slow link the 'load' event froze the recording for seconds
+        pg.goto((ROOT / 'media' / 'git.html').as_uri(), wait_until='domcontentloaded')
         wait(1.0)
         setup()
         cap('The model is text, so a change is a diff', 'which parameter moved which element, and which checks broke')

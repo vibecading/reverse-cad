@@ -576,9 +576,9 @@ function showVal(k) {
   el.classList.toggle('moved', Math.abs(P[k] - (main || P0)[k]) > 1e-9);
 }
 function judge(k, v, t) {
-  // the same rule as tools/bench.py: a bootstrap spread over 5 % of the value means the photo does not fix it
-  const used = (k.match(/[A-Za-z_]\w*/g) || []).filter(n => n in cur.sd);
-  if (used.some(n => cur.sd[n] > 0.05 * Math.abs(cur.params[n])))
+  // the same rule as tools/bench.py: the camera sweep moves it, or the bootstrap spread is over 5 % of it
+  const used = (k.match(/[A-Za-z_]\w*/g) || []).filter(n => n in cur.params);
+  if (used.some(n => cur.unstable.includes(n) || (n in cur.sd && cur.sd[n] > 0.05 * Math.abs(cur.params[n]))))
     return { und: true, c: '#9aa3ab', err: 'not fixed' };
   if (Math.abs(t) < 1) {  // a percentage of a small offset says little: give metres
     const d = v - t, a = Math.abs(d);
@@ -601,7 +601,7 @@ function info() {
     <table>${m.map(([l, v, u]) => `<tr><td>${l}</td><td><b>${u === '' ? v : v.toFixed(u === '°' ? 1 : 2)}</b> ${u}</td></tr>`).join('')}</table>
     <div class="fit"><b>${rms(P).toFixed(1)}</b><span>px mean error on the photo${cur.photos > 1 ? ' (one of ' + cur.photos + ')' : ''}</span></div>
     <div class="sec">Against the ${cur.ref}</div><table>${checks}</table>
-    ${nund ? `<p class="note">Not fixed: the solve's spread is over 5 % of the value, so the ${cur.photos > 1 ? 'photos do' : 'photo does'} not pin it down. Offsets under 1 m are compared in metres.</p>` : ''}
+    ${nund ? `<p class="note">Not fixed: the solve's spread is over 5 % of the value, or a change in the camera assumptions moves it, so the ${cur.photos > 1 ? 'photos do' : 'photo does'} not pin it down. Offsets under 1 m are compared in metres.</p>` : ''}
     <div class="grades">${Object.entries(n).map(([g, c]) => `<span><span class="dot" style="background:${GC[g]}"></span>${g} ${c}</span>`).join('')}</div>`;
 }
 

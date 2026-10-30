@@ -64,6 +64,7 @@
   th:first-child, td:first-child { text-align: left; }
   th { color: var(--muted); font-weight: 500; }
   td.bad { color: var(--warn); }
+  td.und { color: var(--muted, #8a929a); }
   .fine { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
   .credit { color: var(--muted); font-size: 12px; }
   .opencase { margin: 0; padding: 10px 12px; border-left: 3px solid var(--warn); background: #fff7ea; max-width: 80ch; font-size: 14px; }
@@ -318,12 +319,20 @@ function updateTable() {
   const tb = $('truth').querySelector('tbody'); tb.innerHTML = '';
   const names = Object.keys(P), vals = names.map(k => P[k]);
   for (const [k, t] of Object.entries(cur.spec.truth || {})) {
-    const v = expr(k, names)(...vals), e = 100 * (v - t) / t;
+    const v = expr(k, names)(...vals), sd = cur.result.param_sd || {};
+    // the same rule as tools/bench.py: a spread over 5 % of the value means the photo does not fix it,
+    // and a percentage of an offset under 1 m says little, so that one is given in metres
+    const und = (k.match(/[A-Za-z_]\w*/g) || []).some(n => (cur.spread && cur.spread[n] > 5) || (n in sd && sd[n] > 0.05 * Math.abs(cur.result.params[n])));
+    let cls = '', err;
+    if (und) { cls = 'und'; err = 'not fixed'; }
+    else if (Math.abs(t) < 1) { const d = v - t; cls = Math.abs(d) > 0.05 ? 'bad' : ''; err = `${d > 0 ? '+' : ''}${d.toFixed(2)} m`; }
+    else { const e = 100 * (v - t) / t; cls = Math.abs(e) > 5 ? 'bad' : ''; err = `${e > 0 ? '+' : ''}${e.toFixed(1)} %`; }
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${(cur.labels && cur.labels[k]) || k}</td><td>${v.toFixed(2)}</td><td>${t.toFixed(2)}</td><td class="${Math.abs(e) > 5 ? 'bad' : ''}">${e > 0 ? '+' : ''}${e.toFixed(1)} %</td>`;
+    tr.innerHTML = `<td>${(cur.labels && cur.labels[k]) || k}</td><td>${v.toFixed(2)}</td><td>${t.toFixed(2)}</td><td class="${cls}">${err}</td>`;
     tb.appendChild(tr);
   }
-  $('truthnote').textContent = (cur.spec.truth_note || '') + (cur.spec.truth_note ? '. ' : '') + 'Source: ' + (cur.spec.truth_source || '');
+  $('truthnote').textContent = (cur.spec.truth_note || '') + (cur.spec.truth_note ? '. ' : '') + 'Source: ' + (cur.spec.truth_source || '') +
+    (tb.querySelector('td.und') ? '. Not fixed: the solve\'s spread is over 5 % of the value, or a change in the camera assumptions moves it, so the photo does not pin it down' : '');
 }
 
 function select(i) {

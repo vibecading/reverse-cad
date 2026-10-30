@@ -14,9 +14,10 @@ Grades used everywhere: **P** read off a drawing or a dimensioned source,
 **D** measured from a photo, **I** inferred by a design rule, **A** assumed.
 
 Cases that exercised the skills: `../cases/farnsworth` (two photos, HABS
-drawings: within 0.1-2.9 %), `../cases/crownhall` (one photo, published
+drawings: within 4.1 %, the terrace edges not fixed), `../cases/crownhall` (one photo, published
 figures), `../cases/robie` (two phone photos, HABS drawings: each photo alone is
-self-consistent and 3-18 % off; solved together they land within 1 %).
+self-consistent and up to 18 % off; solved together the walls and coping land
+within 1 %, the brick plinth 5.4 % off).
 
 Tests: `python -I -m pytest tests -q` runs synthetic checks of the solvers (a
 known building, known cameras): single and joint solves recover it, distortion

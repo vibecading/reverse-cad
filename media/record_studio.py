@@ -137,7 +137,7 @@ def run():
         js("() => studio.view('photo', 2200)")
         cap('Back through the recovered camera', 'the model lands on the photo')
         wait(3.4)
-        cap('2.0 px on the photo · 0.1–2.9 % off the HABS drawings', 'the check panel compares every value the solve never saw')
+        cap('2.0 px on the photo · within 4 % of the HABS drawings', 'where one photo fixes a value; the rest is marked not fixed')
         wait(4.0)
 
         # Crown Hall: the bays again
@@ -191,7 +191,8 @@ def run():
         cap('')
 
         # the same, for BIM managers and CI
-        pg.goto((ROOT / 'media' / 'git.html').as_uri())
+        # do not wait for the web fonts: on a slow link the 'load' event froze the recording for seconds
+        pg.goto((ROOT / 'media' / 'git.html').as_uri(), wait_until='domcontentloaded')
         wait(1.0)
         js(OVERLAY)
         js("() => { document.getElementById('cap').style.left = '50%'; showMerge(); }")

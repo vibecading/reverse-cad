@@ -1,5 +1,7 @@
 # reverse-cad
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23776743.svg)](https://doi.org/10.5281/zenodo.23776743)
+
 Recover a building's camera and parametric model from ordinary photos, and
 prove the model against measured drawings.
 

@@ -8,6 +8,14 @@ authors:
     orcid: "https://orcid.org/0009-0006-0337-5264"
   - name: "vibecading"
     website: "https://github.com/vibecading"
+doi: "10.5281/zenodo.23776743"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23776743"
+    description: "All versions"
+  - type: doi
+    value: "10.5281/zenodo.23776744"
+    description: "Version 0.1.0"
 repository-code: "https://github.com/vibecading/reverse-cad"
 url: "https://vibecading.github.io/reverse-cad/studio/"
 license: MIT
